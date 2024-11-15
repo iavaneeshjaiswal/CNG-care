@@ -1,23 +1,35 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    fullName: {
-        type: String,
-        required: [true, 'First name is required'],
-        minlength: [3, 'First name must be at least 2 characters long'],
-        maxlength: [50, 'First name can\'t exceed 50 characters'],
+  fullName: {
+    type: String,
+    required: [true, "Full name is required"],
+    minlength: [3, "Full name must be at least 2 characters long"],
+    maxlength: [50, "Full name can't exceed 50 characters"],
+  },
+  number: {
+    type: String,
+    required: [true, "Phone number is required"],
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: [true, "Email is required"],
+    unique: true,
+    validate: {
+      validator: function (v) {
+        const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        return re.test(v);
+      },
+      message: "Please enter a valid email",
     },
-    number: {
-        type: String,
-        required: [true, 'Phone number is required'],
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: [true, 'Password is required'],
-        minlength: [8, 'Password must be at least 8 characters long'],
-    },
+  },
+  password: {
+    type: String,
+    required: [true, "Password is required"],
+    minlength: [8, "Password must be at least 8 characters long"],
+  },
 });
 
- const User = mongoose.model("User", userSchema);
- export default User;
+const User = mongoose.model("User", userSchema);
+export default User;
