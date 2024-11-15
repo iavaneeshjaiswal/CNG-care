@@ -73,7 +73,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 If you have any questions, feel free to contact the project maintainer:
 
 - **Author**: [Avaaneesh Jaiswal](https://github.com/iavaneeshjaiswal)
-- **Email**: [your-email@example.com]
+- **Email**: [workwithavaneesh@gmail.com]
 
 ---
 
