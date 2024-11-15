@@ -64,9 +64,6 @@ Make sure you have the following installed:
 
 Once the application is running, navigate to [http://localhost:3000](http://localhost:3000) in your browser to start using the application.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
