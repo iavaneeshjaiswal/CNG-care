@@ -12,6 +12,13 @@ const client = twilio(
 
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
+
+  const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+  if (!emailPattern.test(email)) {
+    return res.status(401).json({ error: "Invalid email" });
+  }
+
   try {
     const user = await User.findOne({ email });
     if (!user) {
@@ -21,7 +28,12 @@ const userLogin = async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
     const token = jwt.sign({ email, password }, process.env.JWT_SECRET);
-    res.status(200).json({ token, user });
+    res.status(200).json({
+      success: true,
+      message: "User login successfully",
+      token,
+      user,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -29,6 +41,17 @@ const userLogin = async (req, res) => {
 
 const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
+  const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+  if (!emailPattern.test(email)) {
+    return res.status(401).json({ error: "Invalid email" });
+  }
+  const phonePattern = /^[6-9]\d{9}$/;
+
+  if (!phonePattern.test(number)) {
+    return res.status(401).json({ error: "Invalid phone number" });
+  }
+
   try {
     let newUser = new User({ ...req.body });
 
@@ -41,12 +64,18 @@ const signup = async (req, res) => {
     if (existingPhone) {
       return res.status(400).send("Phone number already exists");
     }
-    
+
     await newUser.save();
-    const token = jwt.sign({ email, password }, process.env.JWT_SECRET);
-    res.status(201).json({ token, ...req.body });
+    const user = await User.findOne({ email: newUser.email });
+    const token = jwt.sign({ user }, process.env.JWT_SECRET);
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      token,
+      user,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false ,error: error.message });
   }
 };
 
@@ -102,11 +131,20 @@ const sendOtp = async (req, res) => {
 
 const listUser = async (req, res) => {
   try {
-    const user = await User.find();
-    res.status(200).json({ user });
+    const users = await User.find();
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-export default { userLogin, signup, sendOtp, listUser };
+const removeUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export default { userLogin, signup, sendOtp, listUser,removeUser };

@@ -1,12 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Navbar from "../components/Navbar.jsx";
 import { ProductContext } from "../contexts/porductContext.jsx";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useParams , useNavigate} from "react-router-dom";
 
-export default function NewProduct() {
-  const { addProduct } = useContext(ProductContext);
+export default function UpdateProduct() {
+  const { updateProduct } = useContext(ProductContext);
   const url = "http://localhost:5000";
+
+  const navigate = useNavigate();
+  const { id } = useParams();
   const {
     register,
     handleSubmit,
@@ -14,71 +18,66 @@ export default function NewProduct() {
     setValue,
   } = useForm();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    (async function () {
+      const product = await axios.get(`${url}/product/get-product/${id}`);
+      setValue("title", product.data.title);
+      setValue("price", product.data.price);
+      setValue("offerPrice", product.data.offerPrice);
+      setValue("quantity", product.data.quantity);
+      setValue("category", product.data.category);
+      setValue("description", product.data.description);
+    })();
+  }, [id]);
 
   const onSubmit = async (data) => {
-    if (data.images && data.images.length > 0) {
-      const formData = new FormData();
-      formData.append("title", data.title);
-      formData.append("price", data.price);
-      formData.append("offerPrice", data.offerPrice);
-      formData.append("quantity", data.quantity);
-      formData.append("category", data.category);
-      formData.append("description", data.description);
-
-      Array.from(data.images).forEach((image) => {
-        formData.append("images", image);
-      });
-
-      await addProduct(formData);
-      navigate("/products");
-    } else {
-      console.error("No images uploaded");
-    }
+    await updateProduct(id, data);
+    navigate("/products");
   };
 
   return (
-    <div className="flex gap-3 w-full" onSubmit={handleSubmit(onSubmit)}>
+    <div className="flex gap-3 w-full ">
       <Navbar />
       <div className="flex w-full flex-col items-center p-12 gap-3 ">
-        <h2>Add Product</h2>
-        <form className="flex w-full h-screen flex-col justify-start gap-5 ">
+        <h2>Update Product</h2>
+        <form
+          className="flex w-full h-screen flex-col justify-start gap-5 "
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div className="flex flex-col gap-2 ">
             <label htmlFor="title">Product Name:</label>
             <input
               type="text"
               placeholder="Enter Product Name"
-              id=""
+              id="title"
               {...register("title", { required: "Product name is required" })}
               className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
             />
             {errors.title && (
-              <p className="text-red-400 text-sm">{errors.title.message}</p>
-            )}{" "}
-            {/* Error message */}
+              <p className="text-red-400 text-sm">{errors.title?.message}</p>
+            )}
           </div>
 
           <div className="flex w-full gap-2 ">
             <div className="flex w-1/2 flex-col gap-2 ">
-              <label htmlFor="Price">Price :</label>
+              <label htmlFor="price">Price :</label>
               <input
                 type="number"
                 placeholder="Enter Price"
-                id="Price"
+                id="price"
                 {...register("price", { required: "Price is required" })}
                 className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
               />
               {errors.price && (
-                <p className="text-red-400 text-sm">{errors.price.message}</p>
-              )}{" "}
-              {/* Error message */}
+                <p className="text-red-400 text-sm">{errors.price?.message}</p>
+              )}
             </div>
             <div className="flex w-1/2  flex-col gap-2 ">
-              <label htmlFor="OfferPrice">Offer Price :</label>
+              <label htmlFor="offerPrice">Offer Price :</label>
               <input
                 type="number"
                 placeholder="Enter Offer Price"
-                id="OfferPrice"
+                id="offerPrice"
                 {...register("offerPrice", {
                   required: "Offer Price is required",
                 })}
@@ -86,10 +85,9 @@ export default function NewProduct() {
               />
               {errors.offerPrice && (
                 <p className="text-red-400 text-sm">
-                  {errors.offerPrice.message}
+                  {errors.offerPrice?.message}
                 </p>
-              )}{" "}
-              {/* Error message */}
+              )}
             </div>
           </div>
 
@@ -105,10 +103,9 @@ export default function NewProduct() {
               />
               {errors.quantity && (
                 <p className="text-red-400 text-sm">
-                  {errors.quantity.message}
+                  {errors.quantity?.message}
                 </p>
-              )}{" "}
-              {/* Error message */}
+              )}
             </div>
             <div className="flex w-1/2  flex-col gap-2 ">
               <label htmlFor="category">Category :</label>
@@ -123,15 +120,14 @@ export default function NewProduct() {
               />
               {errors.category && (
                 <p className="text-red-400 text-sm">
-                  {errors.category.message}
+                  {errors.category?.message}
                 </p>
-              )}{" "}
-              {/* Error message */}
+              )}
             </div>
           </div>
 
           <div className="flex flex-col gap-2 ">
-            <label htmlFor="description ">Description:</label>
+            <label htmlFor="description">Description:</label>
             <textarea
               placeholder="Enter Description"
               id="description"
@@ -140,32 +136,17 @@ export default function NewProduct() {
               {...register("description", {
                 required: "Description is required",
               })}
-              className="p-2 rounded focus:outline-none bg-gray-200 w-full border-2  border-gray-400 focus:border-black"
+              className="p-2 rounded focus:outline-none bg-gray-200 w-full border  border-gray-400 focus:border-black"
             ></textarea>
             {errors.description && (
               <p className="text-red-400 text-sm">
-                {errors.description.message}
+                {errors.description?.message}
               </p>
-            )}{" "}
-            {/* Error message */}
-          </div>
-
-          <div className="flex flex-col gap-2 ">
-            <label htmlFor="images">Product Images:</label>
-            <input
-              type="file"
-              id="images"
-              multiple
-              {...register("images", { required: "Please select images" })}
-            />
-            {errors.images && (
-              <p className="text-red-400 text-sm">{errors.images.message}</p>
-            )}{" "}
-            {/* Error message */}
+            )}
           </div>
           <input
             type="submit"
-            value="Add Product"
+            value="Update Product"
             style={{ background: "#FC370F" }}
             className="text-white p-1 px-4 text-lg  rounded-lg cursor-pointer"
           />

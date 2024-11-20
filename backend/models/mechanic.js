@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
+const mechanicSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
@@ -17,23 +17,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Email is required"],
       unique: true,
-      validate: {
-        validator: function (v) {
-          const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-          return re.test(v);
-        },
-        message: "Please enter a valid email",
-      },
     },
     password: {
       type: String,
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters long"],
     },
-    orders: [
+    services: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Order",
+        ref: "Service",
       },
     ],
     payments: [
@@ -42,15 +35,9 @@ const userSchema = new mongoose.Schema(
         ref: "Payment",
       },
     ],
-    services: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Service",
-      },
-    ],
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
-export default User;
+const Mechanic = mongoose.model("Mechanic", mechanicSchema);
+export default Mechanic;

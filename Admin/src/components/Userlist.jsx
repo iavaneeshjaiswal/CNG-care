@@ -1,119 +1,57 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from "react";
+import { UserContext } from "../contexts/userContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Userlist() {
+  const { users, remove_user } = useContext(UserContext);
+  const [Users, setUsers] = useState(users);
 
-    const products = [
-        {
-          category: "Electronics",
-          title: "Wireless Bluetooth Headphones",
-          price: 99.99,
-          offerPrice: 79.99,
-          quantity: 50,
-          description: "High-quality wireless Bluetooth headphones with noise-cancellation and long battery life.",
-          image: "https://example.com/images/headphones.jpg"
-        },
-        {
-          category: "Electronics",
-          title: "Smartphone 5G",
-          price: 799.99,
-          offerPrice: 749.99,
-          quantity: 120,
-          description: "Latest 5G-enabled smartphone with a 6.5-inch AMOLED display and 128GB storage.",
-          image: "https://example.com/images/smartphone.jpg"
-        },
-        {
-          category: "Home Appliances",
-          title: "Air Purifier",
-          price: 149.99,
-          offerPrice: 129.99,
-          quantity: 30,
-          description: "Compact air purifier with HEPA filtration for cleaner air and a healthier home.",
-          image: "https://example.com/images/airpurifier.jpg"
-        },
-        {
-          category: "Books",
-          title: "The Great Gatsby",
-          price: 14.99,
-          offerPrice: 9.99,
-          quantity: 200,
-          description: "A classic novel by F. Scott Fitzgerald, exploring themes of wealth, class, and the American Dream.",
-          image: "https://example.com/images/gatsby.jpg"
-        },
-        {
-          category: "Fashion",
-          title: "Leather Jacket",
-          price: 199.99,
-          offerPrice: 169.99,
-          quantity: 75,
-          description: "Stylish and durable leather jacket with a slim fit design, perfect for casual or semi-formal occasions.",
-          image: "https://example.com/images/leatherjacket.jpg"
-        },
-        {
-          category: "Sports & Outdoors",
-          title: "Yoga Mat",
-          price: 29.99,
-          offerPrice: 24.99,
-          quantity: 150,
-          description: "Non-slip, eco-friendly yoga mat designed for comfort and stability during your practice.",
-          image: "https://example.com/images/yogamat.jpg"
-        }
-      ];
-      
-  const [allproducts,setAllproducts]=useState({...products});
-//   const fetchInfo=async()=>{
-//     await fetch('http://localhost:4000/allproducts').then((res)=>res.json()).then
-//     ((data)=>
-//       {setAllproducts(data)});
-//   }
-
-//   useEffect(
-//     ()=>{
-//       fetchInfo();
-//     },[]
-//   )
-
-//   const remove_product=async(id)=>{
-//     await fetch('http://localhost:4000/removeproduct',{
-//       method:'POST',
-//       headers:{
-//         Accept:'application/json',
-//         'Content-Type':'application/json',
-//       },
-//       body:JSON.stringify({id:id})
-//     }) 
-//     await fetchInfo();
-//   }
-
+  const navigate = useNavigate();
+  useEffect(() => {
+    setUsers(users);
+  }, [users]);
   return (
-    <div className='p-2 box-border bg-white mt-5 rounded-sm w-full'>
-      <div className='max-h-[77vh] overflow-auto px-4 text-center'>
-        <table className='w-full mx-auto '>
+    <div className="p-2 box-border bg-white mt-5 rounded-sm w-full">
+      <div className="max-h-[77vh] overflow-auto px-4 text-center">
+        <table className="w-full mx-auto ">
           <thead>
-            <tr className='bg-primary bold-14 sm:regular-22 text-start py-12 bg-gray-200 '>
-              <th className='p-2 text-start'>Name</th>
-              <th className='p-2 text-start'>Phone Number</th>
-              <th className='p-2 text-start'>location</th>
-              <th className='p-2 text-start'>optional</th>
-              <th className='p-2 text-center'>Remove</th>
+            <tr className="bg-primary bold-14 sm:regular-22 text-start py-12 bg-gray-200 ">
+              <th className="p-2 text-start">Name</th>
+              <th className="p-2 text-start">Phone Number</th>
+              <th className="p-2 text-start">Email</th>
+              <th className="p-2 text-center">Remove</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.title} className='border-b'>
-                <td className='p-2 text-start'>{product.title}</td>
-                <td className='p-2 text-start'>{product.price}</td>
-                <td className='p-2 text-start'>{product.offerPrice}</td>
-                <td className='p-2 text-start'>{product.category}</td>
-                <td className='p-2 text-center'>
-                  <button className=' text-red-600 text-lg p-2 rounded' onClick={() => {remove_product(product.id)}}>{<i class="ri-delete-bin-6-line"></i>}</button>
+            {Users.length > 0 ? (
+              Users.map((user) => (
+                <tr key={user._id} className="border-b">
+                  <td className="p-2 text-start">{user.fullName}</td>
+                  <td className="p-2 text-start">{user.number}</td>
+                  <td className="p-2 text-start">{user.email}</td>
+                  <td className="p-2 text-center">
+                    <button
+                      className=" text-red-600 text-lg p-2 rounded"
+                      onClick={() => {
+                        remove_user(user._id);
+                        setUsers(products.filter((u) => u._id !== user._id));
+                      }}
+                    >
+                      {<i class="ri-delete-bin-6-line"></i>}
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="p-2 text-center text-gray-400">
+                  NO USERS ADDED YET!
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
     </div>
-  )
+  );
 }
-
-
