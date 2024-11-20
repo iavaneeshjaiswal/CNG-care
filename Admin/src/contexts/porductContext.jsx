@@ -20,7 +20,7 @@ export const ProductProvider = (props) => {
     fetchProducts();
   }, []);
 
-  const updateUserState = async () => {
+  const updateproductState = async () => {
     const res = await axios.get(`${url}/product/list-product`);
     setProducts(res.data);
   };
@@ -28,7 +28,7 @@ export const ProductProvider = (props) => {
   const remove_product = (id) => {
     axios
       .delete(`${url}/product/remove-product/${id}`)
-      .then(() => updateUserState())
+      .then(() => updateproductState())
       .catch((err) => console.log(err));
   };
 
@@ -40,7 +40,7 @@ export const ProductProvider = (props) => {
             "Content-Type": "multipart/form-data",
           },
         })
-        .then(() => updateUserState())
+        .then(() => updateproductState())
         .then(() => alert("Product uploaded successfully"));
     } catch (error) {
       alert("Error uploading product:", error);
@@ -51,7 +51,7 @@ export const ProductProvider = (props) => {
     try {
       const response = await axios
         .put(`${url}/product/update-product/${id}`, data)
-        .then(() => updateUserState())
+        .then(() => updateproductState())
         .then(() => alert("Product Updated Successfully"));
     } catch (error) {
       alert("Error updating product:", error);

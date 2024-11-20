@@ -4,7 +4,7 @@ import Userlist from "../components/Userlist";
 
 export default function User() {
   return (
-    <div className="flex gap-3 w-full">
+    <div className="flex w-full">
       <Navbar />
       <Userlist />
     </div>

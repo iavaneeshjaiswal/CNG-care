@@ -35,6 +35,8 @@ export default function Navbar() {
     },
   ];
 
+    
+
   return (
     <nav
       style={{ background: "#FC370F" }}
@@ -52,9 +54,12 @@ export default function Navbar() {
             return (
               <li key={link.id}>
                 <NavLink to={link.path} className="flex gap-2 items-center">
-                  <img src={`/assets/${link.image}.svg`} className="w-5" />
+                  <img
+                    src={`/assets/${link.image}.svg`}
+                    className="w-6 cursor-pointer"
+                  />
 
-                  <p className="text-lg">{link.text}</p>
+                  <p className=" hidden lg:block">{link.text}</p>
                 </NavLink>
               </li>
             );
