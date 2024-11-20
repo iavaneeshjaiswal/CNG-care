@@ -1,6 +1,6 @@
 # CNG Care
 
-CNG Care is a web-based application designed to manage and optimize CNG (Compressed Natural Gas) related services. The platform helps users track and manage CNG usage, stations, and service schedules.
+CNG Care is a 
 
 ## Table of Contents
 
