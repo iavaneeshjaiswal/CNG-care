@@ -6,10 +6,10 @@ import NewProduct from "./pages/NewProduct";
 import User from "./pages/User";
 import Admin from "./pages/Admin";
 import Home from "./pages/Home";
+import NewAdmin from "./pages/NewAdmin"
 import UpdateProduct from "./pages/UpdateProduct";
 export default function App() {
   return (
-
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -17,9 +17,9 @@ export default function App() {
         <Route path="/" element={<User />} />
         <Route path="/admins" element={<Admin />} />
         <Route path="/addproduct" element={<NewProduct />} />
+        <Route path="/addadmins" element={<NewAdmin />} />
         <Route path="/updateproduct/:id" element={<UpdateProduct />} />
       </Routes>
     </Router>
-
   );
 }

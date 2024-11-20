@@ -19,14 +19,13 @@ const adminLogin = async(req, res) => {
     }
 }
 const addAdmin = async(req, res) => {
-    const { fullName, username , password } = req.body;
     try {
-        let newAdmin = new Admin({ fullName, username, password });
+        console.log("hitted",req.body)
+        let newAdmin = new Admin({ ...req.body});
         await newAdmin.save();
-        const token = jwt.sign({ username,password }, process.env.JWT_SECRET);
-        res.status(200).json({ token });
         res.status(201).json({ message: "Admin created successfully" });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: error.message });
     }
 }   
@@ -34,7 +33,7 @@ const addAdmin = async(req, res) => {
 const listAdmin = async(req, res) => {
     try {
         const admin = await Admin.find();
-        res.status(200).json({ admin });
+        res.status(200).json(admin);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -6,7 +6,7 @@ export const UserContext = createContext(null);
 export const UserProvider = (props) => {
   const [users, setUsers] = useState([]);
 
-  const url = "http://localhost:5000";
+  const url = "http://localhost:4000";
 
   useEffect(() => {
     axios

@@ -7,7 +7,7 @@ import { useParams , useNavigate} from "react-router-dom";
 
 export default function UpdateProduct() {
   const { updateProduct } = useContext(ProductContext);
-  const url = "http://localhost:5000";
+  const url = "http://localhost:6000";
 
   const navigate = useNavigate();
   const { id } = useParams();

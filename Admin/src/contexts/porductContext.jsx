@@ -6,7 +6,7 @@ export const ProductContext = createContext(null);
 export const ProductProvider = (props) => {
   const [Products, setProducts] = useState([]);
 
-  const url = "http://localhost:5000";
+  const url = "http://localhost:4000";
 
   useEffect(() => {
     const fetchProducts = async () => {

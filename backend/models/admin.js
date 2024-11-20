@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema({
-    fullName: {
+    name: {
         type: String,
         required: [true, 'First name is required'],
         minlength: [3, 'First name must be at least 2 characters long'],
@@ -12,22 +12,15 @@ const adminSchema = new mongoose.Schema({
         required: [true, 'Phone number is required'],
         unique: true,
     },
-    adminType: {
-        type: String,
-        required: [true, 'Admin type is required'],
-        enum: ['mainAdmin', 'subAdmin'],
-        default: 'subAdmin',
-    },
     password: {
         type: String,
-        unique:true,
         required: [true, 'Password is required'],
         minlength: [8, 'Password must be at least 8 characters long'],
     },
     role:{
         type: String,
         required: [true, 'Role is required'],
-        enum:  ['superAdmin', 'subAdmins'],
+        // enum:  ['superAdmin', 'subAdmin',"manager"],
         default: 'admin',
     }
 });

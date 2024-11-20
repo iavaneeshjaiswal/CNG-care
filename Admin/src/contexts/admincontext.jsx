@@ -5,8 +5,8 @@ export const Admincontext = createContext(null);
 
 export const AdminProvider = (props) => {
   const [Admins, setAdmins] = useState([]);
-
-  const url = "http://localhost:5000";
+  console.log(Admins);
+  const url = "http://localhost:4000";
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -21,8 +21,9 @@ export const AdminProvider = (props) => {
   }, []);
 
   const updateadminState = async () => {
-    const res = await axios.get(`${url}/admin/list-admin`);
-    setProducts(res.data);
+    const res = await axios.get(`${url}/admin/list-admin`).then(() => {
+      setProducts(res.data);
+    });
   };
 
   const remove_Admin = (id) => {
@@ -34,12 +35,9 @@ export const AdminProvider = (props) => {
 
   const addAdmin = async (data) => {
     try {
-      const response = await axios
-        .post(`${url}/admin/add-admin`, data, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
+      console.log(data)
+      await axios
+        .post(`${url}/admin/add-admin`, data)
         .then(() => updateadminState())
         .then(() => alert("User added successfully"));
     } catch (error) {
