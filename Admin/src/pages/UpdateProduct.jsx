@@ -3,11 +3,10 @@ import Navbar from "../components/Navbar.jsx";
 import { ProductContext } from "../contexts/porductContext.jsx";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { useParams , useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function UpdateProduct() {
-  const { updateProduct } = useContext(ProductContext);
-  const url = "http://localhost:6000";
+  const { updateProduct, url } = useContext(ProductContext);
 
   const navigate = useNavigate();
   const { id } = useParams();

@@ -60,7 +60,7 @@ export const ProductProvider = (props) => {
 
   return (
     <ProductContext.Provider
-      value={{ Products, updateProduct, remove_product, addProduct }}
+      value={{ Products, updateProduct, remove_product, addProduct, url }}
     >
       {props.children}
     </ProductContext.Provider>

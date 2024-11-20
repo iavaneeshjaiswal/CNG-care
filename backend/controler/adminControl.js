@@ -20,7 +20,6 @@ const adminLogin = async(req, res) => {
 }
 const addAdmin = async(req, res) => {
     try {
-        console.log("hitted",req.body)
         let newAdmin = new Admin({ ...req.body});
         await newAdmin.save();
         res.status(201).json({ message: "Admin created successfully" });
@@ -51,19 +50,29 @@ const removeAdmin = async(req, res) => {
 
 const updateAdmin = async(req, res) => {
     const { id } = req.params;
-    const { fullName, username , password } = req.body;
     try {
-        const admin = await Admin.findByIdAndUpdate(id, { fullName, username, password });
+        const admin = await Admin.findByIdAndUpdate(id, { ...req.body });
         res.status(200).json({ admin });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }   
 
+const admindetail = async(req,res) => {
+    const { id } = req.params;
+       try {
+        const admin = await Admin.findOne({_id:id});
+        res.status(200).json(admin);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
 export default {
     adminLogin,
     addAdmin,
     listAdmin,
     removeAdmin,
-    updateAdmin
+    updateAdmin,
+    admindetail
 };

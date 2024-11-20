@@ -33,9 +33,13 @@ export default function Navbar() {
       path: "",
       text: "logout",
     },
+    {
+      id: 6,
+      image: "Add Admin",
+      path: "/addadmins",
+      text: "Insert Admin",
+    },
   ];
-
-    
 
   return (
     <nav

@@ -12,7 +12,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const { userLogin, signup, sendOtp, listUser, removeUser } = userControl;
-const { adminLogin, addAdmin, listAdmin, removeAdmin, updateAdmin } =
+const { adminLogin, addAdmin, listAdmin, removeAdmin, updateAdmin , admindetail} =
   adminControl;
 const {
   addProduct,
@@ -63,6 +63,7 @@ app.post("/user/send-otp", sendOtp);
 app.post("/admin/login", adminLogin);
 app.post("/admin/add-admin", addAdmin);
 app.get("/admin/list-admin", listAdmin);
+app.get("/admin/admindetail/:id", admindetail);
 app.delete("/admin/remove-admin/:id", removeAdmin);
 app.put("/admin/update-admin/:id", updateAdmin);
 app.get("/admin/all-users", listUser);

@@ -1,22 +1,34 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Navbar from "../components/Navbar.jsx";
 import { Admincontext } from "../contexts/admincontext.jsx";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function NewAdmin() {
-  const { addAdmin } = useContext(Admincontext);
+export default function UpdateAdmin() {
+  const { updateAdmin, url } = useContext(Admincontext);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm();
-
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    (async function () {
+      const admin = await axios.get(`${url}/admin/admindetail/${id}`);
+      setValue("name", admin.data.name);
+      setValue("password", admin.data.password);
+      setValue("role", admin.data.role);
+      setValue("username", admin.data.username);
+    })();
+  }, [id]);
 
   const onSubmit = async (data) => {
-    await addAdmin(data);
+    await updateAdmin(id,data);
     navigate("/admins");
   };
 
@@ -24,7 +36,7 @@ export default function NewAdmin() {
     <div className="flex gap-3 w-full" onSubmit={handleSubmit(onSubmit)}>
       <Navbar />
       <div className="flex w-full flex-col items-center p-12 gap-3 ">
-        <h2>Add Admin</h2>
+        <h2>Update Admin</h2>
         <form className="flex w-full h-screen flex-col justify-start gap-5 ">
           <div className="flex flex-col gap-2 ">
             <label htmlFor="Name">Admin Name:</label>
@@ -97,7 +109,7 @@ export default function NewAdmin() {
           </div>
           <input
             type="submit"
-            value="Add Admin"
+            value="Update Admin"
             style={{ background: "#FC370F" }}
             className="text-white p-1 px-4 text-lg  rounded-lg cursor-pointer"
           />

@@ -3,15 +3,8 @@ import { Admincontext } from "../contexts/admincontext";
 import { useNavigate } from "react-router-dom";
 
 export default function Adminlist() {
-  const { Admins, addAdmin, remove_Admin, updateAdmin } =
-    useContext(Admincontext);
+  const { Admins, remove_Admin, setAdmins } = useContext(Admincontext);
   const navigate = useNavigate();
-  const [admins, setadmins] = useState(Admins);
-
-  useEffect(() => {
-    setadmins(Admins);
-  }, [Admins]);
-
   return (
     <div className="p-2 box-border bg-white rounded-sm w-full">
       <div className="max-h-[77vh] overflow-auto px-4 text-center">
@@ -33,23 +26,29 @@ export default function Adminlist() {
             </tr>
           </thead>
           <tbody>
-            {admins.length > 0 ? (
-              admins.map((admin) => (
+            {Admins.length > 0 ? (
+              Admins.map((admin) => (
                 <tr key={admin._id} className="border-b">
                   <td className="p-2 text-start">{admin.name}</td>
                   <td className="p-2 text-start">{admin.username}</td>
                   <td className="p-2 text-start">{admin.password}</td>
                   <td className="p-2 text-start">{admin.role}</td>
                   <td className="p-2 text-CENTER">
-                    <button className=" text-black text-xl p-2 rounded">
+                    <button
+                      className=" text-black text-xl p-2 rounded"
+                      onClick={() => {
+                        navigate(`/updateadmin/${admin._id}`);
+                      }}
+                    >
                       {<i class="ri-edit-2-fill"></i>}
                     </button>
                   </td>
                   <td className="p-2 text-center">
                     <button
-                      className=" text-red-600 p-2 text-black text-xl rounded"
+                      className="text-red-500 p-2 text-black text-xl rounded"
                       onClick={() => {
                         remove_Admin(admin._id);
+                        setAdmins(Admins.filter((a) => a._id !== admin._id));
                       }}
                     >
                       {<i class="ri-delete-bin-6-line"></i>}
