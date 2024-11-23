@@ -1,10 +1,16 @@
+/*************  ✨ Codeium Command 🌟  *************/
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const productSchema = new mongoose.Schema(
   {
     category: {
       type: String,
-      required: [true, "Category is required"],
+      required: [true, "Category is required"]
+    },
+    brand: {
+      type: String,
+      required: [true, "Brand is required"],
     },
     title: {
       type: String,
@@ -33,6 +39,14 @@ const productSchema = new mongoose.Schema(
       {
         type: String,
         required: [true, "Image is required"],
+        validate: {
+          validator: (value) => {
+            const extensions = ["jpg", "jpeg", "png", "gif"];
+            const extension = value.split(".").pop().toLowerCase();
+            return extensions.includes(extension);
+          },
+          message: (props) => `${props.value} is not a valid image`,
+        },
       },
     ],
   },

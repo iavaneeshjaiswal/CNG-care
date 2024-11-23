@@ -24,6 +24,7 @@ export default function NewProduct() {
       formData.append("offerPrice", data.offerPrice);
       formData.append("quantity", data.quantity);
       formData.append("category", data.category);
+      formData.append("brand", data.brand);
       formData.append("description", data.description);
 
       Array.from(data.images).forEach((image) => {
@@ -43,19 +44,35 @@ export default function NewProduct() {
       <div className="flex w-full flex-col items-center p-12 gap-3 ">
         <h2>Add Product</h2>
         <form className="flex w-full h-screen flex-col justify-start gap-5 ">
-          <div className="flex flex-col gap-2 ">
-            <label htmlFor="title">Product Name:</label>
-            <input
-              type="text"
-              placeholder="Enter Product Name"
-              id=""
-              {...register("title", { required: "Product name is required" })}
-              className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
-            />
-            {errors.title && (
-              <p className="text-red-400 text-sm">{errors.title.message}</p>
-            )}{" "}
-            {/* Error message */}
+          <div className="flex gap-2 ">
+            <div className="flex flex-col gap-2 w-full">
+              <label htmlFor="title">Product Name:</label>
+              <input
+                type="text"
+                placeholder="Enter Product Name"
+                id=""
+                {...register("title", { required: "Product name is required" })}
+                className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
+              />
+              {errors.title && (
+                <p className="text-red-400 text-sm">{errors.title.message}</p>
+              )}{" "}
+              {/* Error message */}
+            </div>
+            <div className="flex flex-col gap-2 w-full">
+              <label htmlFor="brand">Brand Name:</label>
+              <input
+                type="brand"
+                placeholder="Enter Product Name"
+                id="brand"
+                {...register("brand", { required: "Brand name is required" })}
+                className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
+              />
+              {errors.Brand && (
+                <p className="text-red-400 text-sm">{errors.Brand.message}</p>
+              )}{" "}
+              {/* Error message */}
+            </div>
           </div>
 
           <div className="flex w-full gap-2 ">

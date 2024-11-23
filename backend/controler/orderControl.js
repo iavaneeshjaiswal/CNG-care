@@ -1,6 +1,5 @@
 import Order from '../models/order.js';
 import Product from '../models/product.js';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 

@@ -20,7 +20,7 @@ const addProduct = async (req, res) => {
       (file) => `${url + process.env.PORT}/uploads/${file.filename}`
     );
 
-    const { category, title, price, quantity, offerPrice, description } =
+    const { category, title, price, quantity, offerPrice, description,brand} =
       req.body;
 
     let newProduct = new Product({
@@ -28,6 +28,7 @@ const addProduct = async (req, res) => {
       title,
       price,
       quantity,
+      brand,
       offerPrice,
       description,
       images: imageUrls,
