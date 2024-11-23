@@ -38,15 +38,7 @@ const productSchema = new mongoose.Schema(
     images: [
       {
         type: String,
-        required: [true, "Image is required"],
-        validate: {
-          validator: (value) => {
-            const extensions = ["jpg", "jpeg", "png", "gif"];
-            const extension = value.split(".").pop().toLowerCase();
-            return extensions.includes(extension);
-          },
-          message: (props) => `${props.value} is not a valid image`,
-        },
+        required: [true, "Image is required"]
       },
     ],
   },

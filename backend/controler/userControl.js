@@ -44,12 +44,12 @@ const signup = async (req, res) => {
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   if (!emailPattern.test(email)) {
-    return res.status(401).json({ error: "Invalid email" });
+    return res.status(401).json({ error: "Invalid email" }).json({status: false});
   }
   const phonePattern = /^[6-9]\d{9}$/;
 
   if (!phonePattern.test(number)) {
-    return res.status(401).json({ error: "Invalid phone number" });
+    return res.status(401).json({ error: "Invalid phone number" }).json({status: false});
   }
 
   try {
@@ -57,25 +57,25 @@ const signup = async (req, res) => {
 
     const existingUser = await User.findOne({ email: newUser.email });
     if (existingUser) {
-      return res.status(400).send("Email already exists");
+      return res.status(400).send("Email already exists").json({status: false});
     }
 
     const existingPhone = await User.findOne({ number: newUser.number });
     if (existingPhone) {
-      return res.status(400).send("Phone number already exists");
+      return res.status(400).send("Phone number already exists").json({status: false});
     }
 
     await newUser.save();
     const user = await User.findOne({ email: newUser.email });
     const token = jwt.sign({ user }, process.env.JWT_SECRET);
     res.status(201).json({
-      success: true,
+      status: true,
       message: "User created successfully",
       token,
       user,
     });
   } catch (error) {
-    res.status(500).json({ success: false ,error: error.message });
+    res.status(500).json({ status: false ,error: error.message });
   }
 };
 

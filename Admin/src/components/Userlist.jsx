@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../contexts/userContext";
-import { useNavigate } from "react-router-dom";
 
 export default function Userlist() {
   const { users, remove_user } = useContext(UserContext);
   const [Users, setUsers] = useState(users);
+  console.log(Users);
 
-  const navigate = useNavigate();
   useEffect(() => {
     setUsers(users);
   }, [users]);

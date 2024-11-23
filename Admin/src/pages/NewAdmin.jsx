@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 export default function NewAdmin() {
-  const { addAdmin } = useContext(Admincontext);
+  const { addAdmin , role} = useContext(Admincontext);
 
   const {
     register,
@@ -89,8 +89,9 @@ export default function NewAdmin() {
                 })}
                 className="text-black border p-2 rounded-lg"
               >
-                <option value="manager">Manager</option>
-                <option value="subadmin">Sub-Admin</option>
+                {role.map((item) => {
+                  return <option value={item}>{item}</option>;
+                })}
               </select>
               {/* Error message */}
             </div>

@@ -6,7 +6,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function UpdateAdmin() {
-  const { updateAdmin, url } = useContext(Admincontext);
+  const { updateAdmin, url ,role} = useContext(Admincontext);
 
   const {
     register,
@@ -101,8 +101,9 @@ export default function UpdateAdmin() {
                 })}
                 className="text-black border p-2 rounded-lg"
               >
-                <option value="manager">Manager</option>
-                <option value="subadmin">Sub-Admin</option>
+               { role.map((role) => (
+                <option value={role}>{role}</option>
+               ))}
               </select>
               {/* Error message */}
             </div>

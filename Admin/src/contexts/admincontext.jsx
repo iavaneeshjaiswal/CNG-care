@@ -7,6 +7,8 @@ export const AdminProvider = (props) => {
   const [Admins, setAdmins] = useState([]);
   const url = "http://localhost:4000";
 
+  const [admin, setAdmin] = useState();
+
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
@@ -61,9 +63,50 @@ export const AdminProvider = (props) => {
     }
   };
 
+  const login = async (data) => {
+    console.log(data);
+    try {
+      const response = await axios.post(
+        `${url}/admin/login`,
+        { data },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const response = await axios.get(`${url}/admin/logout`, {
+        withCredentials: true,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const role = ["superAdmin", "subAdmin", "manager", "admin"];
+
   return (
     <Admincontext.Provider
-      value={{ Admins, addAdmin, remove_Admin, updateAdmin, setAdmins, url }}
+      value={{
+        Admins,
+        addAdmin,
+        remove_Admin,
+        updateAdmin,
+        setAdmins,
+        login,
+        url,
+        role,
+        logout
+      }}
     >
       {props.children}
     </Admincontext.Provider>

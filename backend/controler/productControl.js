@@ -6,6 +6,7 @@ import fs from "fs";
 dotenv.config();
 
 const url = process.env.URL;
+const port = process.env.PORT||4000;
 
 // add single product with images
 const addProduct = async (req, res) => {
@@ -17,7 +18,7 @@ const addProduct = async (req, res) => {
     }
 
     const imageUrls = req.files.map(
-      (file) => `${url + process.env.PORT}/uploads/${file.filename}`
+      (file) => `${url + port}/uploads/${file.filename}`
     );
 
     const { category, title, price, quantity, offerPrice, description,brand} =
@@ -65,26 +66,36 @@ const listSingleProduct = async (req, res) => {
 };
 
 const removeProduct = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params;  
   try {
     const product = await Product.findByIdAndDelete(id);
-    if (product && product.images && product.images.length > 0) {
-      product.images.forEach((imageUrl) => {
-        const filePath = path.join(
-          __dirname,
-          "../uploads",
-          path.basename(imageUrl)
-        );
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+
+    if (product.images && product.images.length > 0) {
+      const ProductImages = product.images;
+      ProductImages.forEach((imageUrl) => { 
+        const fileName = path.basename(imageUrl); 
+         const filePath = path.join(new URL('.', import.meta.url).pathname, '../uploads', fileName);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
+          console.log(`Deleted file: ${filePath}`);
+        } else {
+          console.log(`File not found: ${filePath}`);
         }
       });
     }
+
     res.status(200).json({ message: "Product removed successfully" });
   } catch (error) {
+
+    console.error("Error deleting product:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;

@@ -9,10 +9,11 @@ import cors from "cors";
 import path from "path";
 import multer from "multer";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser"
 dotenv.config();
 
 const { userLogin, signup, sendOtp, listUser, removeUser } = userControl;
-const { adminLogin, addAdmin, listAdmin, removeAdmin, updateAdmin , admindetail} =
+const { adminLogin, addAdmin, listAdmin, removeAdmin, updateAdmin , admindetail,logout} =
   adminControl;
 const {
   addProduct,
@@ -47,11 +48,14 @@ const app = express();
 
 //middlewares
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cookieParser())
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+const port = process.env.PORT || 4000;
 // User routes
 app.post("/user/login", userLogin);
 app.get("/user/all-users", listUser);
@@ -67,6 +71,7 @@ app.get("/admin/admindetail/:id", admindetail);
 app.delete("/admin/remove-admin/:id", removeAdmin);
 app.put("/admin/update-admin/:id", updateAdmin);
 app.get("/admin/all-users", listUser);
+app.post("/admin/logout", logout);
 
 //Order Routes
 app.post("/order/add-order", orderControl);
@@ -78,10 +83,10 @@ app.get("/product/get-product/:id", listSingleProduct);
 app.delete("/product/remove-product/:id", removeProduct);
 app.put("/product/update-product/:id", updateProduct);
 
-app.listen(process.env.PORT || 4000, () => {
+app.listen(port, () => {
   console.log(
     `Server started on port ${
-      process.env.PORT || 4000
-    } and URL is ${`http://localhost:${process.env.PORT || 4000}`}`
+      port
+    } and URL is ${`http://localhost:${port}`}`
   );
 });

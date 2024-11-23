@@ -1,50 +1,48 @@
-import React from "react";
+import React,{useContext} from "react";
 import { NavLink } from "react-router-dom";
+import { Admincontext } from "../contexts/admincontext";
+
 
 export default function Navbar() {
+  const { logout } = useContext(Admincontext);
   const links = [
     {
-      id: 2,
       image: "user",
       path: "/",
       text: "Users",
     },
     {
-      id: 3,
       image: "cart",
       path: "/products",
       text: "Products",
     },
     {
-      id: 4,
-      image: "admin",
-      path: "/admins",
-      text: "Admins",
-    },
-    {
-      id: 5,
       image: "add",
       path: "/addproduct",
       text: "Add Product",
     },
     {
-      id: 6,
-      image: "logout",
-      path: "",
-      text: "logout",
+      image: "admin",
+      path: "/admins",
+      text: "Admins",
     },
+
     {
-      id: 6,
-      image: "Add Admin",
+      image: "add",
       path: "/addadmins",
       text: "Insert Admin",
+    },
+    {
+      image: "logout",
+      onclick: logout,
+      text: "logout",
     },
   ];
 
   return (
     <nav
       style={{ background: "#FC370F" }}
-      className="flex w-1/6 flex-col justify-start gap-6 items-center h-full "
+      className="flex w-1/6 flex-col justify-start gap-6 items-center "
     >
       <div className="logo overflow-hidden">
         <NavLink to={"/"}>
@@ -54,15 +52,14 @@ export default function Navbar() {
       <hr className="bg-white w-full" />
       <div className="links w-full h-screen flex gap-4 flex-col items-center">
         <ul className="flex flex-col gap-6 text-white text-md">
-          {links.map((link) => {
+          {links.map((link, i) => {
             return (
-              <li key={link.id}>
-                <NavLink to={link.path} className="flex gap-2 items-center">
+              <li key={i}>
+                <NavLink to={link.path} className="flex gap-2 items-center" onclicj>
                   <img
                     src={`/assets/${link.image}.svg`}
                     className="w-6 cursor-pointer"
                   />
-
                   <p className=" hidden lg:block">{link.text}</p>
                 </NavLink>
               </li>
