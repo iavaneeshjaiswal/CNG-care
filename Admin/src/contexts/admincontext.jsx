@@ -84,12 +84,12 @@ export const AdminProvider = (props) => {
 
   const logout = async () => {
     try {
-      const response = await axios.get(`${url}/admin/logout`, {
+      const response = await axios.post(`${url}/admin/logout`, {
         withCredentials: true,
       });
       console.log(response.data);
     } catch (error) {
-      console.log(error);
+      console.error("Error deleting cookie:", error);
     }
   };
   const role = ["superAdmin", "subAdmin", "manager", "admin"];
@@ -105,7 +105,7 @@ export const AdminProvider = (props) => {
         login,
         url,
         role,
-        logout
+        logout,
       }}
     >
       {props.children}

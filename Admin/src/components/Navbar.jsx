@@ -1,7 +1,6 @@
-import React,{useContext} from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { Admincontext } from "../contexts/admincontext";
-
 
 export default function Navbar() {
   const { logout } = useContext(Admincontext);
@@ -55,7 +54,11 @@ export default function Navbar() {
           {links.map((link, i) => {
             return (
               <li key={i}>
-                <NavLink to={link.path} className="flex gap-2 items-center" onclicj>
+                <NavLink
+                  to={link.path}
+                  className="flex gap-2 items-center"
+                  onClick={link.onclick}
+                >
                   <img
                     src={`/assets/${link.image}.svg`}
                     className="w-6 cursor-pointer"

@@ -9,12 +9,20 @@ import cors from "cors";
 import path from "path";
 import multer from "multer";
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser"
+import cookieParser from "cookie-parser";
 dotenv.config();
 
-const { userLogin, signup, sendOtp, listUser, removeUser } = userControl;
-const { adminLogin, addAdmin, listAdmin, removeAdmin, updateAdmin , admindetail,logout} =
-  adminControl;
+const { userLogin, signup, sendOtp, listUser, removeUser, resetpassword } =
+  userControl;
+const {
+  adminLogin,
+  addAdmin,
+  listAdmin,
+  removeAdmin,
+  updateAdmin,
+  admindetail,
+  logout,
+} = adminControl;
 const {
   addProduct,
   listProduct,
@@ -48,12 +56,15 @@ const app = express();
 
 //middlewares
 app.use(bodyParser.json());
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 const port = process.env.PORT || 4000;
 // User routes
@@ -62,6 +73,7 @@ app.get("/user/all-users", listUser);
 app.post("/user/register", signup);
 app.delete("/user/remove-user/:id", removeUser);
 app.post("/user/send-otp", sendOtp);
+app.post("/user/reset-password", resetpassword);
 
 // Admin routes
 app.post("/admin/login", adminLogin);
@@ -85,8 +97,6 @@ app.put("/product/update-product/:id", updateProduct);
 
 app.listen(port, () => {
   console.log(
-    `Server started on port ${
-      port
-    } and URL is ${`http://localhost:${port}`}`
+    `Server started on port ${port} and URL is ${`http://localhost:${port}`}`
   );
 });

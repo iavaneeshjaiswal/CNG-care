@@ -16,16 +16,16 @@ const userLogin = async (req, res) => {
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   if (!emailPattern.test(email)) {
-    return res.status(401).json({ error: "Invalid email" });
+    return res.status(401).json({ message: "Invalid email" });
   }
 
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ error: "User not found" });
+      return res.status(401).json({ message: "User not found" });
     }
     if (user.password !== password) {
-      return res.status(401).json({ error: "Invalid password" });
+      return res.status(401).json({ message: "Invalid password" });
     }
     const token = jwt.sign({ email, password }, process.env.JWT_SECRET);
     res.status(200).json({
@@ -35,7 +35,7 @@ const userLogin = async (req, res) => {
       user,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: "User not found" });
   }
 };
 
@@ -44,12 +44,14 @@ const signup = async (req, res) => {
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   if (!emailPattern.test(email)) {
-    return res.status(401).json({ error: "Invalid email" }).json({status: false});
+    return res.status(401).json({ error: "Invalid email", status: false });
   }
   const phonePattern = /^[6-9]\d{9}$/;
 
   if (!phonePattern.test(number)) {
-    return res.status(401).json({ error: "Invalid phone number" }).json({status: false});
+    return res
+      .status(401)
+      .json({ error: "Invalid phone number", status: false });
   }
 
   try {
@@ -57,12 +59,16 @@ const signup = async (req, res) => {
 
     const existingUser = await User.findOne({ email: newUser.email });
     if (existingUser) {
-      return res.status(400).send("Email already exists").json({status: false});
+      return res
+        .status(400)
+        .json({ status: false, message: "Email already exists" });
     }
 
     const existingPhone = await User.findOne({ number: newUser.number });
     if (existingPhone) {
-      return res.status(400).send("Phone number already exists").json({status: false});
+      return res
+        .status(400)
+        .json({ status: false, message: "Phone number already exists" });
     }
 
     await newUser.save();
@@ -75,7 +81,7 @@ const signup = async (req, res) => {
       user,
     });
   } catch (error) {
-    res.status(500).json({ status: false ,error: error.message });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -107,10 +113,10 @@ const sendOtp = async (req, res) => {
     auth.sendMail(reciever, (error, info) => {
       if (error) {
         console.log("Error occurred: " + error.message);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
       } else {
         console.log("Email sent: " + info.response);
-        res.status(200).json({ otp });
+        res.status(200).json({ otp, message: "Email sent successfully" });
       }
     });
   } else {
@@ -121,10 +127,12 @@ const sendOtp = async (req, res) => {
         to: `+91${credential}`,
       })
       .then(() => {
-        res.status(200).json({ otp });
+        res
+          .status(200)
+          .json({ otp, message: "Phone number sent successfully" });
       })
       .catch((error) => {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
       });
   }
 };
@@ -132,19 +140,47 @@ const sendOtp = async (req, res) => {
 const listUser = async (req, res) => {
   try {
     const users = await User.find();
-    res.status(200).json(users);
+    res
+      .status(200)
+      .json({ users, message: "Users found successfully", status: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message, status: false });
   }
 };
 
 const removeUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "User deleted successfully" });
+    res
+      .status(200)
+      .json({ message: "User deleted successfully", status: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message, status: true });
   }
 };
 
-export default { userLogin, signup, sendOtp, listUser,removeUser };
+const resetpassword = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    user.password = password;
+    await user.save();
+    res
+      .status(200)
+      .json({ message: "Password reset successfully", status: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+export default {
+  userLogin,
+  signup,
+  sendOtp,
+  listUser,
+  removeUser,
+  resetpassword,
+};

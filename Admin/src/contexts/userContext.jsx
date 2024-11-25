@@ -11,13 +11,14 @@ export const UserProvider = (props) => {
   useEffect(() => {
     axios
       .get(`${url}/admin/all-users`)
-      .then((res) => setUsers(res.data))
+      .then((res) => setUsers(res.data.users))
       .catch((err) => console.log(err));
   }, []);
 
+
   const updateUserState = async () => {
     const res = await axios.get(`${url}/admin/all-users`);
-    setUsers(res.data);
+    setUsers(res.data.users);
   };
   const remove_user = (id) => {
     axios
