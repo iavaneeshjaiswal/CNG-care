@@ -18,7 +18,7 @@ Make sure you have the following installed:
 
 - **Git**: To clone the repository
 - **Node.js**: For backend or frontend development (if applicable)
-- **npm/yarn**: For package management
+- **npm**: For package management
 
 ### Steps
 
@@ -42,22 +42,10 @@ Make sure you have the following installed:
    npm install
    ```
 
-   Or with Yarn:
-
-   ```bash
-   yarn install
-   ```
-
 4. Run the application:
 
    ```bash
    npm start
-   ```
-
-   Or with Yarn:
-
-   ```bash
-   yarn start
    ```
 
 ## Usage
