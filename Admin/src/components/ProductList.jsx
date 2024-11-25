@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { ProductContext } from "../contexts/porductContext";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function ProductList() {
   const { Products, remove_product, updateProduct } =
     useContext(ProductContext);
-
   const [products, setProducts] = useState(Products);
 
   const navigate = useNavigate();

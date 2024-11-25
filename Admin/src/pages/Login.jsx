@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Admincontext } from "../contexts/admincontext";
 export default function Login() {
-  const { login } = useContext(Admincontext);
+  const { login, updateadminState } = useContext(Admincontext);
   const navigate = useNavigate();
   const {
     register,

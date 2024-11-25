@@ -1,9 +1,15 @@
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { Admincontext } from "../contexts/admincontext";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const { logout } = useContext(Admincontext);
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
   const links = [
     {
       image: "user",
@@ -33,7 +39,7 @@ export default function Navbar() {
     },
     {
       image: "logout",
-      onclick: logout,
+      onclick: handleLogout,
       text: "logout",
     },
   ];

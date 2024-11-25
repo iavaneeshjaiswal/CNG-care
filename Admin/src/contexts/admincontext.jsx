@@ -5,12 +5,19 @@ export const Admincontext = createContext(null);
 
 export const AdminProvider = (props) => {
   const [Admins, setAdmins] = useState([]);
+
   const url = "http://localhost:4000";
+
+  const [token] = useState(localStorage.getItem("token"));
 
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const res = await axios.get(`${url}/admin/list-admin`);
+        const res = await axios.get(`${url}/admin/list-admin`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setAdmins(res.data);
       } catch (err) {
         console.log(err);
@@ -21,7 +28,11 @@ export const AdminProvider = (props) => {
 
   const updateadminState = async () => {
     try {
-      const res = await axios.get(`${url}/admin/list-admin`);
+      const res = await axios.get(`${url}/admin/list-admin`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setAdmins(res.data);
     } catch (error) {
       console.error("Error fetching admin list:", error);
@@ -30,7 +41,11 @@ export const AdminProvider = (props) => {
 
   const remove_Admin = (id) => {
     axios
-      .delete(`${url}/admin/remove-admin/${id}`)
+      .delete(`${url}/admin/remove-admin/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(() => updateadminState())
       .catch((err) => console.log(err));
   };
@@ -38,7 +53,11 @@ export const AdminProvider = (props) => {
   const addAdmin = async (data) => {
     try {
       await axios
-        .post(`${url}/admin/add-admin`, data)
+        .post(`${url}/admin/add-admin`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then(() => {
           updateadminState();
         })
@@ -53,7 +72,11 @@ export const AdminProvider = (props) => {
   const updateAdmin = async (id, data) => {
     try {
       await axios
-        .put(`${url}/admin/update-admin/${id}`, data)
+        .put(`${url}/admin/update-admin/${id}`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then(() => updateadminState())
         .then(() => alert("Admin Updated Successfully"));
     } catch (error) {
@@ -63,8 +86,15 @@ export const AdminProvider = (props) => {
 
   const login = async (data) => {
     try {
-      const response = await axios.post(`${url}/admin/login`, { data });
-      console.log(response);
+      const response = await axios.post(
+        `${url}/admin/login`,
+        { data },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response && response.data.success) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.admin.role);
@@ -79,7 +109,6 @@ export const AdminProvider = (props) => {
     try {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
-      
     } catch (error) {
       console.error("Error deleting cookie:", error);
     }

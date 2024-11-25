@@ -5,7 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function UpdateProduct({ id }) {
-  const { updateProduct, url } = useContext(ProductContext);
+  const { updateProduct, url ,} = useContext(ProductContext);
   const [imgURl, setImgURl] = React.useState("");
 
   const navigate = useNavigate();
@@ -18,7 +18,11 @@ export default function UpdateProduct({ id }) {
 
   useEffect(() => {
     (async function () {
-      const product = await axios.get(`${url}/product/get-product/${id}`);
+      const product = await axios.get(`${url}/product/get-product/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       setValue("title", product.data.title);
       setValue("price", product.data.price);
       setValue("offerPrice", product.data.offerPrice);

@@ -10,6 +10,7 @@ import path from "path";
 import multer from "multer";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import verifyUser from "./middleware/verifyUser.js";
 dotenv.config();
 
 const { userLogin, signup, sendOtp, listUser, removeUser, resetpassword } =
@@ -57,7 +58,7 @@ const app = express();
 //middlewares
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", "true");
   next();
@@ -69,31 +70,31 @@ app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 4000;
 // User routes
 app.post("/user/login", userLogin);
-app.get("/user/all-users", listUser);
+app.get("/user/all-users",verifyUser, listUser);
 app.post("/user/register", signup);
-app.delete("/user/remove-user/:id", removeUser);
+app.delete("/user/remove-user/:id",verifyUser, removeUser);
 app.post("/user/send-otp", sendOtp);
 app.post("/user/reset-password", resetpassword);
 
 // Admin routes
 app.post("/admin/login", adminLogin);
-app.post("/admin/add-admin", addAdmin);
-app.get("/admin/list-admin", listAdmin);
-app.get("/admin/admindetail/:id", admindetail);
-app.delete("/admin/remove-admin/:id", removeAdmin);
-app.put("/admin/update-admin/:id", updateAdmin);
-app.get("/admin/all-users", listUser);
-app.post("/admin/logout", logout);
+app.post("/admin/add-admin",verifyUser, addAdmin);
+app.get("/admin/list-admin", verifyUser,listAdmin);
+app.get("/admin/admindetail/:id", verifyUser,admindetail);
+app.delete("/admin/remove-admin/:id", verifyUser,removeAdmin);
+app.put("/admin/update-admin/:id", verifyUser,updateAdmin);
+app.get("/admin/all-users", verifyUser,listUser);
+app.post("/admin/logout", verifyUser,logout);
 
 //Order Routes
 app.post("/order/add-order", orderControl);
 
 //Product routes
-app.post("/product/add-product", upload.array("images", 12), addProduct);
-app.get("/product/list-product", listProduct);
-app.get("/product/get-product/:id", listSingleProduct);
-app.delete("/product/remove-product/:id", removeProduct);
-app.put("/product/update-product/:id", updateProduct);
+app.post("/product/add-product", upload.array("images", 12),verifyUser, addProduct);
+app.get("/product/list-product",verifyUser, listProduct);
+app.get("/product/get-product/:id", verifyUser,listSingleProduct);
+app.delete("/product/remove-product/:id",verifyUser, removeProduct);
+app.put("/product/update-product/:id",verifyUser,  updateProduct);
 
 app.listen(port, () => {
   console.log(

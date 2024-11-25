@@ -32,7 +32,7 @@ export default function Userlist() {
                       className=" text-red-600 text-lg p-2 rounded"
                       onClick={() => {
                         remove_user(user._id);
-                        setUsers(products.filter((u) => u._id !== user._id));
+                        setUsers(Users.filter((u) => u._id !== user._id));
                       }}
                     >
                       {<i class="ri-delete-bin-6-line"></i>}

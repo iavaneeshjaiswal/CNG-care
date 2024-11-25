@@ -5,13 +5,17 @@ export const ProductContext = createContext(null);
 
 export const ProductProvider = (props) => {
   const [Products, setProducts] = useState([]);
-
+  const [token] = useState(localStorage.getItem("token"));
   const url = "http://localhost:4000";
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`${url}/product/list-product`);
+        const res = await axios.get(`${url}/product/list-product`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setProducts(res.data);
       } catch (err) {
         console.log(err);
@@ -21,13 +25,21 @@ export const ProductProvider = (props) => {
   }, []);
 
   const updateproductState = async () => {
-    const res = await axios.get(`${url}/product/list-product`);
+    const res = await axios.get(`${url}/product/list-product`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setProducts(res.data);
   };
 
   const remove_product = (id) => {
     axios
-      .delete(`${url}/product/remove-product/${id}`)
+      .delete(`${url}/product/remove-product/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(() => updateproductState())
       .catch((err) => console.log(err));
   };
@@ -38,6 +50,7 @@ export const ProductProvider = (props) => {
         .post(`${url}/product/add-product`, data, {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         })
         .then(() => updateproductState())
@@ -50,7 +63,11 @@ export const ProductProvider = (props) => {
   const updateProduct = async (id, data) => {
     try {
       const response = await axios
-        .put(`${url}/product/update-product/${id}`, data)
+        .put(`${url}/product/update-product/${id}`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then(() => updateproductState())
         .then(() => alert("Product Updated Successfully"));
     } catch (error) {

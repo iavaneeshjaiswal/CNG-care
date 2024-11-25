@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function NewProduct() {
   const { addProduct } = useContext(ProductContext);
-  const url = "http://localhost:6000";
   const {
     register,
     handleSubmit,
