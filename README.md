@@ -48,9 +48,6 @@ Make sure you have the following installed:
    npm start
    ```
 
-## Usage
-
-Once the application is running, navigate to [http://localhost:3000](http://localhost:3000) in your browser to start using the application.
 
 
 ## Contact
