@@ -4,7 +4,6 @@ import { UserContext } from "../contexts/userContext";
 export default function Userlist() {
   const { users, remove_user } = useContext(UserContext);
   const [Users, setUsers] = useState(users);
-  console.log(Users);
 
   useEffect(() => {
     setUsers(users);
@@ -43,7 +42,10 @@ export default function Userlist() {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="p-2 text-center text-gray-400 text-lg">
+                <td
+                  colSpan="4"
+                  className="p-2 text-center text-gray-400 text-lg"
+                >
                   NO USERS ADDED YET!
                 </td>
               </tr>

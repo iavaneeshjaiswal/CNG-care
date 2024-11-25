@@ -7,8 +7,6 @@ export const AdminProvider = (props) => {
   const [Admins, setAdmins] = useState([]);
   const url = "http://localhost:4000";
 
-  const [admin, setAdmin] = useState();
-
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
@@ -54,7 +52,7 @@ export const AdminProvider = (props) => {
 
   const updateAdmin = async (id, data) => {
     try {
-      const response = await axios
+      await axios
         .put(`${url}/admin/update-admin/${id}`, data)
         .then(() => updateadminState())
         .then(() => alert("Admin Updated Successfully"));
@@ -64,19 +62,14 @@ export const AdminProvider = (props) => {
   };
 
   const login = async (data) => {
-    console.log(data);
     try {
-      const response = await axios.post(
-        `${url}/admin/login`,
-        { data },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(response.data);
+      const response = await axios.post(`${url}/admin/login`, { data });
+      console.log(response);
+      if (response && response.data.success) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("role", response.data.admin.role);
+      }
+      return response;
     } catch (error) {
       console.log(error);
     }
@@ -84,10 +77,9 @@ export const AdminProvider = (props) => {
 
   const logout = async () => {
     try {
-      const response = await axios.post(`${url}/admin/logout`, {
-        withCredentials: true,
-      });
-      console.log(response.data);
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      
     } catch (error) {
       console.error("Error deleting cookie:", error);
     }

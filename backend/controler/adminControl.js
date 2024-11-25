@@ -12,13 +12,6 @@ const adminLogin = async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
     const token = jwt.sign({ admin }, process.env.JWT_SECRET);
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 3600000,
-      sameSite: "strict",
-      path: "/",
-    });
     res.status(200).json({
       success: true,
       message: "Admin login successfully",

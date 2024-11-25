@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
 import logo from "/assets/logo.png";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { Admincontext } from "../contexts/admincontext";
 export default function Login() {
   const { login } = useContext(Admincontext);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -11,7 +13,14 @@ export default function Login() {
   } = useForm();
 
   const onSubmit = async (data) => {
-    await login(data);
+    try {
+      const response = await login(data);
+      if (response && response.data.success) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
