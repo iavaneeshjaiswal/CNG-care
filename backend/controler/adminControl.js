@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import Admin from "../models/admin.js";
+
 const adminLogin = async (req, res) => {
   const { data } = req.body;
   try {
@@ -21,6 +22,9 @@ const adminLogin = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
 const addAdmin = async (req, res) => {
   console.log(req.user);
   try {

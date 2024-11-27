@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import twilio from "twilio";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
+import bcrypt from "bcrypt";
 dotenv.config();
 
 const client = twilio(
@@ -12,73 +13,77 @@ const client = twilio(
 
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
-
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-
   if (!emailPattern.test(email)) {
     return res.status(401).json({ message: "Invalid email" });
   }
-
   try {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
-    if (user.password !== password) {
+    console.log(user.password);
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
       return res.status(401).json({ message: "Invalid password" });
     }
-    const token = jwt.sign({ email, password }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
     res.status(200).json({
       success: true,
       message: "User login successfully",
       token,
-      user,
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+        number: user.number,
+        _id: user._id,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "User not found" });
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-
   if (!emailPattern.test(email)) {
     return res.status(401).json({ error: "Invalid email", status: false });
   }
-  const phonePattern = /^[6-9]\d{9}$/;
 
+  const phonePattern = /^[6-9]\d{9}$/;
   if (!phonePattern.test(number)) {
-    return res
-      .status(401)
-      .json({ error: "Invalid phone number", status: false });
+    return res.status(401).json({ error: "Invalid phone number", status: false });
   }
 
   try {
-    let newUser = new User({ ...req.body });
-
+    const hashedPassword = await bcrypt.hash(password, 10); 
+    const newUser = new User({ fullName, email, number, password: hashedPassword });
     const existingUser = await User.findOne({ email: newUser.email });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ status: false, message: "Email already exists" });
+      return res.status(400).json({ status: false, message: "Email already exists" });
     }
-
     const existingPhone = await User.findOne({ number: newUser.number });
     if (existingPhone) {
-      return res
-        .status(400)
-        .json({ status: false, message: "Phone number already exists" });
+      return res.status(400).json({ status: false, message: "Phone number already exists" });
     }
-
     await newUser.save();
-    const user = await User.findOne({ email: newUser.email });
-    const token = jwt.sign({ user }, process.env.JWT_SECRET);
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.status(201).json({
       status: true,
       message: "User created successfully",
       token,
-      user,
+      user: {
+        fullName: newUser.fullName,
+        email: newUser.email,
+        number: newUser.number,
+        _id: newUser._id
+      },
     });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
