@@ -9,7 +9,7 @@ export default function Adminlist() {
     <div className="p-2 box-border bg-white rounded-sm w-full">
       <div className="max-h-[77vh] overflow-auto px-4 text-center">
         <p className="font-bold p-2 text-sm">
-          NOTE :{" "}
+          NOTE :
           <span className="text-red-600 text-sm">
             ONLY SUPER ADMIN CAN UPDATE AND REMOVE ADMIN LIST
           </span>

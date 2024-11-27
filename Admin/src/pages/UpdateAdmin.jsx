@@ -51,7 +51,7 @@ export default function UpdateAdmin() {
     <div className="flex gap-3 w-full" onSubmit={handleSubmit(onSubmit)}>
       <Navbar />
 
-      {Role == "superAdmin" ? (
+      {Role == "super admin" ? (
         <div className="flex w-full flex-col items-center p-12 gap-3 ">
           <h2>Update Admin</h2>
           <form className="flex w-full h-screen flex-col justify-start gap-5 ">

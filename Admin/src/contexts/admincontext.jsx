@@ -114,7 +114,7 @@ export const AdminProvider = (props) => {
       console.error("Error deleting cookie:", error);
     }
   };
-  const role = ["superAdmin", "subAdmin", "manager", "admin"];
+  const role = ["super admin", "sub admin", "manager", "admin"];
 
   return (
     <Admincontext.Provider

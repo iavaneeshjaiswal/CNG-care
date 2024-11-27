@@ -5,13 +5,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { logout, role, admintype } = useContext(Admincontext);
+  const { logout, admintype } = useContext(Admincontext);
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
+  const role = localStorage.getItem("role");
   let links = [];
-  if (admintype[0] != "superAdmin") {
+  if (admintype[0] != "super admin") {
     links = [
       {
         image: "user",
@@ -80,6 +81,7 @@ export default function Navbar() {
           {<img src="/assets/logo.png" className="w-24 scale-150" />}
         </NavLink>
       </div>
+      <h1 className="text-white text-lg">{role.toUpperCase()}</h1>
       <hr className="bg-white w-full" />
       <div className="links w-full h-screen flex gap-4 flex-col items-center">
         <ul className="flex flex-col gap-6 text-white text-md">

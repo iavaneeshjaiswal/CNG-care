@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import Navbar from "../components/Navbar";
-import Adminlist from "../components/adminlist";
+import Adminlist from "../components/Adminlist";
 import { useNavigate } from "react-router-dom";
 import { Admincontext } from "../contexts/admincontext";
 
@@ -19,7 +19,7 @@ export default function Admin() {
     <div className="flex w-full">
       <Navbar />
 
-      {role == "superAdmin" ? (
+      {role == "super admin" ? (
         <Adminlist />
       ) : (
         <div className="flex flex-col justify-center items-center p-3 w-full text-red-600 text-lg">
