@@ -164,14 +164,18 @@ const removeUser = async (req, res) => {
 };
 
 const resetpassword = async (req, res) => {
-  const { email, password } = req.body;
+  const { credential, new_password } = req.body;
   try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
+    const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+    if (emailPattern.test(credential)) {
+      const user = await User.findOne({ email: credential });
+      user.password = new_password;
+      await user.save();
+    } else {
+      const user = await User.findOne({ number: credential });
+      user.password = new_password;
+      await user.save();
     }
-    user.password = password;
-    await user.save();
     res
       .status(200)
       .json({ message: "Password reset successfully", status: true });
