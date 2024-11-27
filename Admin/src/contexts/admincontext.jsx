@@ -9,7 +9,7 @@ export const AdminProvider = (props) => {
   const url = "http://localhost:4000";
 
   const [token] = useState(localStorage.getItem("token"));
-
+  const admintype = useState(localStorage.getItem("role"));
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
@@ -128,6 +128,7 @@ export const AdminProvider = (props) => {
         url,
         role,
         logout,
+        admintype,
       }}
     >
       {props.children}

@@ -1,48 +1,74 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Admincontext } from "../contexts/admincontext";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { logout } = useContext(Admincontext);
+  const { logout, role, admintype } = useContext(Admincontext);
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
-  const links = [
-    {
-      image: "user",
-      path: "/",
-      text: "Users",
-    },
-    {
-      image: "cart",
-      path: "/products",
-      text: "Products",
-    },
-    {
-      image: "add",
-      path: "/addproduct",
-      text: "Add Product",
-    },
-    {
-      image: "admin",
-      path: "/admins",
-      text: "Admins",
-    },
+  let links = [];
+  if (admintype[0] != "superAdmin") {
+    links = [
+      {
+        image: "user",
+        path: "/",
+        text: "Users",
+      },
+      {
+        image: "cart",
+        path: "/products",
+        text: "Products",
+      },
+      {
+        image: "add",
+        path: "/addproduct",
+        text: "Add Product",
+      },
+      {
+        image: "logout",
+        onclick: handleLogout,
+        text: "logout",
+      },
+    ];
+  } else {
+    links = [
+      {
+        image: "user",
+        path: "/",
+        text: "Users",
+      },
+      {
+        image: "cart",
+        path: "/products",
+        text: "Products",
+      },
+      {
+        image: "add",
+        path: "/addproduct",
+        text: "Add Product",
+      },
+      {
+        image: "admin",
+        path: "/admins",
+        text: "Admins",
+      },
 
-    {
-      image: "add",
-      path: "/addadmins",
-      text: "Insert Admin",
-    },
-    {
-      image: "logout",
-      onclick: handleLogout,
-      text: "logout",
-    },
-  ];
+      {
+        image: "add",
+        path: "/addadmins",
+        text: "Insert Admin",
+      },
+      {
+        image: "logout",
+        onclick: handleLogout,
+        text: "logout",
+      },
+    ];
+  }
 
   return (
     <nav

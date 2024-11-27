@@ -26,9 +26,15 @@ export default function UpdateAdmin() {
     setRole(localStorage.getItem("role"));
   }, []);
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     (async function () {
-      const admin = await axios.get(`${url}/admin/admindetail/${id}`);
+      const admin = await axios.get(`${url}/admin/admindetail/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setValue("name", admin.data.name);
       setValue("password", admin.data.password);
       setValue("role", admin.data.role);
