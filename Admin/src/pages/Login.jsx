@@ -16,7 +16,6 @@ export default function Login() {
     try {
       const response = await login(data);
       if (response && response.data.success) {
-        navigate("/");
       }
     } catch (error) {
       console.log(error);

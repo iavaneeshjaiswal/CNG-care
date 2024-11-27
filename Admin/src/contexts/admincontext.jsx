@@ -98,6 +98,7 @@ export const AdminProvider = (props) => {
       if (response && response.data.success) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.admin.role);
+        window.location.href = "/";
       }
       return response;
     } catch (error) {
