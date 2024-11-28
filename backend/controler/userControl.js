@@ -35,7 +35,7 @@ const userLogin = async (req, res) => {
       token,
       user: {
         fullName: user.fullName,
-        email: user.email,
+        email: user.email.toLowerCase(),
         number: user.number,
         _id: user._id,
       },
@@ -65,7 +65,7 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       fullName,
-      email,
+      email: email.toLowerCase(),
       number,
       password: hashedPassword,
     });
