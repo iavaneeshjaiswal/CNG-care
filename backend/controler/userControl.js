@@ -16,12 +16,12 @@ const userLogin = async (req, res) => {
   const { email, password } = req.body;
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(email)) {
-    return res.status(401).json({ message: "Invalid email" });
+    return res.status(401).json({ message: "Invalid email" , status: false});
   }
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({ message: "User not found" , status: false});
     }
     console.log(user.password);
     const match = await bcrypt.compare(password, user.password);
@@ -42,7 +42,7 @@ const userLogin = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", status: false });
   }
 };
 
