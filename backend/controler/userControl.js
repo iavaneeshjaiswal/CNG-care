@@ -137,7 +137,7 @@ const sendOtp = async (req, res) => {
           { credential, otp },
           process.env.JWT_SECRET,
           {
-            expiresIn: "1h",
+            expiresIn: "100s",
           }
         );
         res
@@ -157,7 +157,7 @@ const sendOtp = async (req, res) => {
           { credential, otp },
           process.env.JWT_SECRET,
           {
-            expiresIn: "1h",
+            expiresIn: "100s",
           }
         );
         res.status(200).json({
@@ -169,6 +169,22 @@ const sendOtp = async (req, res) => {
       .catch((error) => {
         res.status(500).json({ message: error.message });
       });
+  }
+};
+
+// verify otp
+const verifyOtp = async (req, res) => {
+  try {
+    const { otp, VerifyToken } = req.body;
+    const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
+    if (verify.otp !== otp) {
+      return res.status(401).json({ message: "Invalid OTP", status: false });
+    }
+    res
+      .status(200)
+      .json({ message: "OTP verified successfully", status: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
   }
 };
 
@@ -199,16 +215,16 @@ const removeUser = async (req, res) => {
 // reset password
 const resetpassword = async (req, res) => {
   const { credential, new_password, VerifyToken, otp } = req.body;
-  const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
-  if (verify.otp !== otp) {
-    return res.status(401).json({ message: "Invalid OTP", status: false });
-  }
-  if (credential !== verify.credential) {
-    return res
-      .status(401)
-      .json({ message: "Invalid credential", status: false });
-  }
   try {
+    const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
+    if (verify.otp !== otp) {
+      return res.status(401).json({ message: "Invalid OTP", status: false });
+    }
+    if (credential !== verify.credential) {
+      return res
+        .status(401)
+        .json({ message: "Invalid credential", status: false });
+    }
     const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
     if (emailPattern.test(credential)) {
       const user = await User.findOne({ email: credential });
