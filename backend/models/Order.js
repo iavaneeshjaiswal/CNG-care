@@ -35,6 +35,10 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "completed", "cancelled"],
       default: "pending",
     },
+    address: {
+      type: String, 
+      required: true, 
+    },
   },
   { timestamps: true }
 );
