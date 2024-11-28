@@ -11,6 +11,7 @@ const client = twilio(
   process.env.TWILIO_AUTH_TOKEN
 );
 
+// user login
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -27,10 +28,7 @@ const userLogin = async (req, res) => {
     if (!match) {
       return res.status(401).json({ message: "Invalid password" });
     }
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET
-    );
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
     res.status(200).json({
       success: true,
       message: "User login successfully",
@@ -48,6 +46,7 @@ const userLogin = async (req, res) => {
   }
 };
 
+// signup
 const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -57,22 +56,35 @@ const signup = async (req, res) => {
 
   const phonePattern = /^[6-9]\d{9}$/;
   if (!phonePattern.test(number)) {
-    return res.status(401).json({ error: "Invalid phone number", status: false });
+    return res
+      .status(401)
+      .json({ error: "Invalid phone number", status: false });
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10); 
-    const newUser = new User({ fullName, email, number, password: hashedPassword });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      fullName,
+      email,
+      number,
+      password: hashedPassword,
+    });
     const existingUser = await User.findOne({ email: newUser.email });
     if (existingUser) {
-      return res.status(400).json({ status: false, message: "Email already exists" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Email already exists" });
     }
     const existingPhone = await User.findOne({ number: newUser.number });
     if (existingPhone) {
-      return res.status(400).json({ status: false, message: "Phone number already exists" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Phone number already exists" });
     }
     await newUser.save();
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
     res.status(201).json({
       status: true,
       message: "User created successfully",
@@ -81,7 +93,7 @@ const signup = async (req, res) => {
         fullName: newUser.fullName,
         email: newUser.email,
         number: newUser.number,
-        _id: newUser._id
+        _id: newUser._id,
       },
     });
   } catch (error) {
@@ -92,7 +104,8 @@ const signup = async (req, res) => {
 // send otp through email and Phone number
 const sendOtp = async (req, res) => {
   const { credential } = req.body;
-  const otp = Math.floor(1000 + Math.random() * 9000);
+
+  const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
@@ -120,7 +133,16 @@ const sendOtp = async (req, res) => {
         res.status(500).json({ message: error.message });
       } else {
         console.log("Email sent: " + info.response);
-        res.status(200).json({ otp, message: "Email sent successfully" });
+        const VerifyToken = jwt.sign(
+          { credential, otp },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "1h",
+          }
+        );
+        res
+          .status(200)
+          .json({ otp, message: "Email sent successfully", VerifyToken });
       }
     });
   } else {
@@ -131,9 +153,18 @@ const sendOtp = async (req, res) => {
         to: `+91${credential}`,
       })
       .then(() => {
-        res
-          .status(200)
-          .json({ otp, message: "Phone number sent successfully" });
+        const VerifyToken = jwt.sign(
+          { credential, otp },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "1h",
+          }
+        );
+        res.status(200).json({
+          otp,
+          message: "Phone number sent successfully",
+          VerifyToken,
+        });
       })
       .catch((error) => {
         res.status(500).json({ message: error.message });
@@ -141,6 +172,7 @@ const sendOtp = async (req, res) => {
   }
 };
 
+// list user
 const listUser = async (req, res) => {
   try {
     const users = await User.find();
@@ -152,6 +184,7 @@ const listUser = async (req, res) => {
   }
 };
 
+// delete user
 const removeUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
@@ -163,17 +196,29 @@ const removeUser = async (req, res) => {
   }
 };
 
+// reset password
 const resetpassword = async (req, res) => {
-  const { credential, new_password } = req.body;
+  const { credential, new_password, VerifyToken, otp } = req.body;
+  const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
+  if (verify.otp !== otp) {
+    return res.status(401).json({ message: "Invalid OTP", status: false });
+  }
+  if (credential !== verify.credential) {
+    return res
+      .status(401)
+      .json({ message: "Invalid credential", status: false });
+  }
   try {
     const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
     if (emailPattern.test(credential)) {
       const user = await User.findOne({ email: credential });
-      user.password = new_password;
+      const hashedPassword = await bcrypt.hash(new_password, 10);
+      user.password = hashedPassword;
       await user.save();
     } else {
       const user = await User.findOne({ number: credential });
-      user.password = new_password;
+      const hashedPassword = await bcrypt.hash(new_password, 10);
+      user.password = hashedPassword;
       await user.save();
     }
     res
