@@ -13,6 +13,7 @@ const client = twilio(
 
 // user login
 const userLogin = async (req, res) => {
+  const { email, password } = req.body;
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(email)) {
     return res.status(401).json({ message: "Invalid email", status: false });
@@ -47,6 +48,7 @@ const userLogin = async (req, res) => {
 // signup
 const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
+  console.log(req.body);
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(email)) {
     return res.status(401).json({ error: "Invalid email", status: false });
@@ -127,6 +129,7 @@ const sendOtp = async (req, res) => {
             expiresIn: "120s",
           }
         );
+        console.log(otp);
         res
           .status(200)
           .json({
