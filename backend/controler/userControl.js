@@ -221,11 +221,21 @@ const resetpassword = async (req, res) => {
     const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
     if (emailPattern.test(credential)) {
       const user = await User.findOne({ email: credential });
+      if (!user) {
+        return res
+          .status(401)
+          .json({ message: "User not found", status: false });
+      }
       const hashedPassword = await bcrypt.hash(new_password, 10);
       user.password = hashedPassword;
       await user.save();
     } else {
       const user = await User.findOne({ number: credential });
+                if (!user) {
+        return res
+          .status(401)
+          .json({ message: "User not found", status: false });
+      }
       const hashedPassword = await bcrypt.hash(new_password, 10);
       user.password = hashedPassword;
       await user.save();
