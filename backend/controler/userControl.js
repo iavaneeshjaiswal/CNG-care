@@ -16,12 +16,12 @@ const userLogin = async (req, res) => {
   const { email, password } = req.body;
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(email)) {
-    return res.status(401).json({ message: "Invalid email" , status: false});
+    return res.status(401).json({ message: "Invalid email", status: false });
   }
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: "User not found" , status: false});
+      return res.status(401).json({ message: "User not found", status: false });
     }
     console.log(user.password);
     const match = await bcrypt.compare(password, user.password);
@@ -82,19 +82,9 @@ const signup = async (req, res) => {
         .json({ status: false, message: "Phone number already exists" });
     }
     await newUser.save();
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
     res.status(201).json({
       status: true,
       message: "User created successfully",
-      token,
-      user: {
-        fullName: newUser.fullName,
-        email: newUser.email,
-        number: newUser.number,
-        _id: newUser._id,
-      },
     });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
@@ -130,19 +120,24 @@ const sendOtp = async (req, res) => {
     auth.sendMail(reciever, (error, info) => {
       if (error) {
         console.log("Error occurred: " + error.message);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message, status: false });
       } else {
         console.log("Email sent: " + info.response);
         const VerifyToken = jwt.sign(
           { credential, otp },
           process.env.JWT_SECRET,
           {
-            expiresIn: "100s",
+            expiresIn: "120s",
           }
         );
         res
           .status(200)
-          .json({ otp, message: "Email sent successfully", VerifyToken });
+          .json({
+            otp,
+            message: "Email sent successfully",
+            VerifyToken,
+            status: true,
+          });
       }
     });
   } else {
@@ -157,17 +152,18 @@ const sendOtp = async (req, res) => {
           { credential, otp },
           process.env.JWT_SECRET,
           {
-            expiresIn: "100s",
+            expiresIn: "120s",
           }
         );
         res.status(200).json({
           otp,
           message: "Phone number sent successfully",
           VerifyToken,
+          status: true,
         });
       })
       .catch((error) => {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message, status: false });
       });
   }
 };
