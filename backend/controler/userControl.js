@@ -13,7 +13,6 @@ const client = twilio(
 
 // user login
 const userLogin = async (req, res) => {
-  const { email, password } = req.body;
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(email)) {
     return res.status(401).json({ message: "Invalid email", status: false });
@@ -21,9 +20,8 @@ const userLogin = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: "User not found", status: false });
+      return res.status(401).json({ message: "Invalid email", status: false });
     }
-    console.log(user.password);
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.status(401).json({ message: "Invalid password" });
@@ -96,7 +94,6 @@ const sendOtp = async (req, res) => {
   const { credential } = req.body;
 
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   if (emailPattern.test(credential)) {
@@ -157,7 +154,7 @@ const sendOtp = async (req, res) => {
         );
         res.status(200).json({
           otp,
-          message: "Phone number sent successfully",
+          message: "OTP sent successfully",
           VerifyToken,
           status: true,
         });
