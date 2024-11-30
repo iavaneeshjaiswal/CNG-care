@@ -1,12 +1,13 @@
 import React, { useState, useEffect, createContext } from "react"; // React 16
 import axios from "axios";
+import dotenv from "dotenv";
 
-export const Admincontext = createContext(null);
+export const Admincontext = createContext();
 
 export const AdminProvider = (props) => {
   const [Admins, setAdmins] = useState([]);
 
-  const url = "http://localhost:4000";
+  const url = "https://7kn61t4n-4000.inc1.devtunnels.ms";
 
   const [token] = useState(localStorage.getItem("token"));
   const admintype = useState(localStorage.getItem("role"));

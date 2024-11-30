@@ -6,7 +6,8 @@ export const UserContext = createContext(null);
 export const UserProvider = (props) => {
   const [users, setUsers] = useState([]);
   const [token] = useState(localStorage.getItem("token"));
-  const url = "http://localhost:4000";
+  const [iswait, setIswait] = useState(true);
+  const url = "https://7kn61t4n-4000.inc1.devtunnels.ms";
 
   useEffect(() => {
     axios
@@ -40,7 +41,7 @@ export const UserProvider = (props) => {
   };
 
   return (
-    <UserContext.Provider value={{ users, remove_user, url }}>
+    <UserContext.Provider value={{ users, remove_user, url , iswait, setIswait }}>
       {props.children}
     </UserContext.Provider>
   );

@@ -6,7 +6,7 @@ export const ProductContext = createContext(null);
 export const ProductProvider = (props) => {
   const [Products, setProducts] = useState([]);
   const [token] = useState(localStorage.getItem("token"));
-  const url = "http://localhost:4000";
+  const url = "https://7kn61t4n-4000.inc1.devtunnels.ms";
 
   useEffect(() => {
     const fetchProducts = async () => {

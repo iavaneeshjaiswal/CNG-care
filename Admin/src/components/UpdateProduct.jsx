@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ProductContext } from "../contexts/porductContext.jsx";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 export default function UpdateProduct({ id }) {
   const { updateProduct, url ,} = useContext(ProductContext);
   const [imgURl, setImgURl] = React.useState("");
+  const [isWait,setWait] = useState(false)
 
   const navigate = useNavigate();
   const {
@@ -23,6 +24,7 @@ export default function UpdateProduct({ id }) {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+      setWait(!isWait)
       setValue("title", product.data.title);
       setValue("price", product.data.price);
       setValue("offerPrice", product.data.offerPrice);
@@ -41,9 +43,9 @@ export default function UpdateProduct({ id }) {
 
   return (
     <div className="flex w-full flex-col items-center p-12 gap-3 ">
-      <h2 className="text-2xl font-bold">Update Product</h2>
+      <h2 className="text-base">Update Product</h2>
     <img src={imgURl} className="w-48" />
-      <form
+     {isWait ? <form
         className="flex w-full flex-col justify-start gap-5 "
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -165,7 +167,7 @@ export default function UpdateProduct({ id }) {
           style={{ background: "#FC370F" }}
           className="text-white p-1 px-4 text-lg  rounded-lg cursor-pointer"
         />
-      </form>
+      </form> : <h1>Loading...</h1>}
     </div>
   );
 }
