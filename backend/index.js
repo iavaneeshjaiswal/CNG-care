@@ -13,25 +13,6 @@ import cookieParser from "cookie-parser";
 import verifyUser from "./middleware/verifyUser.js";
 dotenv.config();
 
-const { userLogin, signup, sendOtp, listUser, removeUser, resetpassword } =
-  userControl;
-const {
-  adminLogin,
-  addAdmin,
-  listAdmin,
-  removeAdmin,
-  updateAdmin,
-  admindetail,
-  logout,
-} = adminControl;
-const {
-  addProduct,
-  listProduct,
-  removeProduct,
-  updateProduct,
-  listSingleProduct,
-} = productControl;
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -69,32 +50,31 @@ app.use(express.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 4000;
 // User routes
-app.post("/user/login", userLogin);
-app.get("/user/all-users",verifyUser, listUser);
-app.post("/user/register", signup);
-app.delete("/user/remove-user/:id",verifyUser, removeUser);
-app.post("/user/send-otp", sendOtp);
-app.post("/user/reset-password", resetpassword);
+app.post("/user/login", userControl.userLogin);
+app.get("/user/all-users",verifyUser, userControl.listUser);
+app.post("/user/register", userControl.signup);
+app.delete("/user/remove-user/:id",verifyUser, userControl.removeUser);
+app.post("/user/send-otp", userControl.sendOtp);
+app.post("/user/reset-password", userControl.resetpassword);
 
 // Admin routes
-app.post("/admin/login", adminLogin);
-app.post("/admin/add-admin",verifyUser, addAdmin);
-app.get("/admin/list-admin", verifyUser,listAdmin);
-app.get("/admin/admindetail/:id", verifyUser,admindetail);
-app.delete("/admin/remove-admin/:id", verifyUser,removeAdmin);
-app.put("/admin/update-admin/:id", verifyUser,updateAdmin);
-app.get("/admin/all-users", verifyUser,listUser);
-app.post("/admin/logout", verifyUser,logout);
+app.post("/admin/login", adminControl.adminLogin);
+app.post("/admin/add-admin",verifyUser, adminControl.addAdmin);
+app.get("/admin/list-admin", verifyUser,adminControl.listAdmin);
+app.get("/admin/admindetail/:id", verifyUser,adminControl.admindetail);
+app.delete("/admin/remove-admin/:id", verifyUser,adminControl.removeAdmin);
+app.put("/admin/update-admin/:id", verifyUser,adminControl.updateAdmin);
+app.post("/admin/logout", verifyUser,adminControl.logout);
 
 //Order Routes
 app.post("/order/add-order", orderControl);
 
 //Product routes
-app.post("/product/add-product", upload.array("images", 12),verifyUser, addProduct);
-app.get("/product/list-product",verifyUser, listProduct);
-app.get("/product/get-product/:id", verifyUser,listSingleProduct);
-app.delete("/product/remove-product/:id",verifyUser, removeProduct);
-app.put("/product/update-product/:id",verifyUser,  updateProduct);
+app.post("/product/add-product", upload.array("images", 12),verifyUser, productControl.addProduct);
+app.get("/product/list-product",verifyUser, productControl.listProduct);
+app.get("/product/get-product/:id", verifyUser,productControl.listSingleProduct);
+app.delete("/product/remove-product/:id",verifyUser, productControl.removeProduct);
+app.put("/product/update-product/:id",verifyUser, productControl.updateProduct);
 
 app.listen(port, () => {
   console.log(
