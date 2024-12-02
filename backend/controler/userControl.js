@@ -130,14 +130,12 @@ const sendOtp = async (req, res) => {
           }
         );
         console.log(otp);
-        res
-          .status(200)
-          .json({
-            otp,
-            message: "Email sent successfully",
-            VerifyToken,
-            status: true,
-          });
+        res.status(200).json({
+          otp,
+          message: "Email sent successfully",
+          VerifyToken,
+          status: true,
+        });
       }
     });
   } else {
@@ -234,7 +232,7 @@ const resetpassword = async (req, res) => {
       await user.save();
     } else {
       const user = await User.findOne({ number: credential });
-                if (!user) {
+      if (!user) {
         return res
           .status(401)
           .json({ message: "User not found", status: false });

@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      select: false,
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters long"],
     },
@@ -48,6 +49,9 @@ const userSchema = new mongoose.Schema(
         ref: "Service",
       },
     ],
+    socketId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
