@@ -37,7 +37,7 @@ const upload = multer({ storage: storage });
 const app = express();
 
 //middlewares
-app.use(bodyParser.json());
+app.use(bodyParser.json() );
 app.use(cookieParser());
 app.use(cors());
 app.use((req, res, next) => {
