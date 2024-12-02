@@ -7,13 +7,14 @@ export const UserProvider = (props) => {
   const [users, setUsers] = useState([]);
   const [token] = useState(localStorage.getItem("token"));
   const [iswait, setIswait] = useState(true);
-  const url = "https://7kn61t4n-4000.inc1.devtunnels.ms";
+  const url = import.meta.env.VITE_APP_URL;
 
   useEffect(() => {
     axios
-      .get(`${url}/admin/all-users`, {
+      .get(`${url}/user/all-users`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          id: localStorage.getItem("id"),
         },
       })
       .then((res) => setUsers(res.data.users))
@@ -22,9 +23,10 @@ export const UserProvider = (props) => {
 
   const updateUserState = async () => {
     if (!token) return;
-    const res = await axios.get(`${url}/admin/all-users`, {
+    const res = await axios.get(`${url}/user/all-users`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        id: localStorage.getItem("id"),
       },
     });
     setUsers(res.data.users);
@@ -34,6 +36,7 @@ export const UserProvider = (props) => {
       .delete(`${url}/user/remove-user/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          id: localStorage.getItem("id"),
         },
       })
       .then(() => updateUserState())
@@ -41,7 +44,9 @@ export const UserProvider = (props) => {
   };
 
   return (
-    <UserContext.Provider value={{ users, remove_user, url , iswait, setIswait }}>
+    <UserContext.Provider
+      value={{ users, remove_user, url, iswait, setIswait }}
+    >
       {props.children}
     </UserContext.Provider>
   );

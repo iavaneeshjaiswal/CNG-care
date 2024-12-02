@@ -6,7 +6,7 @@ export const ProductContext = createContext(null);
 export const ProductProvider = (props) => {
   const [Products, setProducts] = useState([]);
   const [token] = useState(localStorage.getItem("token"));
-  const url = "https://7kn61t4n-4000.inc1.devtunnels.ms";
+  const url = import.meta.env.VITE_APP_URL;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -14,6 +14,7 @@ export const ProductProvider = (props) => {
         const res = await axios.get(`${url}/product/list-product`, {
           headers: {
             Authorization: `Bearer ${token}`,
+            id: localStorage.getItem("id"),
           },
         });
         setProducts(res.data);
@@ -28,6 +29,7 @@ export const ProductProvider = (props) => {
     const res = await axios.get(`${url}/product/list-product`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        id: localStorage.getItem("id"),
       },
     });
     setProducts(res.data);
@@ -38,6 +40,7 @@ export const ProductProvider = (props) => {
       .delete(`${url}/product/remove-product/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          id: localStorage.getItem("id"),
         },
       })
       .then(() => updateproductState())
@@ -51,6 +54,7 @@ export const ProductProvider = (props) => {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
+            id: localStorage.getItem("id"),
           },
         })
         .then(() => updateproductState())
@@ -66,6 +70,7 @@ export const ProductProvider = (props) => {
         .put(`${url}/product/update-product/${id}`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
+            id: localStorage.getItem("id"),
           },
         })
         .then(() => updateproductState())

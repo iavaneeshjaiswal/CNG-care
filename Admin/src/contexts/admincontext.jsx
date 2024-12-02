@@ -1,13 +1,12 @@
 import React, { useState, useEffect, createContext } from "react"; // React 16
 import axios from "axios";
-import dotenv from "dotenv";
 
 export const Admincontext = createContext();
 
 export const AdminProvider = (props) => {
   const [Admins, setAdmins] = useState([]);
 
-  const url = "https://7kn61t4n-4000.inc1.devtunnels.ms";
+  const url = import.meta.env.VITE_APP_URL;
 
   const [token] = useState(localStorage.getItem("token"));
   const admintype = useState(localStorage.getItem("role"));
@@ -17,6 +16,7 @@ export const AdminProvider = (props) => {
         const res = await axios.get(`${url}/admin/list-admin`, {
           headers: {
             Authorization: `Bearer ${token}`,
+            id: localStorage.getItem("id"),
           },
         });
         setAdmins(res.data);
@@ -32,6 +32,7 @@ export const AdminProvider = (props) => {
       const res = await axios.get(`${url}/admin/list-admin`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          id: localStorage.getItem("id"),
         },
       });
       setAdmins(res.data);
@@ -57,6 +58,7 @@ export const AdminProvider = (props) => {
         .post(`${url}/admin/add-admin`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
+            id: localStorage.getItem("id"),
           },
         })
         .then(() => {
@@ -76,6 +78,7 @@ export const AdminProvider = (props) => {
         .put(`${url}/admin/update-admin/${id}`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
+            id: localStorage.getItem("id"),
           },
         })
         .then(() => updateadminState())
@@ -99,6 +102,7 @@ export const AdminProvider = (props) => {
       if (response && response.data.success) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.admin.role);
+        localStorage.setItem("id", response.data.admin._id);
         window.location.href = "/";
       }
       return response;
@@ -111,6 +115,7 @@ export const AdminProvider = (props) => {
     try {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
+      localStorage.removeItem("id");
     } catch (error) {
       console.error("Error deleting cookie:", error);
     }
