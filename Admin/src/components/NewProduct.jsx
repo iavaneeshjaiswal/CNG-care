@@ -38,7 +38,10 @@ export default function NewProduct() {
   return (
     <div className="flex w-full flex-col items-center p-12 gap-3 ">
       <h2 className="text-2xl font-bold">Add Product</h2>
-      <form className="flex w-full h-screen flex-col justify-start gap-5 " onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="flex w-full h-screen flex-col justify-start gap-5 "
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div className="flex gap-2 ">
           <div className="flex flex-col gap-2 w-full">
             <label htmlFor="title">Product Name:</label>

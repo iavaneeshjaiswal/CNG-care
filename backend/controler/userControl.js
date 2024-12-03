@@ -221,7 +221,7 @@ const resetpassword = async (req, res) => {
     }
     const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
     if (emailPattern.test(credential)) {
-      const user = await User.findOne({ email: credential });
+      const user = await User.findOne({ email: credential.toLowerCase() });
       if (!user) {
         return res
           .status(401)
@@ -236,6 +236,11 @@ const resetpassword = async (req, res) => {
         return res
           .status(401)
           .json({ message: "User not found", status: false });
+      }
+      if(user.password === new_password){
+        return res
+          .status(401)
+          .json({ message: "Password already exists", status: false });
       }
       const hashedPassword = await bcrypt.hash(new_password, 10);
       user.password = hashedPassword;
