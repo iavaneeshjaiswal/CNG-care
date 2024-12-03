@@ -209,6 +209,7 @@ const removeUser = async (req, res) => {
 // reset password
 const resetpassword = async (req, res) => {
   const { credential, new_password, VerifyToken, otp } = req.body;
+  console.log(credential);
   try {
     const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
     if (verify.otp !== otp) {
