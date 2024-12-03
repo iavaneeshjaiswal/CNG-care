@@ -49,6 +49,7 @@ export const AdminProvider = (props) => {
       .delete(`${url}/admin/remove-admin/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          id: localStorage.getItem("id"),
         },
       })
       .then(() => updateadminState())
