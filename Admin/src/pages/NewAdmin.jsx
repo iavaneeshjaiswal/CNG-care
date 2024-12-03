@@ -16,7 +16,8 @@ export default function NewAdmin() {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    await addAdmin(data);
+    const res = await addAdmin(data);
+    console.log(res);
     navigate("/admins");
   };
 
@@ -28,6 +29,8 @@ export default function NewAdmin() {
       navigate("/login");
     }
   }, []);
+
+ 
 
   return (
     <div className="flex gap-3 w-full" onSubmit={handleSubmit(onSubmit)}>
@@ -60,6 +63,10 @@ export default function NewAdmin() {
                   id="username"
                   {...register("username", {
                     required: "Username is required",
+                    pattern: {
+                      value: /^[^\s]+$/,
+                      message: "Username should not have any space",
+                    },
                   })}
                   className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
                 />
@@ -78,6 +85,12 @@ export default function NewAdmin() {
                   id="password"
                   {...register("password", {
                     required: "Password is required",
+                    pattern: {
+                      value:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                      message:
+                        "Password must have at least 6 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+                    },
                   })}
                   className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
                 />

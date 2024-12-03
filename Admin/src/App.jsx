@@ -5,10 +5,9 @@ import Product from "./pages/Product";
 import ProductActions from "./pages/ProductActions";
 import User from "./pages/User";
 import Admin from "./pages/Admin";
-import Home from "./pages/Home";
 import NewAdmin from "./pages/NewAdmin";
-import UpdateProduct from "./components/UpdateProduct";
 import UpdateAdmin from "./pages/UpdateAdmin";
+
 export default function App() {
   return (
     <Router>

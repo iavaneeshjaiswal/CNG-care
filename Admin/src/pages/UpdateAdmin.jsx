@@ -100,6 +100,12 @@ export default function UpdateAdmin() {
                     id="password"
                     {...register("password", {
                       required: "Password is required",
+                      pattern: {
+                        value:
+                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                        message:
+                          "Password must have at least 6 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+                      },
                     })}
                     className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
                   />
@@ -136,7 +142,7 @@ export default function UpdateAdmin() {
                 type="submit"
                 value="Update Admin"
                 style={{ background: "#FC370F" }}
-                className='text-white p-1 px-4 text-lg  rounded-lg cursor-pointer'
+                className="text-white p-1 px-4 text-lg  rounded-lg cursor-pointer"
               />
             </form>
           ) : (

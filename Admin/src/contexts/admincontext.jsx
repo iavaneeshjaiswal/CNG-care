@@ -1,12 +1,12 @@
-import React, { useState, useEffect, createContext } from "react"; // React 16
+import React, { useState, useEffect, createContext } from "react";
 import axios from "axios";
-
 export const Admincontext = createContext();
 
 export const AdminProvider = (props) => {
+  const notify = (msg) => toast(`${msg}`);
   const [Admins, setAdmins] = useState([]);
   const [isloaded, setIsloaded] = useState(false);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const url = import.meta.env.VITE_APP_URL;
 
   const [token] = useState(localStorage.getItem("token"));
@@ -59,7 +59,7 @@ export const AdminProvider = (props) => {
 
   const addAdmin = async (data) => {
     try {
-      await axios
+      const res = await axios
         .post(`${url}/admin/add-admin`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,6 +73,7 @@ export const AdminProvider = (props) => {
         .then(() => {
           alert("User added successfully");
         });
+      console.log(res);
     } catch (error) {
       alert("Error adding user:", error);
     }
@@ -127,7 +128,7 @@ export const AdminProvider = (props) => {
       console.error("Error deleting cookie:", error);
     }
   };
-  const role = ["super Admin", "sub Admin", "manager", "admin"];
+  const role = ["super admin", "sub Admin", "manager", "admin"];
 
   return (
     <Admincontext.Provider
@@ -143,6 +144,7 @@ export const AdminProvider = (props) => {
         logout,
         admintype,
         isloaded,
+        isAuthenticated,
       }}
     >
       {props.children}

@@ -13,17 +13,16 @@ const client = twilio(
 
 // user login
 const userLogin = async (req, res) => {
-  const { email, password } = req.body;
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-  if (!emailPattern.test(email)) {
+  if (!emailPattern.test(req.body.email)) {
     return res.status(401).json({ message: "Invalid email", status: false });
   }
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: req.body.email.toLowerCase() });
     if (!user) {
       return res.status(401).json({ message: "Invalid email", status: false });
     }
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(req.body.password, user.password);
     if (!match) {
       return res.status(401).json({ message: "Invalid password" });
     }
@@ -48,7 +47,6 @@ const userLogin = async (req, res) => {
 // signup
 const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
-  console.log(req.body);
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(email)) {
     return res.status(401).json({ error: "Invalid email", status: false });
@@ -58,10 +56,19 @@ const signup = async (req, res) => {
   if (!phonePattern.test(number)) {
     return res
       .status(401)
-      .json({ error: "Invalid phone number", status: false });
+      .json({ message: "Invalid phone number", status: false });
   }
 
   try {
+    const passwordPattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!passwordPattern.test(password)) {
+      return res.status(401).json({
+        message:
+          "Password must have at least 6 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+        status: false,
+      });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       fullName,
@@ -82,9 +89,11 @@ const signup = async (req, res) => {
         .json({ status: false, message: "Phone number already exists" });
     }
     await newUser.save();
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
     res.status(201).json({
       status: true,
       message: "User created successfully",
+      token,
     });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
@@ -111,9 +120,9 @@ const sendOtp = async (req, res) => {
 
     const reciever = {
       from: process.env.GMAIL_USER,
-      to: credential,
+      to: credential.toLowerCase(),
       subject: "Email Verification",
-      text: `Your One Time Password From CNG care is  ${otp}`,
+      html: `<p>Your One Time Password From CNG care is <strong>${otp}</strong></p>`,
     };
 
     auth.sendMail(reciever, (error, info) => {
@@ -139,6 +148,12 @@ const sendOtp = async (req, res) => {
       }
     });
   } else {
+    const phonePattern = /^[6-9]\d{9}$/;
+    if (!phonePattern.test(credential)) {
+      return res
+        .status(401)
+        .json({ message: "Invalid phone number", status: false });
+    }
     client.messages
       .create({
         body: `Your one time password From CNG care is ${otp}`,
@@ -238,7 +253,7 @@ const resetpassword = async (req, res) => {
           .status(401)
           .json({ message: "User not found", status: false });
       }
-      if(user.password === new_password){
+      if (user.password === new_password) {
         return res
           .status(401)
           .json({ message: "Password already exists", status: false });
