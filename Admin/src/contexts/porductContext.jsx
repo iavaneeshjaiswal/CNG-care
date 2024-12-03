@@ -5,6 +5,7 @@ export const ProductContext = createContext(null);
 
 export const ProductProvider = (props) => {
   const [Products, setProducts] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [token] = useState(localStorage.getItem("token"));
   const url = import.meta.env.VITE_APP_URL;
 
@@ -18,6 +19,7 @@ export const ProductProvider = (props) => {
           },
         });
         setProducts(res.data);
+        setIsLoaded(true);
       } catch (err) {
         console.log(err);
       }
@@ -33,6 +35,7 @@ export const ProductProvider = (props) => {
       },
     });
     setProducts(res.data);
+    setIsLoaded(true);
   };
 
   const remove_product = (id) => {
@@ -44,6 +47,7 @@ export const ProductProvider = (props) => {
         },
       })
       .then(() => updateproductState())
+      .then(() => setIsLoaded(true))
       .catch((err) => console.log(err));
   };
 
@@ -58,6 +62,7 @@ export const ProductProvider = (props) => {
           },
         })
         .then(() => updateproductState())
+        .then(() => setIsLoaded(true))
         .then(() => alert("Product uploaded successfully"));
     } catch (error) {
       alert("Error uploading product:", error);
@@ -74,6 +79,7 @@ export const ProductProvider = (props) => {
           },
         })
         .then(() => updateproductState())
+        .then(() => setIsLoaded(true))
         .then(() => alert("Product Updated Successfully"));
     } catch (error) {
       alert("Error updating product:", error);
@@ -82,7 +88,7 @@ export const ProductProvider = (props) => {
 
   return (
     <ProductContext.Provider
-      value={{ Products, updateProduct, remove_product, addProduct, url }}
+      value={{ Products, updateProduct, remove_product, addProduct, url ,isLoaded}}
     >
       {props.children}
     </ProductContext.Provider>

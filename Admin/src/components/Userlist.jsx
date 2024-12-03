@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { UserContext } from "../contexts/userContext";
 
 export default function Userlist() {
-  const { users, remove_user } = useContext(UserContext);
+  const { users, remove_user, isloaded } = useContext(UserContext);
 
   const handleRemoveUser = (userId) => {
     remove_user(userId); 
@@ -21,7 +21,17 @@ export default function Userlist() {
             </tr>
           </thead>
           <tbody>
-            {users.length > 0 ? (
+            {
+              !isloaded ? (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="p-2 text-center text-gray-400 text-lg"
+                  >
+                    LOADING...
+                  </td>
+                </tr>
+              ) : users.length > 0 ? (
               users.map((user) => (
                 <tr key={user._id} className="border-b text-sm">
                   <td className="p-2 text-start">{user.fullName}</td>

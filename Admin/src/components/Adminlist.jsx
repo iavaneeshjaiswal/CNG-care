@@ -3,7 +3,8 @@ import { Admincontext } from "../contexts/admincontext";
 import { useNavigate } from "react-router-dom";
 
 export default function Adminlist() {
-  const { Admins, remove_Admin, setAdmins } = useContext(Admincontext);
+  const { Admins, remove_Admin, setAdmins, isloaded } =
+    useContext(Admincontext);
   const navigate = useNavigate();
   return (
     <div className="p-2 box-border bg-white rounded-sm w-full">
@@ -26,7 +27,16 @@ export default function Adminlist() {
             </tr>
           </thead>
           <tbody>
-            {Admins.length > 0 ? (
+            {!isloaded ? (
+              <tr>
+                <td
+                  colSpan="6"
+                  className="p-2 text-center text-gray-400 text-lg"
+                >
+                  LOADING...
+                </td>
+              </tr>
+            ) : Admins.length > 0 ? (
               Admins.map((admin) => (
                 <tr key={admin._id} className="border-b">
                   <td className="p-2 text-start">{admin.name}</td>
@@ -40,7 +50,7 @@ export default function Adminlist() {
                         navigate(`/updateadmin/${admin._id}`);
                       }}
                     >
-                      {<i class="ri-edit-2-fill"></i>}
+                      {<i className="ri-edit-2-fill"></i>}
                     </button>
                   </td>
                   <td className="p-2 text-center">
@@ -51,7 +61,7 @@ export default function Adminlist() {
                         setAdmins(Admins.filter((a) => a._id !== admin._id));
                       }}
                     >
-                      {<i class="ri-delete-bin-6-line"></i>}
+                      {<i className="ri-delete-bin-6-line"></i>}
                     </button>
                   </td>
                 </tr>

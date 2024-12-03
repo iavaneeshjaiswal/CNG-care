@@ -33,6 +33,7 @@ export default function UpdateAdmin() {
       const admin = await axios.get(`${url}/admin/admindetail/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          id: localStorage.getItem("id"),
         },
       });
       setIswait(!iswait);

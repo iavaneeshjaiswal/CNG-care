@@ -5,6 +5,7 @@ export const Admincontext = createContext();
 
 export const AdminProvider = (props) => {
   const [Admins, setAdmins] = useState([]);
+  const [isloaded, setIsloaded] = useState(false);
 
   const url = import.meta.env.VITE_APP_URL;
 
@@ -20,6 +21,7 @@ export const AdminProvider = (props) => {
           },
         });
         setAdmins(res.data);
+        setIsloaded(true);
       } catch (err) {
         console.log(err);
       }
@@ -36,6 +38,7 @@ export const AdminProvider = (props) => {
         },
       });
       setAdmins(res.data);
+      setIsloaded(true);
     } catch (error) {
       console.error("Error fetching admin list:", error);
     }
@@ -49,6 +52,7 @@ export const AdminProvider = (props) => {
         },
       })
       .then(() => updateadminState())
+      .then(() => setIsloaded(true))
       .catch((err) => console.log(err));
   };
 
@@ -63,6 +67,7 @@ export const AdminProvider = (props) => {
         })
         .then(() => {
           updateadminState();
+          setIsloaded(true);
         })
         .then(() => {
           alert("User added successfully");
@@ -82,6 +87,7 @@ export const AdminProvider = (props) => {
           },
         })
         .then(() => updateadminState())
+        .then(() => setIsloaded(true))
         .then(() => alert("Admin Updated Successfully"));
     } catch (error) {
       alert("Error updating Admin:", error);
@@ -120,7 +126,7 @@ export const AdminProvider = (props) => {
       console.error("Error deleting cookie:", error);
     }
   };
-  const role = ["super admin", "sub admin", "manager", "admin"];
+  const role = ["super Admin", "sub Admin", "manager", "admin"];
 
   return (
     <Admincontext.Provider
@@ -135,6 +141,7 @@ export const AdminProvider = (props) => {
         role,
         logout,
         admintype,
+        isloaded,
       }}
     >
       {props.children}

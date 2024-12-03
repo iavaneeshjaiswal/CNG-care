@@ -3,7 +3,7 @@ import { ProductContext } from "../contexts/porductContext";
 import { useNavigate } from "react-router-dom";
 
 export default function ProductList() {
-  const { Products, remove_product, updateProduct } =
+  const { Products, remove_product, isLoaded } =
     useContext(ProductContext);
   const [products, setProducts] = useState(Products);
 
@@ -28,7 +28,16 @@ export default function ProductList() {
             </tr>
           </thead>
           <tbody>
-            {products.length > 0 ? (
+            {!isLoaded ? (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="p-2 text-center text-gray-400 text-lg"
+                >
+                  LOADING...
+                </td>
+              </tr>
+            ):products.length > 0 ? (
               products.map((product) => (
                 <tr key={product._id} className="border-b">
                   <td className="p-2 text-start">

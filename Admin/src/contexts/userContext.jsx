@@ -6,7 +6,7 @@ export const UserContext = createContext(null);
 export const UserProvider = (props) => {
   const [users, setUsers] = useState([]);
   const [token] = useState(localStorage.getItem("token"));
-  const [iswait, setIswait] = useState(true);
+  const [isloaded, setIsloaded] = useState(false);
   const url = import.meta.env.VITE_APP_URL;
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export const UserProvider = (props) => {
           id: localStorage.getItem("id"),
         },
       })
-      .then((res) => setUsers(res.data.users))
+      .then((res) => setUsers(res.data.users)).then(() => setIsloaded(true))
       .catch((err) => console.log(err));
   }, []);
 
@@ -30,6 +30,7 @@ export const UserProvider = (props) => {
       },
     });
     setUsers(res.data.users);
+    setIsloaded(true);
   };
   const remove_user = (id) => {
     axios
@@ -40,12 +41,13 @@ export const UserProvider = (props) => {
         },
       })
       .then(() => updateUserState())
+      .then(() => setIsloaded(true))
       .catch((err) => console.log(err));
   };
 
   return (
     <UserContext.Provider
-      value={{ users, remove_user, url, iswait, setIswait }}
+      value={{ users, remove_user, url, isloaded}}
     >
       {props.children}
     </UserContext.Provider>
