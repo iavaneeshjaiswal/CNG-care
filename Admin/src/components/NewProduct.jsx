@@ -13,13 +13,12 @@ export default function NewProduct() {
   } = useForm();
 
   const navigate = useNavigate();
-
+  const categoryOptions = ["CNG", "LPG"];
   const onSubmit = async (data) => {
     if (data.images && data.images.length > 0) {
       const formData = new FormData();
       formData.append("title", data.title);
       formData.append("price", data.price);
-      formData.append("offerPrice", data.offerPrice);
       formData.append("quantity", data.quantity);
       formData.append("category", data.category);
       formData.append("brand", data.brand);
@@ -36,7 +35,7 @@ export default function NewProduct() {
     }
   };
   return (
-    <div className="flex w-full flex-col items-center p-12 gap-3 ">
+    <div className="flex w-3/6 flex-col items-center p-12 gap-3 ">
       <h2 className="text-2xl font-bold">Add Product</h2>
       <form
         className="flex w-full h-screen flex-col justify-start gap-5 "
@@ -80,7 +79,11 @@ export default function NewProduct() {
               type="number"
               placeholder="Enter Price"
               id="Price"
-              {...register("price", { required: "Price is required" })}
+              min={0}
+              {...register("price", {
+                required: "Price is required",
+                min: { value: 0, message: "Price must be at least 0" },
+              })}
               className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
             />
             {errors.price && (
@@ -88,22 +91,24 @@ export default function NewProduct() {
             )}{" "}
             {/* Error message */}
           </div>
-          <div className="flex w-1/2  flex-col gap-2 ">
-            <label htmlFor="OfferPrice">Offer Price :</label>
-            <input
-              type="number"
-              placeholder="Enter Offer Price"
-              id="OfferPrice"
-              {...register("offerPrice", {
-                required: "Offer Price is required",
+          <div className="flex flex-col gap-2 w-1/2 ">
+            <label htmlFor="category">Category :</label>
+            <select
+              name="category"
+              id="category"
+              {...register("category", {
+                required: "category is required",
               })}
-              className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
-            />
-            {errors.offerPrice && (
-              <p className="text-red-400 text-sm">
-                {errors.offerPrice.message}
-              </p>
-            )}{" "}
+              className="text-black border p-2 rounded-lg w-full bg-gray-200  border-gray-400  focus:border-black"
+            >
+              {categoryOptions.map((item, i) => {
+                return (
+                  <option key={i} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
+            </select>
             {/* Error message */}
           </div>
         </div>
@@ -123,22 +128,6 @@ export default function NewProduct() {
             )}{" "}
             {/* Error message */}
           </div>
-          <div className="flex w-1/2  flex-col gap-2 ">
-            <label htmlFor="category">Category :</label>
-            <input
-              type="text"
-              placeholder="Enter Category"
-              id="category"
-              {...register("category", {
-                required: "Product Category is required",
-              })}
-              className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
-            />
-            {errors.category && (
-              <p className="text-red-400 text-sm">{errors.category.message}</p>
-            )}{" "}
-            {/* Error message */}
-          </div>
         </div>
 
         <div className="flex flex-col gap-2 ">
@@ -152,7 +141,19 @@ export default function NewProduct() {
               required: "Description is required",
             })}
             className="p-2 rounded focus:outline-none bg-gray-200 w-full border-2  border-gray-400 focus:border-black"
+            onChange={(e) => {
+              const textArea = e.target;
+              const characterCount = textArea.value.length;
+              textArea.setCustomValidity(
+                characterCount > 500
+                  ? "Description should not exceed 250 characters"
+                  : ""
+              );
+              textArea.setCustomValidity("");
+              textArea.nextSibling.innerText = `Characters: ${characterCount}`;
+            }}
           ></textarea>
+          <p className="text-sm text-gray-500">Characters: 0</p>
           {errors.description && (
             <p className="text-red-400 text-sm">{errors.description.message}</p>
           )}{" "}
@@ -175,6 +176,9 @@ export default function NewProduct() {
         <input
           type="submit"
           value="Add Product"
+          onClick={(e) => {
+            e.target.disable = true;
+          }}
           style={{ background: "#FC370F" }}
           className="text-white p-1 px-4 text-lg  rounded-lg cursor-pointer"
         />

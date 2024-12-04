@@ -6,7 +6,7 @@ import fs from "fs";
 dotenv.config();
 
 const url = process.env.URL;
-const port = process.env.PORT||4000;
+// const port = process.env.PORT||4000;
 
 // add single product with images
 const addProduct = async (req, res) => {
@@ -16,14 +16,16 @@ const addProduct = async (req, res) => {
         .status(400)
         .json({ message: "Please upload at least one image." });
     }
-
     const imageUrls = req.files.map(
-      (file) => `${url + port}/uploads/${file.filename}`
+      (file) => `${url}/uploads/${file.filename}`
     );
 
     const { category, title, price, quantity, offerPrice, description,brand} =
       req.body;
-
+    let categoryOption = ["LPG", "CNG"];
+    if (!categoryOption.includes(category)) {
+      return res.status(400).json({ message: "Invalid category option" });
+    }
     let newProduct = new Product({
       category,
       title,

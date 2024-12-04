@@ -7,16 +7,16 @@ import { useNavigate } from "react-router-dom";
 export default function ProductActions(props) {
   const { id } = useParams();
   const navigate = useNavigate();
-    useEffect(() => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-      }
-    }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, []);
   return (
     <div className="flex gap-3 w-full ">
       <Navbar />
-      {props.add ? <NewProduct /> : <UpdateProduct id={id} />}
+      <div className="w-full flex justify-center">{props.add ? <NewProduct /> : <UpdateProduct id={id} />}</div>
     </div>
   );
 }
