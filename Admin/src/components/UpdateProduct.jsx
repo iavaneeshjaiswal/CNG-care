@@ -97,7 +97,7 @@ export default function UpdateProduct({ id }) {
           </div>
 
           <div className="flex w-full gap-2 ltems-center">
-            <div className="flex w-1/2 flex-col gap-2 ">
+            <div className="flex w-full flex-col gap-2 ">
               <label htmlFor="quantity">Quantity :</label>
               <input
                 type="number"
