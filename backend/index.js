@@ -11,6 +11,7 @@ import multer from "multer";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import verifyUser from "./middleware/verifyUser.js";
+import checkRole from "./middleware/authAdmin.js";
 dotenv.config();
 
 const storage = multer.diskStorage({
@@ -37,7 +38,7 @@ const upload = multer({ storage: storage });
 const app = express();
 
 //middlewares
-app.use(bodyParser.json() );
+app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
 app.use((req, res, next) => {
@@ -51,30 +52,72 @@ app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 4000;
 // User routes
 app.post("/user/login", userControl.userLogin);
-app.get("/user/all-users",verifyUser, userControl.listUser);
+app.get("/user/all-users", verifyUser, userControl.listUser);
 app.post("/user/register", userControl.signup);
-app.delete("/user/remove-user/:id",verifyUser, userControl.removeUser);
+app.delete("/user/remove-user/:id", verifyUser, userControl.removeUser);
 app.post("/user/send-otp", userControl.sendOtp);
 app.post("/user/reset-password", userControl.resetpassword);
 
 // Admin routes
 app.post("/admin/login", adminControl.adminLogin);
-app.post("/admin/add-admin",verifyUser, adminControl.addAdmin);
-app.get("/admin/list-admin", verifyUser,adminControl.listAdmin);
-app.get("/admin/admindetail/:id", verifyUser,adminControl.admindetail);
-app.delete("/admin/remove-admin/:id", verifyUser,adminControl.removeAdmin);
-app.put("/admin/update-admin/:id", verifyUser,adminControl.updateAdmin);
-app.post("/admin/logout", verifyUser,adminControl.logout);
+app.post(
+  "/admin/add-admin",
+  verifyUser,
+  checkRole("super admin"),
+  adminControl.addAdmin
+);
+app.get(
+  "/admin/list-admin",
+  verifyUser,
+  checkRole("super admin"),
+  adminControl.listAdmin
+);
+app.get(
+  "/admin/admindetail/:id",
+  verifyUser,
+  checkRole("super admin"),
+  adminControl.admindetail
+);
+app.delete(
+  "/admin/remove-admin/:id",
+  verifyUser,
+  checkRole("super admin"),
+  adminControl.removeAdmin
+);
+app.put(
+  "/admin/update-admin/:id",
+  verifyUser,
+  checkRole("super admin"),
+  adminControl.updateAdmin
+);
+app.post("/admin/logout", verifyUser, adminControl.logout);
 
 //Order Routes
 app.post("/order/add-order", orderControl);
 
 //Product routes
-app.post("/product/add-product", upload.array("images", 12),verifyUser, productControl.addProduct);
-app.get("/product/list-product",verifyUser, productControl.listProduct);
-app.get("/product/get-product/:id", verifyUser,productControl.listSingleProduct);
-app.delete("/product/remove-product/:id",verifyUser, productControl.removeProduct);
-app.put("/product/update-product/:id",verifyUser, productControl.updateProduct);
+app.post(
+  "/product/add-product",
+  upload.array("images", 12),
+  verifyUser,
+  productControl.addProduct
+);
+app.get("/product/list-product", verifyUser, productControl.listProduct);
+app.get(
+  "/product/get-product/:id",
+  verifyUser,
+  productControl.listSingleProduct
+);
+app.delete(
+  "/product/remove-product/:id",
+  verifyUser,
+  productControl.removeProduct
+);
+app.put(
+  "/product/update-product/:id",
+  verifyUser,
+  productControl.updateProduct
+);
 
 app.listen(port, () => {
   console.log(

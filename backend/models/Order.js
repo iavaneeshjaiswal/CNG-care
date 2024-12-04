@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const orderSchema = new mongoose.Schema(
   {
     user: {
@@ -24,9 +25,13 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    payment: {
+    address: {
+      type: String,
+      required: true,
+    },
+    transactionID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Payment",
+      ref: "Transaction",
       required: true,
     },
     deliveryStatus: {
@@ -35,14 +40,9 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "completed", "cancelled"],
       default: "pending",
     },
-    address: {
-      type: String, 
-      required: true, 
-    },
   },
   { timestamps: true }
 );
 
 const Order = mongoose.model("Order", orderSchema);
 export default Order;
-

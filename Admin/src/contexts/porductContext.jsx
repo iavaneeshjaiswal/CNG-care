@@ -53,7 +53,7 @@ export const ProductProvider = (props) => {
 
   const addProduct = async (data) => {
     try {
-      const response = await axios
+      await axios
         .post(`${url}/product/add-product`, data, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -65,7 +65,7 @@ export const ProductProvider = (props) => {
         .then(() => setIsLoaded(true))
         .then(() => alert("Product uploaded successfully"));
     } catch (error) {
-      alert("Error uploading product:", error);
+      console.log("Error uploading product:", error);
     }
   };
 
@@ -88,7 +88,14 @@ export const ProductProvider = (props) => {
 
   return (
     <ProductContext.Provider
-      value={{ Products, updateProduct, remove_product, addProduct, url ,isLoaded}}
+      value={{
+        Products,
+        updateProduct,
+        remove_product,
+        addProduct,
+        url,
+        isLoaded,
+      }}
     >
       {props.children}
     </ProductContext.Provider>

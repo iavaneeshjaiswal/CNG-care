@@ -145,7 +145,6 @@ Add new product
   - title: string
   - price: number
   - quantity: number
-  - offerPrice: number
   - description: string
   - images: array of strings
 - Response:
@@ -157,7 +156,6 @@ Add new product
       "title": "Iphone 13",
       "price": 1000,
       "quantity": 10,
-      "offerPrice": 800,
       "description": "This is a new Iphone 13",
       "images": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
     }
@@ -184,7 +182,6 @@ Get product by id
   - product: object
 
 ### DELETE /product/:id
-
 Delete product by id
 
 - Request Param:
@@ -253,4 +250,5 @@ Delete order by id
 - Response:
   - message: string
   - status: boolean
+
 

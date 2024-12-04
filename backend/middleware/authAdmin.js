@@ -1,21 +1,18 @@
-import jwt from "jsonwebtoken";
-const SECRET_KEY = process.env.JWT_SECRET;
+const checkRole = (requiredRoles) => {
+  return (req, res, next) => {
+    const userRole = req.user.role;
 
-
-
-const  verifyUser = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(403).json({ message: 'No token provided' });
-  }
-
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: 'Failed to authenticate token' });
+    if (!userRole) {
+      return res.status(401).json({ message: "Unauthorized: No role found" });
     }
-    req.user = decoded; 
-    next();
-  });
-};
 
-export default verifyUser;
+    if (requiredRoles.includes(userRole)) {
+      return next();
+    } else {
+      return res
+        .status(403)
+        .json({ message: "Forbidden: You do not have permission" });
+    }
+  };
+};
+export default checkRole;

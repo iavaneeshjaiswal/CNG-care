@@ -9,7 +9,6 @@ export default function NewProduct() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm();
 
   const navigate = useNavigate();
@@ -24,12 +23,22 @@ export default function NewProduct() {
       formData.append("brand", data.brand);
       formData.append("description", data.description);
 
+
       Array.from(data.images).forEach((image) => {
         formData.append("images", image);
       });
 
-      await addProduct(formData);
-      navigate("/products");
+
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      try {
+        await addProduct(formData);
+        navigate("/products");
+      } catch (error) {
+        console.error("Error adding product:", error);
+      }
     } else {
       console.error("No images uploaded");
     }
@@ -60,13 +69,13 @@ export default function NewProduct() {
             <label htmlFor="brand">Brand Name:</label>
             <input
               type="brand"
-              placeholder="Enter Product Name"
+              placeholder="Enter Brand Name"
               id="brand"
               {...register("brand", { required: "Brand name is required" })}
               className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200  border-gray-400  focus:border-black"
             />
-            {errors.Brand && (
-              <p className="text-red-400 text-sm">{errors.Brand.message}</p>
+            {errors.brand && (
+              <p className="text-red-400 text-sm">{errors.brand.message}</p>
             )}{" "}
             {/* Error message */}
           </div>
