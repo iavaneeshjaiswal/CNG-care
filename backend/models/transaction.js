@@ -16,9 +16,8 @@ const transactionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    orderID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
+    TransactionID: {
+      type: String,
       required: true,
     },
   },

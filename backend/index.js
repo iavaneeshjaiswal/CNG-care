@@ -93,7 +93,8 @@ app.put(
 app.post("/admin/logout", verifyUser, adminControl.logout);
 
 //Order Routes
-app.post("/order/add-order", orderControl);
+app.post("/order/add-order", verifyUser, orderControl.addOrder);
+app.post("/order/view-allOrders", verifyUser, orderControl.viewOrders);
 
 //Product routes
 app.post(

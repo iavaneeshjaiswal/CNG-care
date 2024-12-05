@@ -10,8 +10,9 @@ const orderSchema = new mongoose.Schema(
     products: [
       {
         product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
+          type: String,
+          // type: mongoose.Schema.Types.ObjectId,
+          // ref: "Product",
           required: true,
         },
         quantity: {
@@ -32,7 +33,7 @@ const orderSchema = new mongoose.Schema(
     transactionID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Transaction",
-      required: true,
+      // required: true,
     },
     deliveryStatus: {
       type: String,

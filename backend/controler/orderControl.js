@@ -1,28 +1,39 @@
-import Order from '../models/order.js';
-import Product from '../models/product.js';
-import dotenv from 'dotenv';
+import Order from "../models/order.js";
+import User from "../models/user.js";
+import dotenv from "dotenv";
 dotenv.config();
 
+const addOrder = async (req, res) => {
+  const { products, totalAmount, address, deliveryStatus } = req.body;
+  try {
+    const newOrder = new Order({
+      products,
+      totalAmount,
+      address,
+      deliveryStatus,
+      user: req.user.userId,
+    });
+    await newOrder.save();
+    const user = await User.findById(req.user.userId);
+    user.orders.push(newOrder._id);
+    await user.save();
+    res.status(200).json({ message: "Order added successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-const orderControl = async (req, res)=>{
-        const { id } = req.params;
-        try {
-            // const product = await Product.findById(id);
-            // if (!product) {
-            //     return res.status(404).json({ error: "Product not found" });
-            // }
-            // const order = new Order({
-            //     products: [{ product: product._id, quantity: 1 }],
-            //     totalAmount: product.price,
-            //     paymentMethod: product.paymentMethod,
-            //     user: req.user._id,
-            // });
-            const order = new Order({...req.body})
-            await order.save();
-            res.status(201).json({ message: "Order created successfully" });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
+const viewOrders = async () => {
+  try {
+    const orders = await Order.find();
+    if (orders) {
+      res
+        .status(200)
+        .json({ orders, status: true, message: "Orders found successfully" });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+};
 
-export default orderControl
+export default { addOrder, viewOrders };
