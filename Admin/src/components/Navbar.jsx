@@ -35,7 +35,7 @@ export default function Navbar() {
         text: "Orders",
       },
       {
-        image: "add",
+        image: "rupee",
         path: "/transaction",
         text: "Transaction",
       },
@@ -68,7 +68,7 @@ export default function Navbar() {
         text: "Orders",
       },
       {
-        image: "add",
+        image: "rupee",
         path: "/transaction",
         text: "Transaction",
       },

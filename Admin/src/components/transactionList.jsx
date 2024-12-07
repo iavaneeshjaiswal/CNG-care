@@ -66,7 +66,10 @@ function TransactionList() {
                   <tr key={transaction._id} className="border-b">
                     <td className="p-2 text-start">{transaction._id}</td>
                     <td className="p-2 text-start">{transaction.orderID}</td>
+                    <td className="p-2 text-start">
                       {transaction.userID.fullName}
+                    </td>
+
                     <td className="p-2 text-start">{transaction.paymentID}</td>
                     <td className="p-2 text-start">₹{transaction.amount}</td>
                   </tr>
@@ -90,4 +93,3 @@ function TransactionList() {
 }
 
 export default TransactionList;
-
