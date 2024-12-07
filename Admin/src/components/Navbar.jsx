@@ -30,6 +30,16 @@ export default function Navbar() {
         text: "Add Product",
       },
       {
+        image: "add",
+        path: "/order",
+        text: "Orders",
+      },
+      {
+        image: "add",
+        path: "/transaction",
+        text: "Transaction",
+      },
+      {
         image: "logout",
         onclick: handleLogout,
         text: "logout",
@@ -51,6 +61,16 @@ export default function Navbar() {
         image: "add",
         path: "/addproduct",
         text: "Add Product",
+      },
+      {
+        image: "add",
+        path: "/order",
+        text: "Orders",
+      },
+      {
+        image: "add",
+        path: "/transaction",
+        text: "Transaction",
       },
       {
         image: "admin",

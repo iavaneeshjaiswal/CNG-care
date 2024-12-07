@@ -52,20 +52,20 @@ export const ProductProvider = (props) => {
   };
 
   const addProduct = async (data) => {
+    console.log(data)
     try {
       await axios
         .post(`${url}/product/add-product`, data, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
-            id: localStorage.getItem("id"),
           },
         })
         .then(() => updateproductState())
         .then(() => setIsLoaded(true))
         .then(() => alert("Product uploaded successfully"));
     } catch (error) {
-      console.log("Error uploading product:", error);
+      alert("Error uploading product:", error);
     }
   };
 

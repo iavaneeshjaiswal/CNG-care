@@ -221,6 +221,23 @@ const removeUser = async (req, res) => {
   }
 };
 
+// update Adress
+const updateAddress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: false });
+    }
+    user.address = req.body.address;
+    await user.save();
+    res
+      .status(200)
+      .json({ message: "Address updated successfully", status: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+};
+
 // reset password
 const resetpassword = async (req, res) => {
   const { credential, new_password, VerifyToken, otp } = req.body;

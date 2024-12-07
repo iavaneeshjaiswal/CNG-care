@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    user: {
+    userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -10,9 +10,8 @@ const orderSchema = new mongoose.Schema(
     products: [
       {
         product: {
-          type: String,
-          // type: mongoose.Schema.Types.ObjectId,
-          // ref: "Product",
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
           required: true,
         },
         quantity: {
@@ -33,13 +32,19 @@ const orderSchema = new mongoose.Schema(
     transactionID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Transaction",
-      // required: true,
+      required: true,
     },
-    deliveryStatus: {
+    orderStatus: {
       type: String,
       required: true,
-      enum: ["pending", "completed", "cancelled"],
-      default: "pending",
+      enum: [
+        "Pending",
+        "Order Placed",
+        "Order Shipped",
+        "Out For Delevery",
+        "Delivered",
+      ],
+      default: "Pending",
     },
   },
   { timestamps: true }

@@ -5,6 +5,7 @@ import userControl from "./controler/userControl.js";
 import adminControl from "./controler/adminControl.js";
 import productControl from "./controler/productControl.js";
 import orderControl from "./controler/orderControl.js";
+import transactionControler from "./controler/transactionControler.js";
 import cors from "cors";
 import path from "path";
 import multer from "multer";
@@ -94,8 +95,17 @@ app.post("/admin/logout", verifyUser, adminControl.logout);
 
 //Order Routes
 app.post("/order/add-order", verifyUser, orderControl.addOrder);
-app.post("/order/view-allOrders", verifyUser, orderControl.viewOrders);
+app.get("/order/view-allOrders", verifyUser, orderControl.viewOrders);
+app.get("/order/view-order/:id", verifyUser, orderControl.viewOrder);
+app.put("/order/update-order/:id", verifyUser, orderControl.updateOrder);
+app.delete("/order/delete-order/:id", verifyUser, orderControl.deleteOrder);
 
+//Transaction Routes
+app.get(
+  "/transaction/list-transaction",
+  verifyUser,
+  transactionControler.viewTransaction
+);
 //Product routes
 app.post(
   "/product/add-product",

@@ -8,20 +8,25 @@ const transactionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "failed", "success"],
+      enum: ["failed", "success", "refunded"],
       required: true,
+      default: "failed",
     },
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    TransactionID: {
+    paymentID: {
       type: String,
       required: true,
+    },
+    orderID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
     },
   },
   { timestamps: true }
 );
 
-export default Transaction = mongoose.model("Transaction", transactionSchema);
+export const Transaction = mongoose.model("Transaction", transactionSchema);

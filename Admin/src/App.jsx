@@ -7,7 +7,9 @@ import User from "./pages/User";
 import Admin from "./pages/Admin";
 import NewAdmin from "./pages/NewAdmin";
 import UpdateAdmin from "./pages/UpdateAdmin";
-
+import Order from "./pages/Order";
+import Transaction from "./pages/Transaction";
+import OrderDetail from "./pages/OrderDetail";
 export default function App() {
   return (
     <Router>
@@ -20,6 +22,9 @@ export default function App() {
         <Route path="/addadmins" element={<NewAdmin />} />
         <Route path="/updateproduct/:id" element={<ProductActions />} />
         <Route path="/updateadmin/:id" element={<UpdateAdmin />} />
+        <Route path="/order" element={<Order />} />
+        {/* <Route path="/order/:id" element={<OrderDetail />} /> */}
+        <Route path="/transaction" element={<Transaction />} />
       </Routes>
     </Router>
   );

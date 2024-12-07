@@ -3,6 +3,7 @@ import Admin from "../models/admin.js";
 
 const adminLogin = async (req, res) => {
   const { data } = req.body;
+  console.log(data);
   try {
     const admin = await Admin.findOne({ username: data.username });
     if (!admin) {
@@ -11,7 +12,10 @@ const adminLogin = async (req, res) => {
     if (admin.password !== data.password) {
       return res.status(401).json({ error: "Invalid password" });
     }
-    const token = jwt.sign({ id: admin._id , username: admin.username, role: admin.role }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: admin._id, username: admin.username, role: admin.role },
+      process.env.JWT_SECRET
+    );
     res.status(200).json({
       success: true,
       message: "Admin login successfully",
@@ -22,8 +26,6 @@ const adminLogin = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 const addAdmin = async (req, res) => {
   console.log(req.user);
@@ -83,7 +85,7 @@ const admindetail = async (req, res) => {
 const logout = async (req, res) => {
   try {
     let cookies = req.cookies;
-    res.status(200).json({ message: "Logout successfully" ,cookies});
+    res.status(200).json({ message: "Logout successfully", cookies });
   } catch (error) {
     console.error("Error deleting cookie:", error);
     res.status(500).json({ error: error.message });

@@ -48,9 +48,6 @@ const userSchema = new mongoose.Schema(
         ref: "Service",
       },
     ],
-    socketId: {
-      type: String,
-    },
   },
   { timestamps: true }
 );
