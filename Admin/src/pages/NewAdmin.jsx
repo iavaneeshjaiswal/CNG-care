@@ -30,8 +30,6 @@ export default function NewAdmin() {
     }
   }, []);
 
- 
-
   return (
     <div className="flex gap-3 w-full" onSubmit={handleSubmit(onSubmit)}>
       <Navbar />
@@ -114,8 +112,12 @@ export default function NewAdmin() {
                   })}
                   className="text-black border p-2 rounded-lg"
                 >
-                  {role.map((item) => {
-                    return <option value={item}>{item}</option>;
+                  {role.map((item, i) => {
+                    return (
+                      <option key={i} value={item}>
+                        {item}
+                      </option>
+                    );
                   })}
                 </select>
                 {/* Error message */}

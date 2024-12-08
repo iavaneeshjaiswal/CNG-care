@@ -50,7 +50,7 @@ app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 // User routes
 app.post("/user/login", userControl.userLogin);
 app.get("/user/all-users", verifyUser, userControl.listUser);
@@ -94,18 +94,18 @@ app.put(
 app.post("/admin/logout", verifyUser, adminControl.logout);
 
 //Order Routes
-app.post("/order/add-order", verifyUser, orderControl.addOrder);
-app.get("/order/view-allOrders", verifyUser, orderControl.viewOrders);
-app.get("/order/view-order/:id", verifyUser, orderControl.viewOrder);
-app.put("/order/update-order/:id", verifyUser, orderControl.updateOrder);
-app.delete("/order/delete-order/:id", verifyUser, orderControl.deleteOrder);
+app.post("/order", verifyUser, orderControl.addOrder);
+app.get("/order", verifyUser, orderControl.viewOrders);
+app.get("/order/:id", verifyUser, orderControl.viewOrder);
+app.post(
+  "/order/update-order-status/:id",
+  verifyUser,
+  orderControl.updateOrderStatus
+);
+app.delete("/order/:id", verifyUser, orderControl.deleteOrder);
 
 //Transaction Routes
-app.get(
-  "/transaction/list-transaction",
-  verifyUser,
-  transactionControler.viewTransaction
-);
+app.get("/transaction", verifyUser, transactionControler.viewTransaction);
 //Product routes
 app.post(
   "/product/add-product",

@@ -6,23 +6,22 @@ function TransactionList() {
   const [transaction, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const url = import.meta.env.VITE_APP_URL;
   useEffect(() => {
     const fetchTransaction = async () => {
       setIsLoading(true);
-      const { data } = await axios.get(
-        "http://localhost:3000/transaction/list-transaction",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const { data } = await axios.get(`${url}/transaction`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       console.log(data);
       setTransactions(data);
       setIsLoading(false);
     };
     fetchTransaction();
+    const interval = setInterval(fetchTransaction, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredTransaction = transaction.filter((trans) =>
@@ -71,7 +70,12 @@ function TransactionList() {
                     </td>
 
                     <td className="p-2 text-start">{transaction.paymentID}</td>
-                    <td className="p-2 text-start">₹{transaction.amount}</td>
+                    <td className="p-2 text-start">
+                      {transaction.amount.toLocaleString("en-IN", {
+                        style: "currency",
+                        currency: "INR",
+                      })}
+                    </td>
                   </tr>
                 ))
               ) : (

@@ -16,9 +16,7 @@ export default function ProductList() {
   const filterProducts = () => {
     let filtered = Products;
     if (category !== "all") {
-      filtered = filtered.filter(
-        (product) => product.category === category
-      );
+      filtered = filtered.filter((product) => product.category === category);
     }
     if (searchTerm) {
       filtered = filtered.filter((product) =>
@@ -93,7 +91,12 @@ export default function ProductList() {
                   </td>
                   <td className="p-2 text-start">{product.title}</td>
                   <td className="p-2 text-start">{product.brand}</td>
-                  <td className="p-2 text-start">₹{product.price}</td>
+                  <td className="p-2 text-start">
+                    {product.price.toLocaleString("en-IN", {
+                      style: "currency",
+                      currency: "INR",
+                    })}
+                  </td>
                   <td className="p-2 text-center">{product.category}</td>
                   <td className="p-2 text-center">{product.quantity}</td>
                   <td className="p-2 text-center">
@@ -144,4 +147,3 @@ export default function ProductList() {
     </div>
   );
 }
-

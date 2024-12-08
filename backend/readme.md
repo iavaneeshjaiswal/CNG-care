@@ -15,22 +15,22 @@ Login user and generate token
 - Example:
   - Request Body:
     {
-      "email": "user@example.com",
-      "password": "123456"
+    "email": "user@example.com",
+    "password": "123456"
     }
   - Response:
     {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmU1NmM2ODI2YmUzZTcxMzI5IiwiaWF0IjoxNjM0NTI2MjAyfQ.rh1j5FgXaHJhNlR7Z5W4Jv4Z8hOaTbJ0ZqLlM",
-      "user": {
-        "_id": "62e56c6826be373129",
-        "fullName": "John Doe",
-        "email": "user@example.com",
-        "number": "1234567890",
-        "password": "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
-        "createdAt": "2022-08-29T12:47:26.546Z",
-        "updatedAt": "2022-08-29T12:47:26.546Z",
-        "__v": 0
-      }
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmU1NmM2ODI2YmUzZTcxMzI5IiwiaWF0IjoxNjM0NTI2MjAyfQ.rh1j5FgXaHJhNlR7Z5W4Jv4Z8hOaTbJ0ZqLlM",
+    "user": {
+    "\_id": "62e56c6826be373129",
+    "fullName": "John Doe",
+    "email": "user@example.com",
+    "number": "1234567890",
+    "password": "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+    "createdAt": "2022-08-29T12:47:26.546Z",
+    "updatedAt": "2022-08-29T12:47:26.546Z",
+    "\_\_v": 0
+    }
     }
 
 ### POST /user/register
@@ -48,15 +48,15 @@ Register new user
 - Example:
   - Request Body:
     {
-      "fullName": "John Doe",
-      "email": "user@example.com",
-      "number": "1234567890",
-      "password": "123456"
+    "fullName": "John Doe",
+    "email": "user@example.com",
+    "number": "1234567890",
+    "password": "123456"
     }
   - Response:
     {
-      "message": "User created successfully",
-      "status": true
+    "message": "User created successfully",
+    "status": true
     }
 
 ### GET /user/all-users
@@ -153,16 +153,16 @@ Add new product
 - Example:
   - Request Body:
     {
-      "title": "Iphone 13",
-      "price": 1000,
-      "quantity": 10,
-      "description": "This is a new Iphone 13",
-      "images": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+    "title": "Iphone 13",
+    "price": 1000,
+    "quantity": 10,
+    "description": "This is a new Iphone 13",
+    "images": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
     }
   - Response:
     {
-      "message": "Product created successfully",
-      "status": true
+    "message": "Product created successfully",
+    "status": true
     }
 
 ### GET /product/all-products
@@ -182,6 +182,7 @@ Get product by id
   - product: object
 
 ### DELETE /product/:id
+
 Delete product by id
 
 - Request Param:
@@ -192,40 +193,42 @@ Delete product by id
 
 ## Order Routes
 
-### POST /order/add-order
+### POST /order
 
 Add new order
 
 - Request Body:
-  - userId: string
   - products: array of objects
   - totalAmount: number
+  - address: string
+  - orderStatus: string
 - Response:
   - message: string
   - status: boolean
 - Example:
   - Request Body:
     {
-      "userId": "62e56c6826be373129",
-      "products": [
-        {
-          "productId": "62e56c6826be373129",
-          "quantity": 2
-        },
-        {
-          "productId": "62e56c6826be373130",
-          "quantity": 3
-        }
-      ],
-      "totalAmount": 3500
+    "products": [
+    {
+    "productId": "62e56c6826be373129",
+    "quantity": 2
+    },
+    {
+    "productId": "62e56c6826be373130",
+    "quantity": 3
+    }
+    ],
+    "totalAmount": 3500,
+    "address": "123 Street, City, Country",
+    "orderStatus": "Pending"
     }
   - Response:
     {
-      "message": "Order created successfully",
-      "status": true
+    "message": "Order created successfully",
+    "status": true
     }
 
-### GET /order/all-orders
+### GET /order
 
 Get all orders
 
@@ -251,4 +254,20 @@ Delete order by id
   - message: string
   - status: boolean
 
+## Transaction Routes
 
+### GET /transaction
+
+Get all transactions
+
+- Response:
+  - transactions: array of objects
+
+### GET /transaction/:id
+
+Get transaction by id
+
+- Request Param:
+  - id: string
+- Response:
+  - transaction: object

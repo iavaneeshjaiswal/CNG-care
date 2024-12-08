@@ -12,82 +12,25 @@ export default function Navbar() {
   };
   const role = localStorage.getItem("role");
   let links = [];
-  if (admintype[0] != "super admin") {
+  if (admintype[0] !== "super admin") {
     links = [
-      {
-        image: "user",
-        path: "/",
-        text: "Users",
-      },
-      {
-        image: "cart",
-        path: "/products",
-        text: "Products",
-      },
-      {
-        image: "add",
-        path: "/addproduct",
-        text: "Add Product",
-      },
-      {
-        image: "add",
-        path: "/order",
-        text: "Orders",
-      },
-      {
-        image: "rupee",
-        path: "/transaction",
-        text: "Transaction",
-      },
-      {
-        image: "logout",
-        onclick: handleLogout,
-        text: "logout",
-      },
+      { image: "user", path: "/", text: "Users" },
+      { image: "cart", path: "/products", text: "Products" },
+      { image: "add", path: "/addproduct", text: "Add Product" },
+      { image: "order", path: "/order", text: "Orders" },
+      { image: "wallet", path: "/transaction", text: "Transaction" },
+      { image: "logout", onclick: handleLogout, text: "logout" },
     ];
   } else {
     links = [
-      {
-        image: "user",
-        path: "/",
-        text: "Users",
-      },
-      {
-        image: "cart",
-        path: "/products",
-        text: "Products",
-      },
-      {
-        image: "add",
-        path: "/addproduct",
-        text: "Add Product",
-      },
-      {
-        image: "add",
-        path: "/order",
-        text: "Orders",
-      },
-      {
-        image: "rupee",
-        path: "/transaction",
-        text: "Transaction",
-      },
-      {
-        image: "admin",
-        path: "/admins",
-        text: "Admins",
-      },
-
-      {
-        image: "add",
-        path: "/addadmins",
-        text: "Insert Admin",
-      },
-      {
-        image: "logout",
-        onclick: handleLogout,
-        text: "logout",
-      },
+      { image: "user", path: "/", text: "Users" },
+      { image: "cart", path: "/products", text: "Products" },
+      { image: "add", path: "/addproduct", text: "Add Product" },
+      { image: "order", path: "/order", text: "Orders" },
+      { image: "wallet", path: "/transaction", text: "Transaction" },
+      { image: "admin", path: "/admins", text: "Admins" },
+      { image: "addAdmin", path: "/addadmins", text: "Insert Admin" },
+      { image: "logout", onclick: handleLogout, text: "logout" },
     ];
   }
 
@@ -98,30 +41,29 @@ export default function Navbar() {
     >
       <div className="logo overflow-hidden">
         <NavLink to={"/"}>
-          {<img src="/assets/logo.png" className="w-24 scale-150" />}
+          <img src="/assets/logo.png" className="w-24 scale-150" alt="logo" />
         </NavLink>
       </div>
-      <h1 className="text-white text-lg">{role.toUpperCase()}</h1>
+      <h1 className="text-white text-lg">{role ? role.toUpperCase() : ""}</h1>
       <hr className="bg-white w-full" />
       <div className="links w-full h-screen flex gap-4 flex-col items-center">
         <ul className="flex flex-col gap-6 text-white text-md">
-          {links.map((link, i) => {
-            return (
-              <li key={i}>
-                <NavLink
-                  to={link.path}
-                  className="flex gap-2 items-center"
-                  onClick={link.onclick}
-                >
-                  <img
-                    src={`/assets/${link.image}.svg`}
-                    className="w-6 cursor-pointer"
-                  />
-                  <p className=" hidden lg:block">{link.text}</p>
-                </NavLink>
-              </li>
-            );
-          })}
+          {links.map((link, i) => (
+            <li key={i}>
+              <NavLink
+                to={link.path}
+                className="flex gap-2 items-center"
+                onClick={link.onclick}
+              >
+                <img
+                  src={`/assets/${link.image}.svg`}
+                  className="w-6 cursor-pointer"
+                  alt={link.text}
+                />
+                <p className="hidden lg:block">{link.text}</p>
+              </NavLink>
+            </li>
+          ))}
         </ul>
       </div>
     </nav>

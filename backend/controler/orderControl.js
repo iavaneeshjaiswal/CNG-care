@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const addOrder = async (req, res) => {
-  const { products, totalAmount, address, deliveryStatus } = req.body;
+  const { products, totalAmount, address, orderStatus } = req.body;
 
   if (!products || products.length === 0) {
     return res
@@ -22,7 +22,7 @@ const addOrder = async (req, res) => {
       .status(400)
       .json({ message: "Address is required", status: false });
   }
-  if (!deliveryStatus) {
+  if (!orderStatus) {
     return res
       .status(400)
       .json({ message: "Delivery status is required", status: false });
@@ -32,7 +32,7 @@ const addOrder = async (req, res) => {
       products,
       totalAmount,
       address,
-      deliveryStatus,
+      orderStatus,
       userID: req.user.userId,
     });
 
@@ -93,15 +93,14 @@ const deleteOrder = async (req, res) => {
 
 const viewOrder = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate(
-      "products.product"
-    );
+    const order = await Order.findById(req.params.id)
+      .populate("products.product")
+      .populate("userID");
     if (order) {
       res.status(200).json({
         order,
         status: true,
         message: "Order found successfully",
-        status: true,
       });
     }
   } catch (error) {
@@ -109,16 +108,15 @@ const viewOrder = async (req, res) => {
   }
 };
 
-const updateOrder = async (req, res) => {
+const updateOrderStatus = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     if (order) {
-      order.deliveryStatus = req.body.deliveryStatus;
+      order.orderStatus = req.body.orderStatus;
       await order.save();
       res.status(200).json({
         status: true,
         message: "Order updated successfully",
-        status: true,
       });
     }
   } catch (error) {
@@ -126,4 +124,10 @@ const updateOrder = async (req, res) => {
   }
 };
 
-export default { addOrder, viewOrders, deleteOrder, viewOrder, updateOrder };
+export default {
+  addOrder,
+  viewOrders,
+  deleteOrder,
+  viewOrder,
+  updateOrderStatus,
+};

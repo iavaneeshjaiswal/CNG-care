@@ -18,7 +18,11 @@ const userLogin = async (req, res) => {
     return res.status(401).json({ message: "Invalid email", status: false });
   }
   try {
-    const user = await User.findOne({ email: req.body.email.toLowerCase() });
+    const user = await User.findOne({
+      email: req.body.email.toLowerCase(),
+    })
+      .populate("orders")
+      .populate("payments");
     if (!user) {
       return res.status(401).json({ message: "Invalid email", status: false });
     }
@@ -31,12 +35,7 @@ const userLogin = async (req, res) => {
       status: true,
       message: "User login successfully",
       token,
-      user: {
-        fullName: user.fullName,
-        email: user.email.toLowerCase(),
-        number: user.number,
-        _id: user._id,
-      },
+      user,
     });
   } catch (error) {
     console.error(error);
@@ -93,6 +92,7 @@ const signup = async (req, res) => {
     res.status(201).json({
       status: true,
       message: "User created successfully",
+      user: newUser,
       token,
     });
   } catch (error) {

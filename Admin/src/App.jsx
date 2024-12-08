@@ -23,7 +23,7 @@ export default function App() {
         <Route path="/updateproduct/:id" element={<ProductActions />} />
         <Route path="/updateadmin/:id" element={<UpdateAdmin />} />
         <Route path="/order" element={<Order />} />
-        {/* <Route path="/order/:id" element={<OrderDetail />} /> */}
+        <Route path="/order/:id" element={<OrderDetail />} />
         <Route path="/transaction" element={<Transaction />} />
       </Routes>
     </Router>
