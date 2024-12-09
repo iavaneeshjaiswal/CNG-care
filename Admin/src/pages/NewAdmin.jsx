@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function NewAdmin() {
   const { addAdmin, role } = useContext(Admincontext);
-
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -16,8 +16,9 @@ export default function NewAdmin() {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    const res = await addAdmin(data);
-    console.log(res);
+    setIsLoading(true);
+    await addAdmin(data);
+    setIsLoading(false);
     navigate("/admins");
   };
 
@@ -134,6 +135,11 @@ export default function NewAdmin() {
       ) : (
         <div className="flex flex-col justify-center items-center p-3 w-full text-red-600 text-lg">
           <p>Auth Failed : Only super admin can see this.</p>
+        </div>
+      )}
+      {isLoading && (
+        <div className="absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
         </div>
       )}
     </div>

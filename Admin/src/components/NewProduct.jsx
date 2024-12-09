@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext ,useState} from "react";
 import { ProductContext } from "../contexts/porductContext.jsx";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 export default function NewProduct() {
   const { addProduct } = useContext(ProductContext);
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -23,18 +24,18 @@ export default function NewProduct() {
       formData.append("brand", data.brand);
       formData.append("description", data.description);
 
-
       Array.from(data.images).forEach((image) => {
         formData.append("images", image);
       });
-
 
       for (const [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
 
       try {
+        setIsLoading(true);
         await addProduct(formData);
+        setIsLoading(false);
         navigate("/products");
       } catch (error) {
         console.error("Error adding product:", error);
@@ -192,6 +193,11 @@ export default function NewProduct() {
           className="text-white p-1 px-4 text-lg  rounded-lg cursor-pointer"
         />
       </form>
+      {isLoading && (
+        <div className="absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+        </div>
+      )}
     </div>
   );
 }

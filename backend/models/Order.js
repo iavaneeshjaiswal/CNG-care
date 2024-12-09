@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema(
         "Pending",
         "Order Placed",
         "Order Shipped",
-        "Out For Delevery",
+        "Out For Delivery",
         "Delivered",
       ],
       default: "Pending",

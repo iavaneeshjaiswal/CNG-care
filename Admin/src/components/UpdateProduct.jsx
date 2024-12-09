@@ -8,6 +8,7 @@ export default function UpdateProduct({ id }) {
   const { updateProduct, url } = useContext(ProductContext);
   const [imgURl, setImgURl] = React.useState("");
   const [isWait, setWait] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const {
@@ -37,7 +38,9 @@ export default function UpdateProduct({ id }) {
   }, [id]);
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     await updateProduct(id, data);
+    setIsLoading(false);
     navigate("/products");
   };
 
@@ -171,6 +174,13 @@ export default function UpdateProduct({ id }) {
       ) : (
         <h1>Loading...</h1>
       )}
+      {isLoading && (
+        <div className="absolute top-0 bottom-0 left-0 right-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+        </div>
+      )}
     </div>
   );
 }
+
+

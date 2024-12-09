@@ -2,12 +2,12 @@ import Product from "../models/product.js";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
-
+import { fileURLToPath } from "url";
 dotenv.config();
 
 const url = process.env.URL;
-// const port = process.env.PORT||4000;
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const addProduct = async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
@@ -78,14 +78,9 @@ const removeProduct = async (req, res) => {
       const ProductImages = product.images;
       ProductImages.forEach((imageUrl) => {
         const fileName = path.basename(imageUrl);
-        const filePath = path.join(
-          new URL(".", import.meta.url).pathname,
-          "../uploads",
-          fileName
-        );
+        const filePath = path.join(__dirname, "../uploads", fileName);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
-          console.log(`Deleted file: ${filePath}`);
         } else {
           console.log(`File not found: ${filePath}`);
         }
