@@ -58,6 +58,7 @@ app.post("/user/register", userControl.signup);
 app.delete("/user/remove-user/:id", verifyUser, userControl.removeUser);
 app.post("/user/send-otp", userControl.sendOtp);
 app.post("/user/reset-password", userControl.resetpassword);
+app.post("/user/update-address", verifyUser, userControl.updateAddress);
 
 // Admin routes
 app.post("/admin/login", adminControl.adminLogin);

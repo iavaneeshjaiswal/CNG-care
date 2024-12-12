@@ -36,10 +36,10 @@ const userSchema = new mongoose.Schema(
         ref: "Order",
       },
     ],
-    payments: [
+    transactionID: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Payment",
+        ref: "Transaction",
       },
     ],
     services: [

@@ -54,7 +54,7 @@ const addOrder = async (req, res) => {
     }
 
     user.orders.push(newOrder._id);
-    user.payments.push(newTransaction._id);
+    user.transactionID.push(newTransaction._id);
     await user.save();
 
     res.status(200).json({ message: "Order added successfully", status: true });

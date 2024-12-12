@@ -13,6 +13,9 @@ const client = twilio(
 
 // user login
 const userLogin = async (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    return res.status(401).json({ message: "Email and password required" });
+  }
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(req.body.email)) {
     return res.status(401).json({ message: "Invalid email", status: false });
@@ -46,6 +49,9 @@ const userLogin = async (req, res) => {
 // signup
 const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
+  if (!fullName || !email || !number || !password) {
+    res.status(401).json({ message: "All fields are required", status: false });
+  }
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(email)) {
     return res.status(401).json({ error: "Invalid email", status: false });
