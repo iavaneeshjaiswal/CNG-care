@@ -1,4 +1,10 @@
 import { Transaction } from "../models/transaction.js";
+import Razorpay from "razorpay";
+
+const razorpay = new Razorpay({
+  key_id: "your_razorpay_key_id", 
+  key_secret: "your_razorpay_key_secret", 
+});
 
 const viewTransaction = async (req, res) => {
   try {
