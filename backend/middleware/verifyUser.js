@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
-const verifyUser = (req, res, next) => {
+export const verifyUser = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "No token provided" });
@@ -18,5 +18,3 @@ const verifyUser = (req, res, next) => {
     next();
   });
 };
-
-export default verifyUser;

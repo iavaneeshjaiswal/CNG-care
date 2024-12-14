@@ -1,7 +1,15 @@
 import express from "express";
 import bodyParser from "body-parser";
 import connectDb from "./connectDb.js";
-import userControl from "./controler/userControl.js";
+import {
+  userLogin,
+  signup,
+  sendOtp,
+  listUser,
+  removeUser,
+  resetpassword,
+  updateAddress,
+} from "./controler/userControl.js";
 import adminControl from "./controler/adminControl.js";
 import productControl from "./controler/productControl.js";
 import orderControl from "./controler/orderControl.js";
@@ -11,7 +19,7 @@ import path from "path";
 import multer from "multer";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import verifyUser from "./middleware/verifyUser.js";
+import { verifyUser } from "./middleware/verifyUser.js";
 import checkRole from "./middleware/authAdmin.js";
 dotenv.config();
 
@@ -52,13 +60,13 @@ app.use(express.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000;
 // User routes
-app.post("/user/login", userControl.userLogin);
-app.get("/user/all-users", verifyUser, userControl.listUser);
-app.post("/user/register", userControl.signup);
-app.delete("/user/remove-user/:id", verifyUser, userControl.removeUser);
-app.post("/user/send-otp", userControl.sendOtp);
-app.post("/user/reset-password", userControl.resetpassword);
-app.post("/user/update-address", verifyUser, userControl.updateAddress);
+app.post("/user/login", userLogin);
+app.get("/user/all-users", verifyUser, listUser);
+app.post("/user/register", signup);
+app.delete("/user/remove-user/:id", verifyUser, removeUser);
+app.post("/user/send-otp", sendOtp);
+app.post("/user/reset-password", resetpassword);
+app.post("/user/update-address", verifyUser, updateAddress);
 
 // Admin routes
 app.post("/admin/login", adminControl.adminLogin);

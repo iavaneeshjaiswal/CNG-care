@@ -40,8 +40,7 @@ function OrderDetail() {
           },
         }
       );
-      setDeliveryStatus(e.target.value);
-      alert(`Order status updated to ${e.target.value}`);
+      window.location.reload();
     } catch (error) {
       console.error("Error updating delivery status:", error);
     }
@@ -76,6 +75,18 @@ function OrderDetail() {
                   <p className="font-semibold">
                     Customer Phone Number: +91{orderDetail.userID.number}
                   </p>
+                  <p className="font-semibold">
+                    Payment Status:{" "}
+                    <span
+                      className={`${
+                        orderDetail.paymentStatus === "failed"
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
+                      {orderDetail.paymentStatus.toUpperCase()}
+                    </span>
+                  </p>
                   <p className="flex items-center gap-2">
                     Delivery Status:{" "}
                     <select
@@ -86,7 +97,7 @@ function OrderDetail() {
                       <option value="Pending">Pending</option>
                       <option value="Order Placed">Order Placed</option>
                       <option value="Order Shipped">Order Shipped</option>
-                      <option value="Out For Delevery">Out For Delevery</option>
+                      <option value="Out For Delivery">Out For Delivery</option>
                       <option value="Delivered">Delivered</option>
                     </select>
                   </p>

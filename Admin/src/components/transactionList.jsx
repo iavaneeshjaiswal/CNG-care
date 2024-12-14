@@ -15,8 +15,7 @@ function TransactionList() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log(data);
-      setTransactions(data);
+      setTransactions(data.transactions);
       setIsLoading(false);
     };
     fetchTransaction();
@@ -43,7 +42,9 @@ function TransactionList() {
             className="p-2 w-full border-2 rounded focus:outline-none"
           />
         </div>
-
+        <p className="text-lg font-bold mb-4 w-full text-start">
+          Total Transactions: {transaction.length || 0}
+        </p>
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>

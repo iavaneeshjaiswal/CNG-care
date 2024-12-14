@@ -12,7 +12,7 @@ const client = twilio(
 );
 
 // user login
-const userLogin = async (req, res) => {
+export const userLogin = async (req, res) => {
   if (!req.body.email || !req.body.password) {
     return res.status(401).json({ message: "Email and password required" });
   }
@@ -47,7 +47,7 @@ const userLogin = async (req, res) => {
 };
 
 // signup
-const signup = async (req, res) => {
+export const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
   if (!fullName || !email || !number || !password) {
     res.status(401).json({ message: "All fields are required", status: false });
@@ -107,7 +107,7 @@ const signup = async (req, res) => {
 };
 
 // send otp through email and Phone number
-const sendOtp = async (req, res) => {
+export const sendOtp = async (req, res) => {
   const { credential } = req.body;
 
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
@@ -188,7 +188,7 @@ const sendOtp = async (req, res) => {
 };
 
 // verify otp
-const verifyOtp = async (req, res) => {
+export const verifyOtp = async (req, res) => {
   try {
     const { otp, VerifyToken } = req.body;
     const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
@@ -204,7 +204,7 @@ const verifyOtp = async (req, res) => {
 };
 
 // list user
-const listUser = async (req, res) => {
+export const listUser = async (req, res) => {
   try {
     const users = await User.find();
     res
@@ -216,7 +216,7 @@ const listUser = async (req, res) => {
 };
 
 // delete user
-const removeUser = async (req, res) => {
+export const removeUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res
@@ -228,7 +228,7 @@ const removeUser = async (req, res) => {
 };
 
 // update Adress
-const updateAddress = async (req, res) => {
+export const updateAddress = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
     if (!user) {
@@ -245,7 +245,7 @@ const updateAddress = async (req, res) => {
 };
 
 // reset password
-const resetpassword = async (req, res) => {
+export const resetpassword = async (req, res) => {
   const { credential, new_password, VerifyToken, otp } = req.body;
   console.log(credential);
   try {
@@ -291,13 +291,4 @@ const resetpassword = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
-};
-
-export default {
-  userLogin,
-  signup,
-  sendOtp,
-  listUser,
-  removeUser,
-  resetpassword,
 };

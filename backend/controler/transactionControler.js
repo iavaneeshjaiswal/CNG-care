@@ -34,7 +34,7 @@ const createRazorpayOrder = async (req, res) => {
     }
 
     const options = {
-      amount: amount * 100, 
+      amount: amount * 100,
       currency: "INR",
       receipt: `receipt_${Math.random()}`,
     };
@@ -51,6 +51,5 @@ const createRazorpayOrder = async (req, res) => {
     res.status(500).json({ status: false, message: error.message });
   }
 };
-
 
 export default { viewTransaction, createRazorpayOrder };

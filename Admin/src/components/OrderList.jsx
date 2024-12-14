@@ -19,7 +19,6 @@ function OrderList() {
         },
       });
       setOrders(data.orders);
-      console.log(data.orders);
       setIsLoading(false);
     };
     fetchOrders();
@@ -80,6 +79,7 @@ function OrderList() {
                 <th className="p-2 text-start">TRANSACTION ID</th>
                 <th className="p-2 text-start">AMOUNT</th>
                 <th className="p-2 text-start">DELIVERY STATUS</th>
+                <th className="p-2 text-start">PAYMENT STATUS</th>
                 <th className="p-2 text-start">VIEW</th>
               </tr>
             </thead>
@@ -106,6 +106,17 @@ function OrderList() {
                       }`}
                     >
                       {order.orderStatus}
+                    </td>
+                    <td
+                      className={`p-2 text-start font-bold ${
+                        order.paymentStatus === "failed"
+                          ? "text-red-500"
+                          : order.paymentStatus === "success"
+                          ? "text-green-500"
+                          : ""
+                      }`}
+                    >
+                      {order.paymentStatus.toUpperCase()}
                     </td>
                     <td className="p-2 text-start ">
                       <Link to={`/order/${order._id}`}>
