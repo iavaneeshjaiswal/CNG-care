@@ -1,6 +1,6 @@
 import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
-import crypto from "crypto";
+
 const viewTransaction = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
@@ -34,7 +34,7 @@ const createRazorpayOrder = async (req, res) => {
     }
 
     const options = {
-      amount: amount * 100, // Amount in paise (100 paise = 1 INR)
+      amount: amount * 100, 
       currency: "INR",
       receipt: `receipt_${Math.random()}`,
     };
@@ -52,38 +52,5 @@ const createRazorpayOrder = async (req, res) => {
   }
 };
 
-const verifyPayment = async (req, res) => {
-  try {
-    const { payment_id, RazorpayOrderId, signature } = req.body;
 
-    if (!payment_id || !RazorpayOrderId || !signature) {
-      return res.status(400).json({
-        status: false,
-        message:
-          "Missing required fields: payment_id, RazorpayOrderId, or signature",
-      });
-    }
-
-    const body = `${RazorpayOrderId}|${payment_id}`;
-    const expectedSignature = crypto
-      .createHmac("sha256", razorpayInstance.key_secret)
-      .update(body)
-      .digest("hex");
-
-    if (expectedSignature === signature) {
-      res.status(200).json({ status: true, message: "Payment verified" });
-    } else {
-      res
-        .status(400)
-        .json({ status: false, message: "Payment verification failed" });
-    }
-  } catch (error) {
-    console.error("Error verifying payment:", error);
-    res.status(500).json({
-      status: false,
-      message: "Internal server error during payment verification",
-    });
-  }
-};
-
-export default { viewTransaction, createRazorpayOrder, verifyPayment };
+export default { viewTransaction, createRazorpayOrder };

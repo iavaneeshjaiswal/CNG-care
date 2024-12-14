@@ -107,6 +107,9 @@ app.delete("/order/:id", verifyUser, orderControl.deleteOrder);
 
 //Transaction Routes
 app.get("/transaction", verifyUser, transactionControler.viewTransaction);
+app.post("/transaction", verifyUser, transactionControler.createRazorpayOrder);
+// app.post("/transaction/verify", verifyUser, transactionControler.verifyPayment);
+
 //Product routes
 app.post(
   "/product/add-product",
