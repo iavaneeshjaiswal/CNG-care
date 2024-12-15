@@ -10,6 +10,7 @@ const VerifyAndAddOrder = async (req, res) => {
     const { payment_id, RazorpayOrderId, signature, products, address } =
       req.body;
 
+    // Validation
     if (!payment_id || !RazorpayOrderId || !signature) {
       return res.status(400).json({
         status: false,
@@ -17,115 +18,100 @@ const VerifyAndAddOrder = async (req, res) => {
           "Missing required fields: payment_id, RazorpayOrderId, or signature",
       });
     }
+
     if (!Array.isArray(products) || products.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Products are required", status: false });
+      return res.status(400).json({
+        status: false,
+        message: "Products are required",
+      });
     }
-    if (!totalAmount || typeof totalAmount !== "number" || totalAmount <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Invalid total amount", status: false });
-    }
+
     if (!address || typeof address !== "string" || address.trim() === "") {
-      return res
-        .status(400)
-        .json({ message: "Address is required", status: false });
+      return res.status(400).json({
+        status: false,
+        message: "Address is required",
+      });
     }
-    if (!orderStatus || typeof orderStatus !== "string") {
-      return res
-        .status(400)
-        .json({ message: "Delivery status is required", status: false });
+
+    const productIds = products.map((product) => product._id);
+    const dbProducts = await Product.find({ _id: { $in: productIds } });
+
+    if (dbProducts.length !== products.length) {
+      return res.status(404).json({
+        status: false,
+        message: "Some products were not found",
+      });
+    }
+
+    const totalAmount = products.reduce((sum, product) => {
+      const dbProduct = dbProducts.find(
+        (p) => p._id.toString() === product._id
+      );
+      return sum + (dbProduct.price * product.quantity || 0);
+    }, 0);
+
+    if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
+      return res.status(400).json({
+        status: false,
+        message: "Invalid total amount",
+      });
     }
 
     const body = `${RazorpayOrderId}|${payment_id}`;
-
-    const calculateTotalAmount = async () => {
-      let totalAmount = 0;
-      for (const product of products) {
-        const prod = await Product.findById(product._id);
-        if (!prod) {
-          return res
-            .status(404)
-            .json({ message: "Product not found", status: false });
-        }
-        totalAmount += prod.price * product.quantity;
-      }
-      return totalAmount;
-    };
-
-    const totalAmount = await calculateTotalAmount();
-
     const expectedSignature = crypto
       .createHmac("sha256", razorpayInstance.key_secret)
       .update(body)
       .digest("hex");
 
-    if (expectedSignature !== signature) {
-      const newOrder = new Order({
-        products,
-        totalAmount,
-        address,
-        paymentStatus: "failed",
-        orderStatus: "Pending",
-        userID: req.user.userId,
-      });
+    const paymentStatus =
+      expectedSignature === signature ? "success" : "failed";
 
-      const newTransaction = new Transaction({
-        amount: totalAmount,
-        status: "failed",
-        userID: req.user.userId,
-        orderID: newOrder._id,
-        paymentID: payment_id,
-      });
+    const newOrder = new Order({
+      products,
+      totalAmount,
+      address,
+      paymentStatus,
+      orderStatus: "Pending",
+      userID: req.user.userId,
+    });
 
-      await newOrder.save();
-      await newTransaction.save();
-      return res
-        .status(400)
-        .json({ status: false, message: "Payment verification failed" });
+    const newTransaction = new Transaction({
+      amount: totalAmount,
+      status: paymentStatus,
+      userID: req.user.userId,
+      orderID: newOrder._id,
+      paymentID: payment_id,
+    });
+
+    newOrder.transactionID = newTransaction._id;
+
+    await newOrder.save();
+    await newTransaction.save();
+
+    // Link order and transaction to user
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({
+        status: false,
+        message: "User not found",
+      });
     }
 
-    try {
-      const newOrder = new Order({
-        products,
-        totalAmount,
-        address,
-        paymentStatus: "success",
-        orderStatus: "Pending",
-        userID: req.user.userId,
-      });
+    user.orders.push(newOrder._id);
+    user.transactionID.push(newTransaction._id);
+    await user.save();
 
-      const newTransaction = new Transaction({
-        amount: totalAmount,
-        status: "success",
-        userID: req.user.userId,
-        orderID: newOrder._id,
-        paymentID: payment_id,
-      });
+    const responseMessage =
+      paymentStatus === "success"
+        ? "Order added successfully"
+        : "Payment verification failed, order saved with failed status";
 
-      newOrder.transactionID = newTransaction._id;
-      await newOrder.save();
-      await newTransaction.save();
+    const statusCode = paymentStatus === "success" ? 200 : 400;
 
-      const user = await User.findById(req.user.userId);
-      if (!user) {
-        return res
-          .status(404)
-          .json({ message: "User not found", status: false });
-      }
-
-      user.orders.push(newOrder._id);
-      user.transactionID.push(newTransaction._id);
-      await user.save();
-
-      return res
-        .status(200)
-        .json({ message: "Order added successfully", status: true });
-    } catch (error) {
-      console.error("Error adding order:", error);
-      return res.status(500).json({ message: error.message, status: false });
-    }
+    return res.status(statusCode).json({
+      status: paymentStatus === "success",
+      message: responseMessage,
+    });
   } catch (error) {
     console.error("Error verifying payment:", error);
     res.status(500).json({

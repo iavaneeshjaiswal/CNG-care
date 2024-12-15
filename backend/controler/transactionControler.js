@@ -1,6 +1,8 @@
 import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
 import Product from "../models/product.js";
+import { v4 as uuidv4 } from "uuid";
+
 const viewTransaction = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
@@ -25,28 +27,23 @@ const viewTransaction = async (req, res) => {
 const createRazorpayOrder = async (req, res) => {
   try {
     const { products } = req.body;
-    const amount = async () => {
-      let totalAmount = 0;
-      for (const product of products) {
-        const prod = await Product.findById(product._id);
-        if (!prod) {
-          return res
-            .status(404)
-            .json({ message: "Product not found", status: false });
-        }
-        totalAmount += prod.price * product.quantity;
-      }
-      return totalAmount;
-    };
 
-    const totalAmount = await amount();
+    const productIds = products.map((product) => product._id);
+    const dbProducts = await Product.find({ _id: { $in: productIds } });
 
-    if (totalAmount <= 0) {
-      return res.status(400).json({
+    if (dbProducts.length !== products.length) {
+      return res.status(404).json({
         status: false,
-        message: "Invalid amount provided",
+        message: "Some products were not found",
       });
     }
+
+    const totalAmount = products.reduce((sum, product) => {
+      const dbProduct = dbProducts.find(
+        (p) => p._id.toString() === product._id.toString()
+      );
+      return sum + (dbProduct.price * product.quantity || 0);
+    }, 0);
 
     if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
       return res.status(400).json({
@@ -61,7 +58,7 @@ const createRazorpayOrder = async (req, res) => {
       name: "CNG-CARE",
       description: "Payment for products",
       image: `${process.env.URL}/public/logo.png`,
-      receipt: `receipt_${Math.random()}`,
+      receipt: `receipt_${uuidv4()}`,
     };
 
     const response = await razorpayInstance.orders.create(options);
