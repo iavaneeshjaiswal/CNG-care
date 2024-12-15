@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import Admin from "../models/admin.js";
-
+import dotenv from "dotenv";
+dotenv.config();
 const adminLogin = async (req, res) => {
   const { data } = req.body;
   console.log(data);

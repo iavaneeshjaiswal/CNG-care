@@ -129,11 +129,7 @@ app.post(
   verifyUser,
   productControl.addProduct
 );
-app.get(
-  "/api/product/search-product",
-  verifyUser,
-  productControl.searchProduct
-);
+app.get("/api/product/search", verifyUser, productControl.searchProduct);
 app.get("/api/product/list-product", verifyUser, productControl.listProduct);
 app.get(
   "/api/product/get-product/:id",

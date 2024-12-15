@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import twilio from "twilio";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+dotenv.config();
 const client = twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
@@ -22,7 +24,7 @@ export const userLogin = async (req, res) => {
       email: req.body.email.toLowerCase(),
     })
       .populate("orders")
-      .populate("payments");
+      .populate("transactionID");
     if (!user) {
       return res.status(401).json({ message: "Invalid email", status: false });
     }
@@ -39,7 +41,7 @@ export const userLogin = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error", status: false });
+    res.status(500).json({ message: error.message, status: false });
   }
 };
 

@@ -110,33 +110,26 @@ const updateProduct = async (req, res) => {
   }
 };
 
-const orderPlace = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const product = await Product.findByIdAndUpdate(id, {
-      customersID: { $addToSet: req.user._id },
-    });
-    res.status(200).json({ product });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 const searchProduct = async (req, res) => {
-  const { query } = req.params;
+  const { query } = req.query;
+  console.log(query);
   if (!query) {
-    res.status(500).json({ status: false, message: "Query not found" });
+    return res.status(400).json({ status: false, message: "Query not found" });
   }
   try {
     const product = await Product.find({
       title: { $regex: query, $options: "i" },
     });
-    if (!product) {
-      res.status(500).json({ status: false, message: "Product not found" });
+    if (!product || product.length === 0) {
+      return res
+        .status(400)
+        .json({ status: false, message: "Product not found with this name" });
     }
-    res.status(200).json({ product, status: true, message: "Product found" });
+    return res
+      .status(200)
+      .json({ product, status: true, message: "Product found" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -147,5 +140,4 @@ export default {
   removeProduct,
   updateProduct,
   listSingleProduct,
-  orderPlace,
 };

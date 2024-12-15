@@ -4,7 +4,8 @@ import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
 import Product from "../models/product.js";
 import crypto from "crypto";
-
+import dotenv from "dotenv";
+dotenv.config();
 const VerifyAndAddOrder = async (req, res) => {
   try {
     const { payment_id, RazorpayOrderId, signature, products, address } =
