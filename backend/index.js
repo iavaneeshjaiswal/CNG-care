@@ -55,89 +55,98 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/uploads", express.static("uploads"));
+app.use("/public", express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000;
 // User routes
-app.post("/user/login", userLogin);
-app.get("/user/all-users", verifyUser, listUser);
-app.post("/user/register", signup);
-app.delete("/user/remove-user/:id", verifyUser, removeUser);
-app.post("/user/send-otp", sendOtp);
-app.post("/user/reset-password", resetpassword);
-app.post("/user/update-address", verifyUser, updateAddress);
+app.post("/api/user/login", userLogin);
+app.get("/api/user/all-users", verifyUser, listUser);
+app.post("/api/user/register", signup);
+app.delete("/api/user/remove-user/:id", verifyUser, removeUser);
+app.post("/api/user/send-otp", sendOtp);
+app.post("/api/user/reset-password", resetpassword);
+app.post("/api/user/update-address", verifyUser, updateAddress);
 
 // Admin routes
-app.post("/admin/login", adminControl.adminLogin);
+app.post("/api/admin/login", adminControl.adminLogin);
 app.post(
-  "/admin/add-admin",
+  "/api/admin/add-admin",
   verifyUser,
   checkRole("super admin"),
   adminControl.addAdmin
 );
 app.get(
-  "/admin/list-admin",
+  "/api/admin/list-admin",
   verifyUser,
   checkRole("super admin"),
   adminControl.listAdmin
 );
 app.get(
-  "/admin/admindetail/:id",
+  "/api/admin/admindetail/:id",
   verifyUser,
   checkRole("super admin"),
   adminControl.admindetail
 );
 app.delete(
-  "/admin/remove-admin/:id",
+  "/api/admin/remove-admin/:id",
   verifyUser,
   checkRole("super admin"),
   adminControl.removeAdmin
 );
 app.put(
-  "/admin/update-admin/:id",
+  "/api/admin/update-admin/:id",
   verifyUser,
   checkRole("super admin"),
   adminControl.updateAdmin
 );
-app.post("/admin/logout", verifyUser, adminControl.logout);
+app.post("/api/admin/logout", verifyUser, adminControl.logout);
 
 //Order Routes
-app.post("/order", verifyUser, orderControl.addOrder);
-app.get("/order", verifyUser, orderControl.viewOrders);
-app.get("/order/:id", verifyUser, orderControl.viewOrder);
+app.post("/api/order", verifyUser, orderControl.VerifyAndAddOrder);
+app.get("/api/order", verifyUser, orderControl.viewOrders);
+app.get("/api/order/:id", verifyUser, orderControl.viewOrder);
 app.post(
-  "/order/update-order-status/:id",
+  "/api/order/update-order-status/:id",
   verifyUser,
   orderControl.updateOrderStatus
 );
-app.delete("/order/:id", verifyUser, orderControl.deleteOrder);
+app.delete("/api/order/:id", verifyUser, orderControl.deleteOrder);
 
 //Transaction Routes
-app.get("/transaction", verifyUser, transactionControler.viewTransaction);
-app.post("/transaction", verifyUser, transactionControler.createRazorpayOrder);
-// app.post("/transaction/verify", verifyUser, transactionControler.verifyPayment);
+app.get("/api/transaction", verifyUser, transactionControler.viewTransaction);
+app.post(
+  "/api/transaction",
+  verifyUser,
+  transactionControler.createRazorpayOrder
+);
 
 //Product routes
 app.post(
-  "/product/add-product",
+  "/api/product/add-product",
   upload.array("images", 12),
   verifyUser,
   productControl.addProduct
 );
-app.get("/product/list-product", verifyUser, productControl.listProduct);
 app.get(
-  "/product/get-product/:id",
+  "/api/product/search-product",
+  verifyUser,
+  productControl.searchProduct
+);
+app.get("/api/product/list-product", verifyUser, productControl.listProduct);
+app.get(
+  "/api/product/get-product/:id",
   verifyUser,
   productControl.listSingleProduct
 );
 app.delete(
-  "/product/remove-product/:id",
+  "/api/product/remove-product/:id",
   verifyUser,
   productControl.removeProduct
 );
 app.put(
-  "/product/update-product/:id",
+  "/api/product/update-product/:id",
   verifyUser,
   productControl.updateProduct
 );

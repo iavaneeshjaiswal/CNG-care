@@ -4,19 +4,11 @@ import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
 import Product from "../models/product.js";
 import crypto from "crypto";
-import dotenv from "dotenv";
-dotenv.config();
 
-const addOrder = async (req, res) => {
+const VerifyAndAddOrder = async (req, res) => {
   try {
-    const {
-      payment_id,
-      RazorpayOrderId,
-      signature,
-      products,
-      address,
-      orderStatus,
-    } = req.body;
+    const { payment_id, RazorpayOrderId, signature, products, address } =
+      req.body;
 
     if (!payment_id || !RazorpayOrderId || !signature) {
       return res.status(400).json({
@@ -51,7 +43,7 @@ const addOrder = async (req, res) => {
     const calculateTotalAmount = async () => {
       let totalAmount = 0;
       for (const product of products) {
-        const prod = await Product.findById(product.productID);
+        const prod = await Product.findById(product._id);
         if (!prod) {
           return res
             .status(404)
@@ -75,7 +67,7 @@ const addOrder = async (req, res) => {
         totalAmount,
         address,
         paymentStatus: "failed",
-        orderStatus,
+        orderStatus: "Pending",
         userID: req.user.userId,
       });
 
@@ -100,7 +92,7 @@ const addOrder = async (req, res) => {
         totalAmount,
         address,
         paymentStatus: "success",
-        orderStatus,
+        orderStatus: "Pending",
         userID: req.user.userId,
       });
 
@@ -205,7 +197,7 @@ const updateOrderStatus = async (req, res) => {
 };
 
 export default {
-  addOrder,
+  VerifyAndAddOrder,
   viewOrders,
   deleteOrder,
   viewOrder,

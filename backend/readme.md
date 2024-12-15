@@ -271,3 +271,29 @@ Get transaction by id
   - id: string
 - Response:
   - transaction: object
+
+### POST /transaction
+
+Add new transaction
+
+- Request Body:
+  - orderId: string
+  - transactionId: string
+  - transactionStatus: string
+  - paymentMethod: string
+- Response:
+  - message: string
+  - status: boolean
+- Example:
+  - Request Body:
+    {
+    "orderId": "62e56c6826be373129",
+    "transactionId": "62e56c6826be373130",
+    "transactionStatus": "Success",
+    "paymentMethod": "COD"
+    }
+  - Response:
+    {
+    "message": "Transaction created successfully",
+    "status": true
+    }

@@ -1,6 +1,6 @@
 import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
-
+import Product from "../models/product.js";
 const viewTransaction = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
@@ -24,9 +24,31 @@ const viewTransaction = async (req, res) => {
 
 const createRazorpayOrder = async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { products } = req.body;
+    const amount = async () => {
+      let totalAmount = 0;
+      for (const product of products) {
+        const prod = await Product.findById(product._id);
+        if (!prod) {
+          return res
+            .status(404)
+            .json({ message: "Product not found", status: false });
+        }
+        totalAmount += prod.price * product.quantity;
+      }
+      return totalAmount;
+    };
 
-    if (!amount || isNaN(amount) || amount <= 0) {
+    const totalAmount = await amount();
+
+    if (totalAmount <= 0) {
+      return res.status(400).json({
+        status: false,
+        message: "Invalid amount provided",
+      });
+    }
+
+    if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
       return res.status(400).json({
         status: false,
         message: "Invalid amount provided",
@@ -34,8 +56,11 @@ const createRazorpayOrder = async (req, res) => {
     }
 
     const options = {
-      amount: amount * 100,
+      amount: totalAmount * 100,
       currency: "INR",
+      name: "CNG-CARE",
+      description: "Payment for products",
+      image: `${process.env.URL}/public/logo.png`,
       receipt: `receipt_${Math.random()}`,
     };
 

@@ -122,8 +122,27 @@ const orderPlace = async (req, res) => {
   }
 };
 
+const searchProduct = async (req, res) => {
+  const { query } = req.params;
+  if (!query) {
+    res.status(500).json({ status: false, message: "Query not found" });
+  }
+  try {
+    const product = await Product.find({
+      title: { $regex: query, $options: "i" },
+    });
+    if (!product) {
+      res.status(500).json({ status: false, message: "Product not found" });
+    }
+    res.status(200).json({ product, status: true, message: "Product found" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export default {
   addProduct,
+  searchProduct,
   listProduct,
   removeProduct,
   updateProduct,

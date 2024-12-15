@@ -1,11 +1,8 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import twilio from "twilio";
-import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
-dotenv.config();
-
 const client = twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
