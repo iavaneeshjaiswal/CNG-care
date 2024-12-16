@@ -37,16 +37,16 @@ export default function ProductList() {
   return (
     <div className="p-2 box-border bg-white mt-5 rounded-sm w-full h-screen">
       <div className="max-h-[90vh] overflow-auto px-4 text-center ">
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4 w-3/6">
           <input
             type="text"
             placeholder="Search by product name"
             value={searchTerm}
             onChange={handleSearchChange}
-            className="p-2 border-2 rounded focus:outline-none"
+            className="p-2 border-2 rounded focus:outline-none w-full"
           />
           <select
-            className="bg-gray-200 p-2 rounded outline-none px-3"
+            className="bg-gray-200 p-2 rounded outline-none px-3 w-2/6"
             value={category}
             onChange={handleCategoryChange}
           >

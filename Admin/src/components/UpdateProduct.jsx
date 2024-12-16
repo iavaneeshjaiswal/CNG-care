@@ -125,8 +125,12 @@ export default function UpdateProduct({ id }) {
                 })}
                 className="text-black border p-2 rounded-lg w-full bg-gray-200  border-gray-400  focus:border-black"
               >
-                {categoryOptions.map((item) => {
-                  return <option value={item}>{item}</option>;
+                {categoryOptions.map((item, i) => {
+                  return (
+                    <option value={item} key={i}>
+                      {item}
+                    </option>
+                  );
                 })}
               </select>
               {/* Error message */}

@@ -8,10 +8,10 @@ const adminLogin = async (req, res) => {
   try {
     const admin = await Admin.findOne({ username: data.username });
     if (!admin) {
-      return res.status(401).json({ error: "Admin not found" });
+      return res.status(401).json({ message: "Admin not found" });
     }
     if (admin.password !== data.password) {
-      return res.status(401).json({ error: "Invalid password" });
+      return res.status(401).json({ message: "Invalid password" });
     }
     const token = jwt.sign(
       { id: admin._id, username: admin.username, role: admin.role },
@@ -36,9 +36,7 @@ const addAdmin = async (req, res) => {
     res.status(201).json({ message: "Admin created successfully" });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({ error: error.message, message: "Admin not created" });
+    res.status(500).json({ message: "Admin not created" });
   }
 };
 
@@ -47,9 +45,7 @@ const listAdmin = async (req, res) => {
     const admin = await Admin.find();
     res.status(200).json(admin);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: error.message, message: "Admins not found!" });
+    res.status(500).json({ message: "Admins not found!" });
   }
 };
 
@@ -59,7 +55,7 @@ const removeAdmin = async (req, res) => {
     const admin = await Admin.findByIdAndDelete(id);
     res.status(200).json({ admin });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -69,7 +65,7 @@ const updateAdmin = async (req, res) => {
     const admin = await Admin.findByIdAndUpdate(id, { ...req.body });
     res.status(200).json({ admin });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -79,7 +75,7 @@ const admindetail = async (req, res) => {
     const admin = await Admin.findOne({ _id: id });
     res.status(200).json(admin);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -88,8 +84,8 @@ const logout = async (req, res) => {
     let cookies = req.cookies;
     res.status(200).json({ message: "Logout successfully", cookies });
   } catch (error) {
-    console.error("Error deleting cookie:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error deleting cookie:", error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 

@@ -58,7 +58,7 @@ function TransactionList() {
                 <th className="p-2 text-start">CUSTOMER NAME</th>
                 <th className="p-2 text-start">PAYMENT ID (Gateway)</th>
                 <th className="p-2 text-start">AMOUNT</th>
-                <th className="p-2 text-start">PAYMENT STATUS</th>
+                <th className="p-2 text-center">PAYMENT STATUS</th>
               </tr>
             </thead>
             <tbody>
@@ -78,7 +78,15 @@ function TransactionList() {
                         currency: "INR",
                       })}
                     </td>
-                    {/* <td className="p-2 text-start">{transaction.status || "failed"}</td> */}
+                    <td
+                      className={`p-2 text-center ${
+                        transaction.status === "success"
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {transaction.status || "failed"}
+                    </td>
                   </tr>
                 ))
               ) : (

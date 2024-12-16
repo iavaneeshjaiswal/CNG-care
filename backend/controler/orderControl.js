@@ -128,21 +128,21 @@ const viewOrders = async (req, res) => {
       .populate("userID")
       .populate("products.product");
     if (orders) {
-      res.status(200).json({
+      return res.status(200).json({
         orders,
         status: true,
         message: "Orders found successfully",
       });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ message: error.message, status: false });
   }
 };
 
 const deleteOrder = async (req, res) => {
   try {
     await Order.findByIdAndDelete(req.params.id);
-    res
+    return res
       .status(200)
       .json({ message: "Order deleted successfully", status: true });
   } catch (error) {
@@ -156,14 +156,14 @@ const viewOrder = async (req, res) => {
       .populate("products.product")
       .populate("userID");
     if (order) {
-      res.status(200).json({
+      return res.status(200).json({
         order,
         status: true,
         message: "Order found successfully",
       });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ message: error.message, status: false });
   }
 };
 
@@ -173,13 +173,13 @@ const updateOrderStatus = async (req, res) => {
     if (order) {
       order.orderStatus = req.body.orderStatus;
       await order.save();
-      res.status(200).json({
+      return res.status(200).json({
         status: true,
         message: "Order updated successfully",
       });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ message: error.message, status: false });
   }
 };
 

@@ -12,13 +12,13 @@ export const ProductProvider = (props) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`${url}/product/list-product`, {
+        const res = await axios.get(`${url}/product/list-products`, {
           headers: {
             Authorization: `Bearer ${token}`,
             id: localStorage.getItem("id"),
           },
         });
-        setProducts(res.data);
+        setProducts(res.data.products);
         setIsLoaded(true);
       } catch (err) {
         console.log(err);
@@ -28,13 +28,13 @@ export const ProductProvider = (props) => {
   }, []);
 
   const updateproductState = async () => {
-    const res = await axios.get(`${url}/product/list-product`, {
+    const res = await axios.get(`${url}/product/list-products`, {
       headers: {
         Authorization: `Bearer ${token}`,
         id: localStorage.getItem("id"),
       },
     });
-    setProducts(res.data);
+    setProducts(res.data.products);
     setIsLoaded(true);
   };
 
@@ -52,7 +52,7 @@ export const ProductProvider = (props) => {
   };
 
   const addProduct = async (data) => {
-    console.log(data)
+    console.log(data);
     try {
       await axios
         .post(`${url}/product/add-product`, data, {

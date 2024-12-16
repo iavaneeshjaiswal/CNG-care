@@ -13,7 +13,9 @@ const client = twilio(
 // user login
 export const userLogin = async (req, res) => {
   if (!req.body.email || !req.body.password) {
-    return res.status(401).json({ message: "Email and password required" });
+    return res
+      .status(401)
+      .json({ message: "Email and password required", status: false });
   }
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(req.body.email)) {
@@ -30,7 +32,9 @@ export const userLogin = async (req, res) => {
     }
     const match = await bcrypt.compare(req.body.password, user.password);
     if (!match) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res
+        .status(401)
+        .json({ message: "Invalid password", status: false });
     }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
     res.status(200).json({
@@ -206,9 +210,12 @@ export const verifyOtp = async (req, res) => {
 export const listUser = async (req, res) => {
   try {
     const users = await User.find();
-    res
+    return res
       .status(200)
       .json({ users, message: "Users found successfully", status: true });
+    if (!users) {
+      return res.status(404).json({ message: "No users found", status: false });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
@@ -218,11 +225,11 @@ export const listUser = async (req, res) => {
 export const removeUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res
+    return res
       .status(200)
       .json({ message: "User deleted successfully", status: true });
   } catch (error) {
-    res.status(500).json({ message: error.message, status: true });
+    return res.status(500).json({ message: error.message, status: true });
   }
 };
 
@@ -235,11 +242,11 @@ export const updateAddress = async (req, res) => {
     }
     user.address = req.body.address;
     await user.save();
-    res
+    return res
       .status(200)
       .json({ message: "Address updated successfully", status: true });
   } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ message: error.message, status: false });
   }
 };
 
