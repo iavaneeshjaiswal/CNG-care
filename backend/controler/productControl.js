@@ -50,9 +50,14 @@ const addProduct = async (req, res) => {
 const listProduct = async (req, res) => {
   try {
     const product = await Product.find();
-    res.status(200).json(product);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: "Product not found", status: false });
+    }
+    res.status(200).json({ product, status: true, message: "Product found" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message, status: false });
   }
 };
 
@@ -133,6 +138,21 @@ const searchProduct = async (req, res) => {
   }
 };
 
+const addBulkProduct = async (req, res) => {
+  try {
+    const products = req.body;
+    if (!Array.isArray(products)) {
+      return res.status(400).json({ message: "Products must be an array" });
+    }
+    const createdProducts = await Product.insertMany(products);
+    res
+      .status(201)
+      .json({ message: "Products created successfully", createdProducts });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export default {
   addProduct,
   searchProduct,
@@ -140,4 +160,5 @@ export default {
   removeProduct,
   updateProduct,
   listSingleProduct,
+  addBulkProduct,
 };

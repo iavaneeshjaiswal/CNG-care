@@ -147,6 +147,8 @@ app.put(
   productControl.updateProduct
 );
 
+// app.post("/api/product/add-bulk-product", productControl.addBulkProduct);
+
 app.listen(port, () => {
   console.log(
     `Server started on port ${port} and URL is ${`http://localhost:${port}`}`
