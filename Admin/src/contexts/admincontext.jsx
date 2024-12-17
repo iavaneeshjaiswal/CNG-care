@@ -99,7 +99,7 @@ export const AdminProvider = (props) => {
   const login = async (data) => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/admin/login`,
+        `${url}/admin/login`,
         { data },
         {
           headers: {

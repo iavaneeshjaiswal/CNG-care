@@ -45,6 +45,7 @@ connectDb();
 //constants
 const upload = multer({ storage: storage });
 const app = express();
+const port = process.env.PORT || 3000;
 
 //middlewares
 app.use(bodyParser.json());
@@ -59,7 +60,6 @@ app.use("/public", express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 3000;
 // User routes
 app.post("/api/user/login", userLogin);
 app.get("/api/user/all-users", verifyUser, listUser);

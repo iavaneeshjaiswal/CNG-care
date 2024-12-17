@@ -210,12 +210,12 @@ export const verifyOtp = async (req, res) => {
 export const listUser = async (req, res) => {
   try {
     const users = await User.find();
-    return res
-      .status(200)
-      .json({ users, message: "Users found successfully", status: true });
     if (!users) {
       return res.status(404).json({ message: "No users found", status: false });
     }
+    return res
+      .status(200)
+      .json({ users, message: "Users found successfully", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

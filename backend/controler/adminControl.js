@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 const adminLogin = async (req, res) => {
   const { data } = req.body;
-  console.log(data);
   try {
     const admin = await Admin.findOne({ username: data.username });
     if (!admin) {
@@ -29,13 +28,11 @@ const adminLogin = async (req, res) => {
 };
 
 const addAdmin = async (req, res) => {
-  console.log(req.user);
   try {
     let newAdmin = new Admin({ ...req.body });
     await newAdmin.save();
     res.status(201).json({ message: "Admin created successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Admin not created" });
   }
 };
