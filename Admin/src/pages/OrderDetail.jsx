@@ -157,7 +157,9 @@ function OrderDetail() {
                         Total Amount :
                       </td>
                       <td className="p-2 font-semibold text-lg">
-                        {orderDetail.totalAmount.toLocaleString("en-IN", {
+                        {orderDetail.products.reduce((total, product) => {
+                          return total + product.product.price * product.quantity;
+                        }, 0).toLocaleString("en-IN", {
                           style: "currency",
                           currency: "INR",
                         })}
