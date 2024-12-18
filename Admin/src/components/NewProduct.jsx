@@ -1,4 +1,4 @@
-import React, { useContext ,useState} from "react";
+import React, { useContext, useState } from "react";
 import { ProductContext } from "../contexts/porductContext.jsx";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ export default function NewProduct() {
   } = useForm();
 
   const navigate = useNavigate();
-  const categoryOptions = ["CNG", "LPG"];
+  const categoryOptions = ["CNG", "LPG", "SPARE"];
   const onSubmit = async (data) => {
     if (data.images && data.images.length > 0) {
       const formData = new FormData();

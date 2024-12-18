@@ -53,6 +53,7 @@ export default function ProductList() {
             <option value="all">ALL</option>
             <option value="LPG">LPG</option>
             <option value="CNG">CNG</option>
+            <option value="SPARE">SPARE</option>
           </select>
         </div>
         <table className="w-full mx-auto ">

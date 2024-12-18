@@ -5,7 +5,7 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, "Category is required"],
-      enum: ["CNG", "LPG"],
+      enum: ["CNG", "LPG", "SPARE"],
     },
     brand: {
       type: String,
@@ -32,7 +32,7 @@ const productSchema = new mongoose.Schema(
     images: [
       {
         type: String,
-        required: [true, "Image is required"]
+        required: [true, "Image is required"],
       },
     ],
   },
