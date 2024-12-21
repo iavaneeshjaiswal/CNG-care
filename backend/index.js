@@ -67,7 +67,7 @@ app.post("/api/user/register", signup);
 app.delete("/api/user/remove-user/:id", verifyUser, removeUser);
 app.post("/api/user/send-otp", sendOtp);
 app.post("/api/user/reset-password", resetpassword);
-app.post("/api/user/update-address", verifyUser, updateAddress);
+app.put("/api/user/update-address", verifyUser, updateAddress);
 
 // Admin routes
 app.post("/api/admin/login", adminControl.adminLogin);

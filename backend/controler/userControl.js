@@ -262,14 +262,14 @@ export const removeUser = async (req, res) => {
 export const updateAddress = async (req, res) => {
   const { pincode, state, area, locality, city } = req.body;
   try {
-    // Find user by ID
-    const user = await User.findById(req.user.userId);
+    // Find user by ID and update
+    const user = await User.findOneAndUpdate(
+      { _id: req.user.userId },
+      { address: `${area},${locality},${pincode},${city},${state}` }
+    );
     if (!user) {
       return res.status(404).json({ message: "User not found", status: false });
     }
-    // Update address field
-    user.address = `${area},${locality},${city},${pincode},${state}`;
-    await user.save();
     return res
       .status(200)
       .json({ message: "Address updated successfully", status: true });
@@ -332,4 +332,3 @@ export const resetpassword = async (req, res) => {
     res.status(500).json({ message: error.message, status: false });
   }
 };
-  
