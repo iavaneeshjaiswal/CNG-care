@@ -87,13 +87,13 @@ const VerifyAndAddOrder = async (req, res) => {
         address,
         paymentStatus,
         orderStatus: "Pending",
-        userID: "6753e5e70e5f740cec1acdbf",
+        userID: req.user.userId,
       });
 
       const newTransaction = new Transaction({
         amount: totalAmount,
         status: paymentStatus,
-        userID: "6753e5e70e5f740cec1acdbf",
+        userID: req.user.userId,
         orderID: newOrder._id,
         paymentID: razorpay_payment_id,
         razorpay_order_id,
@@ -102,7 +102,7 @@ const VerifyAndAddOrder = async (req, res) => {
 
       newOrder.transactionID = newTransaction._id;
 
-      const user = await User.findById("6753e5e70e5f740cec1acdbf");
+      const user = await User.findById(req.user.userId);
       if (!user) {
         return res.status(404).json({
           status: false,
