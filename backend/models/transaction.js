@@ -21,9 +21,14 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    razorpay_order_id: {
+      type: String,
+      required: true,
+    },
     orderID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
+      required: true,
     },
   },
   { timestamps: true }

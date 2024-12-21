@@ -8,15 +8,25 @@ import dotenv from "dotenv";
 dotenv.config();
 const VerifyAndAddOrder = async (req, res) => {
   try {
-    const { payment_id, RazorpayOrderId, signature, products, address } =
-      req.body;
-
+    const {
+      razorpay_payment_id,
+      razorpay_order_id,
+      razorpay_signature,
+      products,
+      address,
+    } = req.body;
     // Validation
-    if (!payment_id || !RazorpayOrderId || !signature) {
+    if (
+      !products ||
+      !razorpay_payment_id ||
+      !razorpay_order_id ||
+      !razorpay_signature ||
+      !address
+    ) {
       return res.status(400).json({
         status: false,
         message:
-          "Missing required fields: payment_id, RazorpayOrderId, or signature",
+          "Missing required fields: RazorpayOrderId, razorpay_order_id, razorpay_signature, or address",
       });
     }
 
@@ -33,10 +43,8 @@ const VerifyAndAddOrder = async (req, res) => {
         message: "Address is required",
       });
     }
-
     const productIds = products.map((product) => product._id);
     const dbProducts = await Product.find({ _id: { $in: productIds } });
-
     if (dbProducts.length !== products.length) {
       return res.status(404).json({
         status: false,
@@ -58,53 +66,65 @@ const VerifyAndAddOrder = async (req, res) => {
       });
     }
 
-    const body = `${RazorpayOrderId}|${payment_id}`;
+    const productsWithIds = products.map((product) => ({
+      product: product._id,
+      quantity: product.quantity,
+    }));
+
+    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSignature = crypto
       .createHmac("sha256", razorpayInstance.key_secret)
       .update(body)
       .digest("hex");
 
     const paymentStatus =
-      expectedSignature === signature ? "success" : "failed";
+      expectedSignature === razorpay_signature ? "success" : "failed";
 
-    const newOrder = new Order({
-      products,
-      totalAmount,
-      address,
-      paymentStatus,
-      orderStatus: "Pending",
-      userID: req.user.userId,
-    });
+    try {
+      const newOrder = new Order({
+        products: productsWithIds,
+        totalAmount,
+        address,
+        paymentStatus,
+        orderStatus: "Pending",
+        userID: "6753e5e70e5f740cec1acdbf",
+      });
 
-    const newTransaction = new Transaction({
-      amount: totalAmount,
-      status: paymentStatus,
-      userID: req.user.userId,
-      orderID: newOrder._id,
-      paymentID: payment_id,
-    });
+      const newTransaction = new Transaction({
+        amount: totalAmount,
+        status: paymentStatus,
+        userID: "6753e5e70e5f740cec1acdbf",
+        orderID: newOrder._id,
+        paymentID: razorpay_payment_id,
+        razorpay_order_id,
+        status: paymentStatus,
+      });
 
-    newOrder.transactionID = newTransaction._id;
+      newOrder.transactionID = newTransaction._id;
 
-    await newOrder.save();
-    await newTransaction.save();
+      const user = await User.findById("6753e5e70e5f740cec1acdbf");
+      if (!user) {
+        return res.status(404).json({
+          status: false,
+          message: "User not found",
+        });
+      }
 
-    // Link order and transaction to user
-    const user = await User.findById(req.user.userId);
-    if (!user) {
-      return res.status(404).json({
+      user.orders.push(newOrder._id);
+      user.transactionID.push(newTransaction._id);
+      await newOrder.save();
+      await newTransaction.save();
+      await user.save();
+    } catch (error) {
+      return res.status(500).json({
         status: false,
-        message: "User not found",
+        message: "Error saving order",
       });
     }
 
-    user.orders.push(newOrder._id);
-    user.transactionID.push(newTransaction._id);
-    await user.save();
-
     const responseMessage =
       paymentStatus === "success"
-        ? "Order added successfully"
+        ? "Order added successfully and Payment verified successfully"
         : "Payment verification failed, order saved with failed status";
 
     const statusCode = paymentStatus === "success" ? 200 : 400;

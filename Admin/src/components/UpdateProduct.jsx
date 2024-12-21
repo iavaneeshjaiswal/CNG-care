@@ -9,7 +9,7 @@ export default function UpdateProduct({ id }) {
   const [imgURl, setImgURl] = React.useState("");
   const [isWait, setWait] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  let urlImage = import.meta.env.VITE_APP_URL_IMAGE;
   const navigate = useNavigate();
   const {
     register,
@@ -47,7 +47,7 @@ export default function UpdateProduct({ id }) {
   return (
     <div className="flex w-3/6 flex-col items-center p-12 gap-3 ">
       <h2 className="text-base">Update Product</h2>
-      <img src={imgURl} className="h-24" />
+      <img src={`${urlImage}${imgURl}`} className="h-24" />
       {isWait ? (
         <form
           className="flex w-full flex-col justify-start gap-5 "

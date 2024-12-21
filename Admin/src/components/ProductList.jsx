@@ -13,6 +13,8 @@ export default function ProductList() {
     filterProducts();
   }, [Products, category, searchTerm]);
 
+  let urlImage = import.meta.env.VITE_APP_URL_IMAGE;
+
   const filterProducts = () => {
     let filtered = Products;
     if (category !== "all") {
@@ -85,7 +87,7 @@ export default function ProductList() {
                 <tr key={product._id} className="border-b">
                   <td className="p-2 text-start">
                     <img
-                      src={product.images[0]}
+                      src={`${urlImage}${product.images[0]}`}
                       alt={product.title}
                       className="w-16 h-16 rounded object-cover"
                     />

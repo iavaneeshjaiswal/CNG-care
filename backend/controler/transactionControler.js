@@ -27,10 +27,8 @@ const viewTransaction = async (req, res) => {
 const createRazorpayOrder = async (req, res) => {
   try {
     const { products } = req.body;
-
     const productIds = products.map((product) => product._id);
     const dbProducts = await Product.find({ _id: { $in: productIds } });
-
     if (dbProducts.length !== products.length) {
       return res.status(404).json({
         status: false,
@@ -51,14 +49,11 @@ const createRazorpayOrder = async (req, res) => {
         message: "Invalid amount provided",
       });
     }
-
+    const receiptId = `receipt_${uuidv4().substring(0, 30)}`;
     const options = {
-      amount: totalAmount * 100,
+      amount: totalAmount * 100, // Convert to paise
       currency: "INR",
-      name: "CNG-CARE",
-      description: "Payment for products",
-      image: `${process.env.URL}/public/logo.png`,
-      receipt: `receipt_${uuidv4()}`,
+      receipt: receiptId,
     };
 
     const response = await razorpayInstance.orders.create(options);

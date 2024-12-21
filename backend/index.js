@@ -104,7 +104,7 @@ app.put(
 app.post("/api/admin/logout", verifyUser, adminControl.logout);
 
 //Order Routes
-app.post("/api/order", verifyUser, orderControl.VerifyAndAddOrder);
+app.post("/api/order", orderControl.VerifyAndAddOrder);
 app.get("/api/order", verifyUser, orderControl.viewOrders);
 app.get("/api/order/:id", verifyUser, orderControl.viewOrder);
 app.post(
@@ -116,11 +116,7 @@ app.delete("/api/order/:id", verifyUser, orderControl.deleteOrder);
 
 //Transaction Routes
 app.get("/api/transaction", verifyUser, transactionControler.viewTransaction);
-app.post(
-  "/api/transaction",
-  verifyUser,
-  transactionControler.createRazorpayOrder
-);
+app.post("/api/transaction", transactionControler.createRazorpayOrder);
 
 //Product routes
 app.post(

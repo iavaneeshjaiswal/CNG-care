@@ -5,8 +5,6 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 dotenv.config();
 
-const url = process.env.URL;
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const addProduct = async (req, res) => {
   try {
@@ -15,13 +13,11 @@ const addProduct = async (req, res) => {
         .status(400)
         .json({ message: "Please upload at least one image." });
     }
-    const imageUrls = req.files.map(
-      (file) => `${url}/uploads/${file.filename}`
-    );
+    const imageUrls = req.files.map((file) => `uploads/${file.filename}`);
 
     const { category, title, price, quantity, offerPrice, description, brand } =
       req.body;
-    let categoryOption = ["LPG", "CNG"];
+    let categoryOption = ["CNG", "LPG", "SPARE"];
     if (!categoryOption.includes(category)) {
       return res.status(400).json({ message: "Invalid category option" });
     }

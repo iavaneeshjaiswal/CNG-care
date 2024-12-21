@@ -9,6 +9,7 @@ function OrderDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [deliveryStatus, setDeliveryStatus] = useState("");
   const url = import.meta.env.VITE_APP_URL;
+  let urlImage = import.meta.env.VITE_APP_URL_IMAGE;
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
@@ -119,8 +120,8 @@ function OrderDetail() {
                       <tr key={product._id} className="border">
                         <td className="p-2 text-lg">
                           <img
-                            src={product.product.images[0]}
-                            alt={product.product.images[0]}
+                            src={urlImage + product.product.images[0]}
+                            alt={urlImage + product.product.images[0]}
                             className="h-24 w-24"
                           />
                         </td>
@@ -157,12 +158,16 @@ function OrderDetail() {
                         Total Amount :
                       </td>
                       <td className="p-2 font-semibold text-lg">
-                        {orderDetail.products.reduce((total, product) => {
-                          return total + product.product.price * product.quantity;
-                        }, 0).toLocaleString("en-IN", {
-                          style: "currency",
-                          currency: "INR",
-                        })}
+                        {orderDetail.products
+                          .reduce((total, product) => {
+                            return (
+                              total + product.product.price * product.quantity
+                            );
+                          }, 0)
+                          .toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                          })}
                       </td>
                     </tr>
                   </tbody>

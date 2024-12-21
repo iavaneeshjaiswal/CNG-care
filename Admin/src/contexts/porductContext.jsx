@@ -19,6 +19,7 @@ export const ProductProvider = (props) => {
           },
         });
         setProducts(res.data.products);
+        console.log(url + res.data.products);
         setIsLoaded(true);
       } catch (err) {
         console.log(err);
