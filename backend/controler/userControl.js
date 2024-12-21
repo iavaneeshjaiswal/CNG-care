@@ -5,23 +5,28 @@ import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
+
+// Initialize Twilio client
 const client = twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
 
-// user login
+// User login function
 export const userLogin = async (req, res) => {
+  // Validate input fields
   if (!req.body.email || !req.body.password) {
     return res
       .status(401)
       .json({ message: "Email and password required", status: false });
   }
+  // Email validation pattern
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(req.body.email)) {
     return res.status(401).json({ message: "Invalid email", status: false });
   }
   try {
+    // Find user by email and populate related fields
     const user = await User.findOne({
       email: req.body.email.toLowerCase(),
     })
@@ -30,12 +35,14 @@ export const userLogin = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid email", status: false });
     }
+    // Compare passwords
     const match = await bcrypt.compare(req.body.password, user.password);
     if (!match) {
       return res
         .status(401)
         .json({ message: "Invalid password", status: false });
     }
+    // Generate JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
     res.status(200).json({
       status: true,
@@ -49,17 +56,20 @@ export const userLogin = async (req, res) => {
   }
 };
 
-// signup
+// User signup function
 export const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
+  // Check for mandatory fields
   if (!fullName || !email || !number || !password) {
     res.status(401).json({ message: "All fields are required", status: false });
   }
+  // Email validation pattern
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   if (!emailPattern.test(email)) {
     return res.status(401).json({ error: "Invalid email", status: false });
   }
 
+  // Phone number validation pattern
   const phonePattern = /^[6-9]\d{9}$/;
   if (!phonePattern.test(number)) {
     return res
@@ -68,6 +78,7 @@ export const signup = async (req, res) => {
   }
 
   try {
+    // Password validation pattern
     const passwordPattern =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     if (!passwordPattern.test(password)) {
@@ -77,6 +88,7 @@ export const signup = async (req, res) => {
         status: false,
       });
     }
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       fullName,
@@ -84,19 +96,23 @@ export const signup = async (req, res) => {
       number,
       password: hashedPassword,
     });
+    // Check for existing email
     const existingUser = await User.findOne({ email: newUser.email });
     if (existingUser) {
       return res
         .status(400)
         .json({ status: false, message: "Email already exists" });
     }
+    // Check for existing phone number
     const existingPhone = await User.findOne({ number: newUser.number });
     if (existingPhone) {
       return res
         .status(400)
         .json({ status: false, message: "Phone number already exists" });
     }
+    // Save new user to database
     await newUser.save();
+    // Generate JWT token
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
     res.status(201).json({
       status: true,
@@ -109,14 +125,16 @@ export const signup = async (req, res) => {
   }
 };
 
-// send otp through email and Phone number
+// Send OTP through email and phone number
 export const sendOtp = async (req, res) => {
   const { credential } = req.body;
-
+  // Generate random OTP
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  // Email validation pattern
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   if (emailPattern.test(credential)) {
+    // Setup Nodemailer for email
     const auth = nodemailer.createTransport({
       service: "gmail",
       secure: true,
@@ -134,12 +152,14 @@ export const sendOtp = async (req, res) => {
       html: `<p>Your One Time Password From CNG care is <strong>${otp}</strong></p>`,
     };
 
+    // Send email
     auth.sendMail(reciever, (error, info) => {
       if (error) {
         console.log("Error occurred: " + error.message);
         res.status(500).json({ message: error.message, status: false });
       } else {
         console.log("Email sent: " + info.response);
+        // Create verification token
         const VerifyToken = jwt.sign(
           { credential, otp },
           process.env.JWT_SECRET,
@@ -157,12 +177,14 @@ export const sendOtp = async (req, res) => {
       }
     });
   } else {
+    // Phone number validation pattern
     const phonePattern = /^[6-9]\d{9}$/;
     if (!phonePattern.test(credential)) {
       return res
         .status(401)
         .json({ message: "Invalid phone number", status: false });
     }
+    // Send SMS using Twilio
     client.messages
       .create({
         body: `Your one time password From CNG care is ${otp}`,
@@ -170,6 +192,7 @@ export const sendOtp = async (req, res) => {
         to: `+91${credential}`,
       })
       .then(() => {
+        // Create verification token
         const VerifyToken = jwt.sign(
           { credential, otp },
           process.env.JWT_SECRET,
@@ -190,10 +213,11 @@ export const sendOtp = async (req, res) => {
   }
 };
 
-// verify otp
+// Verify OTP function
 export const verifyOtp = async (req, res) => {
   try {
     const { otp, VerifyToken } = req.body;
+    // Verify the token
     const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
     if (verify.otp !== otp) {
       return res.status(401).json({ message: "Invalid OTP", status: false });
@@ -206,9 +230,10 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-// list user
+// List all users
 export const listUser = async (req, res) => {
   try {
+    // Retrieve all users
     const users = await User.find();
     if (!users) {
       return res.status(404).json({ message: "No users found", status: false });
@@ -221,7 +246,7 @@ export const listUser = async (req, res) => {
   }
 };
 
-// delete user
+// Delete user by ID
 export const removeUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
@@ -233,14 +258,17 @@ export const removeUser = async (req, res) => {
   }
 };
 
-// update Adress
+// Update user address
 export const updateAddress = async (req, res) => {
+  const { pincode, state, area, locality, city } = req.body;
   try {
+    // Find user by ID
     const user = await User.findById(req.user.userId);
     if (!user) {
       return res.status(404).json({ message: "User not found", status: false });
     }
-    user.address = req.body.address;
+    // Update address field
+    user.address = `${area},${locality},${city},${pincode},${state}`;
     await user.save();
     return res
       .status(200)
@@ -250,11 +278,12 @@ export const updateAddress = async (req, res) => {
   }
 };
 
-// reset password
+// Reset user password
 export const resetpassword = async (req, res) => {
   const { credential, new_password, VerifyToken, otp } = req.body;
   console.log(credential);
   try {
+    // Verify the token
     const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
     if (verify.otp !== otp) {
       return res.status(401).json({ message: "Invalid OTP", status: false });
@@ -264,18 +293,22 @@ export const resetpassword = async (req, res) => {
         .status(401)
         .json({ message: "Invalid credential", status: false });
     }
+    // Email validation pattern
     const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
     if (emailPattern.test(credential)) {
+      // Find user by email
       const user = await User.findOne({ email: credential.toLowerCase() });
       if (!user) {
         return res
           .status(401)
           .json({ message: "User not found", status: false });
       }
+      // Hash new password
       const hashedPassword = await bcrypt.hash(new_password, 10);
       user.password = hashedPassword;
       await user.save();
     } else {
+      // Find user by phone number
       const user = await User.findOne({ number: credential });
       if (!user) {
         return res
@@ -287,6 +320,7 @@ export const resetpassword = async (req, res) => {
           .status(401)
           .json({ message: "Password already exists", status: false });
       }
+      // Hash new password
       const hashedPassword = await bcrypt.hash(new_password, 10);
       user.password = hashedPassword;
       await user.save();
@@ -298,3 +332,4 @@ export const resetpassword = async (req, res) => {
     res.status(500).json({ message: error.message, status: false });
   }
 };
+  

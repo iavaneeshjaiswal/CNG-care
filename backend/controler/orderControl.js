@@ -1,3 +1,7 @@
+/**
+ * Controller for handling orders
+ */
+
 import Order from "../models/order.js";
 import User from "../models/user.js";
 import { Transaction } from "../models/transaction.js";
@@ -6,6 +10,12 @@ import Product from "../models/product.js";
 import crypto from "crypto";
 import dotenv from "dotenv";
 dotenv.config();
+
+/**
+ * Verify payment and add order to database
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const VerifyAndAddOrder = async (req, res) => {
   try {
     const {
@@ -43,6 +53,7 @@ const VerifyAndAddOrder = async (req, res) => {
         message: "Address is required",
       });
     }
+
     const productIds = products.map((product) => product._id);
     const dbProducts = await Product.find({ _id: { $in: productIds } });
     if (dbProducts.length !== products.length) {
@@ -142,6 +153,11 @@ const VerifyAndAddOrder = async (req, res) => {
   }
 };
 
+/**
+ * View all orders
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const viewOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -159,6 +175,11 @@ const viewOrders = async (req, res) => {
   }
 };
 
+/**
+ * Delete an order
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const deleteOrder = async (req, res) => {
   try {
     await Order.findByIdAndDelete(req.params.id);
@@ -170,6 +191,11 @@ const deleteOrder = async (req, res) => {
   }
 };
 
+/**
+ * View an order
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const viewOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -187,6 +213,11 @@ const viewOrder = async (req, res) => {
   }
 };
 
+/**
+ * Update order status
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 const updateOrderStatus = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -210,3 +241,4 @@ export default {
   viewOrder,
   updateOrderStatus,
 };
+

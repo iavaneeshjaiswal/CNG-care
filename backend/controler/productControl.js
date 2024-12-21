@@ -6,8 +6,11 @@ import { fileURLToPath } from "url";
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Controller to add a new product
 const addProduct = async (req, res) => {
   try {
+    // Check if images are uploaded
     if (!req.files || req.files.length === 0) {
       return res
         .status(400)
@@ -18,9 +21,11 @@ const addProduct = async (req, res) => {
     const { category, title, price, quantity, offerPrice, description, brand } =
       req.body;
     let categoryOption = ["CNG", "LPG", "SPARE"];
+    // Validate category
     if (!categoryOption.includes(category)) {
       return res.status(400).json({ message: "Invalid category option" });
     }
+    // Create new product instance
     let newProduct = new Product({
       category,
       title,
@@ -32,6 +37,7 @@ const addProduct = async (req, res) => {
       images: imageUrls,
     });
 
+    // Save product to database
     await newProduct.save();
 
     res
@@ -42,6 +48,7 @@ const addProduct = async (req, res) => {
   }
 };
 
+// Controller to list all products
 const listProduct = async (req, res) => {
   try {
     const products = await Product.find();
@@ -56,6 +63,7 @@ const listProduct = async (req, res) => {
   }
 };
 
+// Controller to list a single product by ID
 const listSingleProduct = async (req, res) => {
   const { id } = req.params;
   try {
@@ -69,6 +77,7 @@ const listSingleProduct = async (req, res) => {
   }
 };
 
+// Controller to remove a product by ID
 const removeProduct = async (req, res) => {
   const { id } = req.params;
   try {
@@ -77,6 +86,7 @@ const removeProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
+    // Delete associated images
     if (product.images && product.images.length > 0) {
       const ProductImages = product.images;
       ProductImages.forEach((imageUrl) => {
@@ -97,6 +107,7 @@ const removeProduct = async (req, res) => {
   }
 };
 
+// Controller to update a product by ID
 const updateProduct = async (req, res) => {
   const { id } = req.params;
   try {
@@ -113,6 +124,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
+// Controller to search products by title
 const searchProduct = async (req, res) => {
   const { query } = req.query;
   console.log(query);
@@ -136,6 +148,7 @@ const searchProduct = async (req, res) => {
   }
 };
 
+// Controller to add multiple products at once
 const addBulkProduct = async (req, res) => {
   try {
     const products = req.body;
@@ -151,6 +164,7 @@ const addBulkProduct = async (req, res) => {
   }
 };
 
+// Export all product controllers
 export default {
   addProduct,
   searchProduct,
@@ -160,3 +174,4 @@ export default {
   listSingleProduct,
   addBulkProduct,
 };
+

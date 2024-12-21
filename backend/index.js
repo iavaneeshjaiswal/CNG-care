@@ -1,6 +1,11 @@
 import express from "express";
 import bodyParser from "body-parser";
 import connectDb from "./connectDb.js";
+import cors from "cors";
+import path from "path";
+import multer from "multer";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import {
   userLogin,
   signup,
@@ -14,11 +19,6 @@ import adminControl from "./controler/adminControl.js";
 import productControl from "./controler/productControl.js";
 import orderControl from "./controler/orderControl.js";
 import transactionControler from "./controler/transactionControler.js";
-import cors from "cors";
-import path from "path";
-import multer from "multer";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
 import { verifyUser } from "./middleware/verifyUser.js";
 import checkRole from "./middleware/authAdmin.js";
 dotenv.config();
@@ -146,8 +146,6 @@ app.put(
   verifyUser,
   productControl.updateProduct
 );
-
-// app.post("/api/product/add-bulk-product", productControl.addBulkProduct);
 
 app.listen(port, () => {
   console.log(

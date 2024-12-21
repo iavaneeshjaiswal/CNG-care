@@ -2,16 +2,21 @@ import jwt from "jsonwebtoken";
 import Admin from "../models/admin.js";
 import dotenv from "dotenv";
 dotenv.config();
+
+// Admin login function
 const adminLogin = async (req, res) => {
   const { data } = req.body;
   try {
+    // Find admin by username
     const admin = await Admin.findOne({ username: data.username });
     if (!admin) {
       return res.status(401).json({ message: "Admin not found" });
     }
+    // Check password
     if (admin.password !== data.password) {
       return res.status(401).json({ message: "Invalid password" });
     }
+    // Generate JWT token
     const token = jwt.sign(
       { id: admin._id, username: admin.username, role: admin.role },
       process.env.JWT_SECRET
@@ -27,8 +32,10 @@ const adminLogin = async (req, res) => {
   }
 };
 
+// Add new admin
 const addAdmin = async (req, res) => {
   try {
+    // Create new admin
     let newAdmin = new Admin({ ...req.body });
     await newAdmin.save();
     res.status(201).json({ message: "Admin created successfully" });
@@ -37,8 +44,10 @@ const addAdmin = async (req, res) => {
   }
 };
 
+// List all admins
 const listAdmin = async (req, res) => {
   try {
+    // Retrieve all admins
     const admin = await Admin.find();
     res.status(200).json(admin);
   } catch (error) {
@@ -46,9 +55,11 @@ const listAdmin = async (req, res) => {
   }
 };
 
+// Remove admin by ID
 const removeAdmin = async (req, res) => {
   const { id } = req.params;
   try {
+    // Delete admin by ID
     const admin = await Admin.findByIdAndDelete(id);
     res.status(200).json({ admin });
   } catch (error) {
@@ -56,9 +67,11 @@ const removeAdmin = async (req, res) => {
   }
 };
 
+// Update admin by ID
 const updateAdmin = async (req, res) => {
   const { id } = req.params;
   try {
+    // Update admin by ID
     const admin = await Admin.findByIdAndUpdate(id, { ...req.body });
     res.status(200).json({ admin });
   } catch (error) {
@@ -66,9 +79,11 @@ const updateAdmin = async (req, res) => {
   }
 };
 
+// Get admin details by ID
 const admindetail = async (req, res) => {
   const { id } = req.params;
   try {
+    // Find admin by ID
     const admin = await Admin.findOne({ _id: id });
     res.status(200).json(admin);
   } catch (error) {
@@ -76,8 +91,10 @@ const admindetail = async (req, res) => {
   }
 };
 
+// Logout admin
 const logout = async (req, res) => {
   try {
+    // Delete cookie
     let cookies = req.cookies;
     res.status(200).json({ message: "Logout successfully", cookies });
   } catch (error) {
@@ -95,3 +112,4 @@ export default {
   admindetail,
   logout,
 };
+

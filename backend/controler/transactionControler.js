@@ -1,13 +1,27 @@
+/**
+ * Controller for transaction-related operations.
+ *
+ * @module transactionControler
+ */
+
 import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
 import Product from "../models/product.js";
 import { v4 as uuidv4 } from "uuid";
 
+/**
+ * View all transactions.
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const viewTransaction = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
 
+    // Find all transactions, skip the first 'skip' number of documents,
+    // and limit the result to 'limit' number of documents.
     const transactions = await Transaction.find()
       .skip(skip)
       .limit(limit)
@@ -24,6 +38,12 @@ const viewTransaction = async (req, res) => {
   }
 };
 
+/**
+ * Create a new Razorpay order.
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const createRazorpayOrder = async (req, res) => {
   try {
     const { products } = req.body;
@@ -36,12 +56,15 @@ const createRazorpayOrder = async (req, res) => {
       });
     }
 
-    const totalAmount = products.reduce((sum, product) => {
+    let totalAmount = 0;
+    // Calculate the total amount by summing up the price of each product
+    // in the products array.
+    products.forEach((product) => {
       const dbProduct = dbProducts.find(
         (p) => p._id.toString() === product._id.toString()
       );
-      return sum + (dbProduct.price * product.quantity || 0);
-    }, 0);
+      totalAmount += dbProduct.price * product.quantity;
+    });
 
     if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
       return res.status(400).json({
@@ -49,6 +72,7 @@ const createRazorpayOrder = async (req, res) => {
         message: "Invalid amount provided",
       });
     }
+
     const receiptId = `receipt_${uuidv4().substring(0, 30)}`;
     const options = {
       amount: totalAmount * 100, // Convert to paise
@@ -70,3 +94,4 @@ const createRazorpayOrder = async (req, res) => {
 };
 
 export default { viewTransaction, createRazorpayOrder };
+
