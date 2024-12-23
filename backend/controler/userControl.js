@@ -261,6 +261,14 @@ export const removeUser = async (req, res) => {
 // Update user address
 export const updateAddress = async (req, res) => {
   const { pincode, state, area, locality, city } = req.body;
+
+  // Validate input fields
+  if (!pincode || !state || !area || !locality || !city) {
+    return res
+      .status(400)
+      .json({ message: "All address fields are required", status: false });
+  }
+
   try {
     // Find user by ID and update
     const user = await User.findOneAndUpdate(
@@ -268,7 +276,7 @@ export const updateAddress = async (req, res) => {
       { address: `${area},${locality},${pincode},${city},${state}` }
     );
     if (!user) {
-      return res.status(404).json({ message: "User not found", status: false });
+      return res.status(401).json({ message: "User not found", status: false });
     }
     return res
       .status(200)
