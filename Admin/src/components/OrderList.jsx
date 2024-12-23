@@ -80,6 +80,8 @@ function OrderList() {
                 <th className="p-2 text-start">AMOUNT</th>
                 <th className="p-2 text-start">DELIVERY STATUS</th>
                 <th className="p-2 text-start">PAYMENT STATUS</th>
+                <th className="p-2 text-start">ORDER DATE</th>
+                <th className="p-2 text-start">ORDER TIME</th>
                 <th className="p-2 text-start">VIEW</th>
               </tr>
             </thead>
@@ -117,6 +119,12 @@ function OrderList() {
                       }`}
                     >
                       {order.paymentStatus.toUpperCase()}
+                    </td>
+                    <td className="p-2 text-start ">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-2 text-start ">
+                      {new Date(order.createdAt).toLocaleTimeString()}
                     </td>
                     <td className="p-2 text-start ">
                       <Link to={`/order/${order._id}`}>

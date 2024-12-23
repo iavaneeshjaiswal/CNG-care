@@ -8,13 +8,13 @@ import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
 import Product from "../models/product.js";
 import crypto from "crypto";
+import sendMail from "../utils/sendMail.js";
 import dotenv from "dotenv";
-import nodemailer from "nodemailer";
+dotenv.config();
 import {
   getSuccessEmailTemplate,
   getFailureEmailTemplate,
 } from "../utils/emailTemplate.js";
-dotenv.config();
 
 const VerifyAndAddOrder = async (req, res) => {
   try {
@@ -151,6 +151,8 @@ const VerifyAndAddOrder = async (req, res) => {
               address,
               newTransaction._id
             );
+
+      sendMail(user.email, emailTemplate);
     } catch (error) {
       return res.status(500).json({
         status: false,
@@ -161,42 +163,9 @@ const VerifyAndAddOrder = async (req, res) => {
     const responseMessage =
       paymentStatus === "success"
         ? "Order added successfully and Payment verified successfully"
-        : "Payment verification failed, order saved with failed status " +
-          totalAmount;
+        : "Payment verification failed, order saved with failed status";
 
     const statusCode = paymentStatus === "success" ? 200 : 400;
-
-    const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-
-    if (emailPattern.test(userEmail)) {
-      // Setup Nodemailer for email
-      const auth = nodemailer.createTransport({
-        service: "gmail",
-        secure: true,
-        port: 465,
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_PASS,
-        },
-      });
-
-      const reciever = {
-        from: process.env.GMAIL_USER,
-        to: userEmail.toLowerCase(),
-        subject: "Order detail",
-        html: emailTemplate,
-      };
-
-      // Send email For order
-      auth.sendMail(reciever, (error, info) => {
-        if (error) {
-          console.log("Error occurred: " + error.message);
-          res.status(500).json({ message: error.message, status: false });
-        } else {
-          console.log("Order Email sent: " + info.response);
-        }
-      });
-    }
 
     return res.status(statusCode).json({
       status: paymentStatus === "success",
