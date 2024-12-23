@@ -5,9 +5,9 @@
  */
 
 import { Transaction } from "../models/transaction.js";
-import razorpayInstance from "../utils/razorpay.js";
-import Product from "../models/product.js";
-import { v4 as uuidv4 } from "uuid";
+// import razorpayInstance from "../utils/razorpay.js";
+// import Product from "../models/product.js";
+// import { v4 as uuidv4 } from "uuid";
 
 /**
  * View all transactions.
@@ -45,9 +45,8 @@ const viewTransaction = async (req, res) => {
  * @param {Object} res - Express response object.
  */
 const createRazorpayOrder = async (req, res) => {
+  const { products } = req.body;
   try {
-    const { products } = req.body;
-
     // Check if products are provided and are an array
     if (!products || !Array.isArray(products)) {
       return res.status(404).json({
@@ -73,7 +72,7 @@ const createRazorpayOrder = async (req, res) => {
       const dbProduct = dbProducts.find(
         (p) => p._id.toString() === product._id.toString()
       );
-      totalAmount += dbProduct.price * product.quantity * 100;
+      totalAmount += dbProduct.price * product.quantity;
     });
 
     if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
@@ -85,7 +84,7 @@ const createRazorpayOrder = async (req, res) => {
 
     const receiptId = `receipt_${uuidv4().substring(0, 30)}`;
     const options = {
-      amount: totalAmount, // Convert to paise
+      amount: totalAmount * 100, // Convert to paise
       currency: "INR",
       receipt: receiptId,
     };

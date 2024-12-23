@@ -9,13 +9,13 @@ import razorpayInstance from "../utils/razorpay.js";
 import Product from "../models/product.js";
 import crypto from "crypto";
 import dotenv from "dotenv";
+import nodemailer from "nodemailer";
+import {
+  getSuccessEmailTemplate,
+  getFailureEmailTemplate,
+} from "../utils/emailTemplate.js";
 dotenv.config();
 
-/**
- * Verify payment and add order to database
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
 const VerifyAndAddOrder = async (req, res) => {
   try {
     const {
@@ -39,6 +39,14 @@ const VerifyAndAddOrder = async (req, res) => {
           "Missing required fields: RazorpayOrderId, razorpay_order_id, razorpay_signature, or address",
       });
     }
+    const user = await User.findById(req.user.userId, "email");
+    if (!user) {
+      return res.status(404).json({
+        status: false,
+        message: "User not found",
+      });
+    }
+    const userEmail = user.email;
 
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({
@@ -87,9 +95,9 @@ const VerifyAndAddOrder = async (req, res) => {
       .createHmac("sha256", razorpayInstance.key_secret)
       .update(body)
       .digest("hex");
-
     const paymentStatus =
       expectedSignature === razorpay_signature ? "success" : "failed";
+    let emailTemplate;
 
     try {
       const newOrder = new Order({
@@ -126,19 +134,69 @@ const VerifyAndAddOrder = async (req, res) => {
       await newOrder.save();
       await newTransaction.save();
       await user.save();
+
+      emailTemplate =
+        paymentStatus === "success"
+          ? getSuccessEmailTemplate(
+              newOrder._id,
+              totalAmount,
+              new Date().toISOString().split("T")[0],
+              address,
+              newTransaction._id
+            )
+          : getFailureEmailTemplate(
+              newOrder._id,
+              totalAmount,
+              new Date().toISOString().split("T")[0],
+              address,
+              newTransaction._id
+            );
     } catch (error) {
       return res.status(500).json({
         status: false,
-        message: "Error saving order",
+        message: "Error saving order or transaction " + error.message,
       });
     }
 
     const responseMessage =
       paymentStatus === "success"
         ? "Order added successfully and Payment verified successfully"
-        : "Payment verification failed, order saved with failed status";
+        : "Payment verification failed, order saved with failed status " +
+          totalAmount;
 
     const statusCode = paymentStatus === "success" ? 200 : 400;
+
+    const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+    if (emailPattern.test(userEmail)) {
+      // Setup Nodemailer for email
+      const auth = nodemailer.createTransport({
+        service: "gmail",
+        secure: true,
+        port: 465,
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS,
+        },
+      });
+
+      const reciever = {
+        from: process.env.GMAIL_USER,
+        to: userEmail.toLowerCase(),
+        subject: "Order detail",
+        html: emailTemplate,
+      };
+
+      // Send email For order
+      auth.sendMail(reciever, (error, info) => {
+        if (error) {
+          console.log("Error occurred: " + error.message);
+          res.status(500).json({ message: error.message, status: false });
+        } else {
+          console.log("Order Email sent: " + info.response);
+        }
+      });
+    }
 
     return res.status(statusCode).json({
       status: paymentStatus === "success",
@@ -153,11 +211,6 @@ const VerifyAndAddOrder = async (req, res) => {
   }
 };
 
-/**
- * View all orders
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
 const viewOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -175,11 +228,6 @@ const viewOrders = async (req, res) => {
   }
 };
 
-/**
- * Delete an order
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
 const deleteOrder = async (req, res) => {
   try {
     await Order.findByIdAndDelete(req.params.id);
@@ -191,11 +239,6 @@ const deleteOrder = async (req, res) => {
   }
 };
 
-/**
- * View an order
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
 const viewOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -213,11 +256,6 @@ const viewOrder = async (req, res) => {
   }
 };
 
-/**
- * Update order status
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
 const updateOrderStatus = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -241,4 +279,3 @@ export default {
   viewOrder,
   updateOrderStatus,
 };
-
