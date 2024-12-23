@@ -47,6 +47,16 @@ const viewTransaction = async (req, res) => {
 const createRazorpayOrder = async (req, res) => {
   try {
     const { products } = req.body;
+
+    // Check if products are provided and are an array
+    if (!products || !Array.isArray(products)) {
+      return res.status(404).json({
+        status: false,
+        message: "Products are important",
+      });
+    }
+
+    // Check if all products exist in the database
     const productIds = products.map((product) => product._id);
     const dbProducts = await Product.find({ _id: { $in: productIds } });
     if (dbProducts.length !== products.length) {
@@ -63,7 +73,7 @@ const createRazorpayOrder = async (req, res) => {
       const dbProduct = dbProducts.find(
         (p) => p._id.toString() === product._id.toString()
       );
-      totalAmount += dbProduct.price * product.quantity;
+      totalAmount += dbProduct.price * product.quantity * 100;
     });
 
     if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
@@ -75,7 +85,7 @@ const createRazorpayOrder = async (req, res) => {
 
     const receiptId = `receipt_${uuidv4().substring(0, 30)}`;
     const options = {
-      amount: totalAmount * 100, // Convert to paise
+      amount: totalAmount, // Convert to paise
       currency: "INR",
       receipt: receiptId,
     };
@@ -86,6 +96,7 @@ const createRazorpayOrder = async (req, res) => {
       status: true,
       RazorpayOrderId: response.id,
       message: "Razorpay order created successfully",
+      amount: response.amount,
     });
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
@@ -94,4 +105,3 @@ const createRazorpayOrder = async (req, res) => {
 };
 
 export default { viewTransaction, createRazorpayOrder };
-
