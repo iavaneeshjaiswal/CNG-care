@@ -26,6 +26,7 @@ const VerifyAndAddOrder = async (req, res) => {
       address,
     } = req.body;
     // Validation
+    console.log(req.body);
     if (
       !products ||
       !razorpay_payment_id ||
@@ -47,7 +48,6 @@ const VerifyAndAddOrder = async (req, res) => {
       });
     }
     const userEmail = user.email;
-
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({
         status: false,
@@ -152,7 +152,7 @@ const VerifyAndAddOrder = async (req, res) => {
               newTransaction._id
             );
 
-      sendMail(user.email, emailTemplate);
+      await sendMail(user.email, emailTemplate, "Order Status");
     } catch (error) {
       return res.status(500).json({
         status: false,
@@ -166,7 +166,7 @@ const VerifyAndAddOrder = async (req, res) => {
         : "Payment verification failed, order saved with failed status";
 
     const statusCode = paymentStatus === "success" ? 200 : 400;
-
+    console.log(statusCode);
     return res.status(statusCode).json({
       status: paymentStatus === "success",
       message: responseMessage,

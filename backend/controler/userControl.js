@@ -1,9 +1,10 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import twilio from "twilio";
-import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import sendMail from "../utils/sendMail.js";
+import { getOtpEmailtemp } from "../utils/emailTemplate.js";
 dotenv.config();
 
 // Initialize Twilio client
@@ -134,48 +135,26 @@ export const sendOtp = async (req, res) => {
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   if (emailPattern.test(credential)) {
-    // Setup Nodemailer for email
-    const auth = nodemailer.createTransport({
-      service: "gmail",
-      secure: true,
-      port: 465,
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-      },
-    });
-
-    const reciever = {
-      from: process.env.GMAIL_USER,
-      to: credential.toLowerCase(),
-      subject: "Email Verification",
-      html: `<p>Your One Time Password From CNG care is <strong>${otp}</strong></p>`,
-    };
-
-    // Send email
-    auth.sendMail(reciever, (error, info) => {
-      if (error) {
-        console.log("Error occurred: " + error.message);
-        res.status(500).json({ message: error.message, status: false });
-      } else {
-        console.log("Email sent: " + info.response);
-        // Create verification token
-        const VerifyToken = jwt.sign(
-          { credential, otp },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: "120s",
-          }
-        );
-        console.log(otp);
-        res.status(200).json({
-          otp,
-          message: "Email sent successfully",
-          VerifyToken,
-          status: true,
-        });
-      }
-    });
+    try {
+      await sendMail(credential, getOtpEmailtemp(otp), "OTP Verification");
+      const VerifyToken = jwt.sign(
+        { credential, otp },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "120s",
+        }
+      );
+      return res.status(200).json({
+        otp,
+        message: "OTP sent successfully",
+        VerifyToken,
+        status: true,
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Failure While sending Email", status: false });
+    }
   } else {
     // Phone number validation pattern
     const phonePattern = /^[6-9]\d{9}$/;
@@ -338,5 +317,23 @@ export const resetpassword = async (req, res) => {
       .json({ message: "Password reset successfully", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+export const getUserLocation = async (req, res) => {
+  try {
+    const { lat, long } = req.body;
+    if (!lat || !long) {
+      return res
+        .status(400)
+        .json({ message: "Latitude and longitude are required", status: false });
+    }
+    const location = `https://www.google.com/maps?q=${lat},${long}`;
+    console.log(location);
+    return res
+      .status(200)
+      .json({ location, status: true, message: "Location found" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
   }
 };

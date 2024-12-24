@@ -19,6 +19,7 @@ const Payment = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzUzZTVlNzBlNWY3NDBjZWMxYWNkYmYiLCJpYXQiOjE3MzQ5NDk0Nzh9.TnV5jMv7N8ELkVbS5jjRYca1BDFnUPg4aG3dQiED_fA`,
         },
         body: JSON.stringify({ products }),
       });
@@ -34,10 +35,11 @@ const Payment = () => {
           order_id: data.RazorpayOrderId,
           handler: async function (response) {
             // Send the payment details to your backend for verification
-            await fetch("http://localhost:3000/api/order", {
+            await fetch("http://localhost:3000/api/verifyandorder", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzUzZTVlNzBlNWY3NDBjZWMxYWNkYmYiLCJpYXQiOjE3MzQ5NDk0Nzh9.TnV5jMv7N8ELkVbS5jjRYca1BDFnUPg4aG3dQiED_fA`,
               },
               body: JSON.stringify({
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -56,6 +58,7 @@ const Payment = () => {
                 }
               })
               .catch((error) => {
+                console.log(verificationData);
                 alert("Payment Verification Failed");
                 console.error("Verification Error:", error);
               });
@@ -84,13 +87,6 @@ const Payment = () => {
   return (
     <div>
       <h2>Payment for Products</h2>
-      <ul>
-        {products.map((product) => (
-          <li key={product._id}>
-            {product.name} - ₹{product.price} x {product.quantity}
-          </li>
-        ))}
-      </ul>
       <button onClick={handlePayment}>Pay with Razorpay</button>
     </div>
   );

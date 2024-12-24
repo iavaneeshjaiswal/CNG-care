@@ -14,6 +14,7 @@ import {
   removeUser,
   resetpassword,
   updateAddress,
+  getUserLocation,
 } from "./controler/userControl.js";
 import adminControl from "./controler/adminControl.js";
 import productControl from "./controler/productControl.js";
@@ -68,6 +69,7 @@ app.delete("/api/user/remove-user/:id", verifyUser, removeUser);
 app.post("/api/user/send-otp", sendOtp);
 app.post("/api/user/reset-password", resetpassword);
 app.put("/api/user/update-address", verifyUser, updateAddress);
+app.get("/api/user/location", verifyUser, getUserLocation);
 
 // Admin routes
 app.post("/api/admin/login", adminControl.adminLogin);
@@ -147,6 +149,10 @@ app.put(
   productControl.updateProduct
 );
 
+
+
+
+//server
 app.listen(port, () => {
   console.log(
     `Server started on port ${port} and URL is ${`http://localhost:${port}`}`

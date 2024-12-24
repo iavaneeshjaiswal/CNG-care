@@ -5,9 +5,9 @@
  */
 
 import { Transaction } from "../models/transaction.js";
-// import razorpayInstance from "../utils/razorpay.js";
-// import Product from "../models/product.js";
-// import { v4 as uuidv4 } from "uuid";
+import razorpayInstance from "../utils/razorpay.js";
+import Product from "../models/product.js";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * View all transactions.
