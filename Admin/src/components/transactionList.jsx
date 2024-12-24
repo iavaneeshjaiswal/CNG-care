@@ -79,9 +79,11 @@ function TransactionList() {
                       })}
                     </td>
                     <td
-                      className={`p-2 text-center ${
+                      className={`p-2 text-center  ${
                         transaction.status === "success"
                           ? "text-green-600"
+                          : transaction.status === "refunded"
+                          ? "text-yellow-600"
                           : "text-red-600"
                       }`}
                     >

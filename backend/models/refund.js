@@ -1,16 +1,15 @@
 import mongoose from "mongoose";
 
-const transactionSchema = new mongoose.Schema(
+const refundSchema = new mongoose.Schema(
   {
     amount: {
       type: Number,
       required: true,
     },
-    status: {
-      type: String,
-      enum: ["failed", "success", "refunded"],
+    transactionID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Transaction",
       required: true,
-      default: "failed",
     },
     userID: {
       type: mongoose.Schema.Types.ObjectId,
@@ -21,6 +20,10 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    refundID: {
+        type: String,
+        required: true,
+      },
     orderID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
@@ -30,4 +33,4 @@ const transactionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Transaction = mongoose.model("Transaction", transactionSchema);
+export const Refund = mongoose.model("Refund", refundSchema);

@@ -1,8 +1,10 @@
-/**
- * Check if the user has the required role
- * @param {string[]} requiredRoles - The roles that are required to access the route
- * @returns {(req: Request, res: Response, next: NextFunction) => void} - The middleware function
- */
+import jwt from "jsonwebtoken";
+
+const SECRET_KEY = process.env.JWT_SECRET;
+
+if (!SECRET_KEY) {
+  throw new Error("JWT_SECRET is not defined in environment variables.");
+}
 const checkRole = (requiredRoles) => {
   return (req, res, next) => {
     // Get the user's role from the request

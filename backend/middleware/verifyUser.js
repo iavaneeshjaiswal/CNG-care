@@ -6,12 +6,6 @@ if (!SECRET_KEY) {
   throw new Error("JWT_SECRET is not defined in environment variables.");
 }
 
-/**
- * Middleware to verify user authentication
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
- */
 export const verifyUser = (req, res, next) => {
   // Retrieve token from Authorization header or cookies
   const authHeader = req.headers.authorization;

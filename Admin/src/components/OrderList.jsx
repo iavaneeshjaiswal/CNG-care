@@ -61,6 +61,7 @@ function OrderList() {
             <option value="Order Shipped">Order Shipped</option>
             <option value="Out For Delivery">Out For Delivery</option>
             <option value="Delivered">Delivered</option>
+            <option value="cancelled">cancelled</option>
           </select>
         </div>
         <p className="text-lg font-bold text-start my-2 w-full ">
@@ -102,9 +103,9 @@ function OrderList() {
                       className={`p-2 text-start font-bold ${
                         order.orderStatus === "Pending"
                           ? "text-red-500"
-                          : order.orderStatus === "Delivered"
-                          ? "text-green-500"
-                          : ""
+                          : order.orderStatus === "cancelled"
+                          ? "text-yellow-500"
+                          : "text-green-500"
                       }`}
                     >
                       {order.orderStatus}
@@ -113,9 +114,9 @@ function OrderList() {
                       className={`p-2 text-start font-bold ${
                         order.paymentStatus === "failed"
                           ? "text-red-500"
-                          : order.paymentStatus === "success"
-                          ? "text-green-500"
-                          : ""
+                          : order.paymentStatus === "refunded"
+                          ? "text-yellow-500"
+                          : "text-green-500"
                       }`}
                     >
                       {order.paymentStatus.toUpperCase()}

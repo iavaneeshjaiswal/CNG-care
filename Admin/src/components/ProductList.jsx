@@ -38,17 +38,17 @@ export default function ProductList() {
 
   return (
     <div className="p-2 box-border bg-white mt-5 rounded-sm w-full h-screen">
-      <div className="max-h-[90vh] overflow-auto px-4 text-center ">
-        <div className="flex gap-2 mb-4 w-3/6">
+      <div className="max-h-[90vh] overflow-auto px-4">
+        <div className="flex gap-2 mb-4 w-full items-center">
           <input
             type="text"
             placeholder="Search by product name"
             value={searchTerm}
             onChange={handleSearchChange}
-            className="p-2 border-2 rounded focus:outline-none w-full"
+            className="p-2 border-2 rounded focus:outline-none w-2/3"
           />
           <select
-            className="bg-gray-200 p-2 rounded outline-none px-3 w-2/6"
+            className="bg-gray-200 p-2 rounded outline-none px-3 w-1/3"
             value={category}
             onChange={handleCategoryChange}
           >
@@ -58,13 +58,13 @@ export default function ProductList() {
             <option value="SPARE">SPARE</option>
           </select>
         </div>
-        <table className="w-full mx-auto ">
+        <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-primary bold-14 sm:regular-22 text-start py-12 bg-gray-200 ">
-              <th className="p-2 text-start">IMAGES</th>
-              <th className="p-2 text-start">NAME</th>
-              <th className="p-2 text-start">BRAND</th>
-              <th className="p-2 text-start">PRICE</th>
+            <tr className="bg-gray-200 font-semibold">
+              <th className="p-2">IMAGES</th>
+              <th className="p-2">NAME</th>
+              <th className="p-2">BRAND</th>
+              <th className="p-2">PRICE</th>
               <th className="p-2 text-center">CATEGORY</th>
               <th className="p-2 text-center">QUANTITY</th>
               <th className="p-2 text-center">STOCKS</th>
@@ -75,26 +75,23 @@ export default function ProductList() {
           <tbody>
             {!isLoaded ? (
               <tr>
-                <td
-                  colSpan="8"
-                  className="p-2 text-center text-gray-400 text-lg"
-                >
+                <td colSpan="9" className="p-2 text-center text-gray-400 text-lg">
                   LOADING...
                 </td>
               </tr>
             ) : products.length > 0 ? (
               products.map((product) => (
                 <tr key={product._id} className="border-b">
-                  <td className="p-2 text-start">
+                  <td className="p-2">
                     <img
                       src={`${urlImage}${product.images[0]}`}
                       alt={product.title}
                       className="w-16 h-16 rounded object-cover"
                     />
                   </td>
-                  <td className="p-2 text-start">{product.title}</td>
-                  <td className="p-2 text-start">{product.brand}</td>
-                  <td className="p-2 text-start">
+                  <td className="p-2">{product.title}</td>
+                  <td className="p-2">{product.brand}</td>
+                  <td className="p-2">
                     {product.price.toLocaleString("en-IN", {
                       style: "currency",
                       currency: "INR",
@@ -103,43 +100,36 @@ export default function ProductList() {
                   <td className="p-2 text-center">{product.category}</td>
                   <td className="p-2 text-center">{product.quantity}</td>
                   <td className="p-2 text-center">
-                    {product.quantity != 0 ? (
+                    {product.quantity !== 0 ? (
                       <span className="text-green-600">Available</span>
                     ) : (
                       <span className="text-red-400">Out of Stock</span>
                     )}
                   </td>
-                  <td className="p-2 text-CENTER">
+                  <td className="p-2 text-center">
                     <button
-                      className=" text-black text-xl p-2 rounded"
-                      onClick={() => {
-                        navigate(`/updateproduct/${product._id}`);
-                      }}
+                      className="text-black text-xl p-2 rounded hover:bg-gray-100"
+                      onClick={() => navigate(`/updateproduct/${product._id}`)}
                     >
-                      {<i className="ri-edit-2-fill"></i>}
+                      <i className="ri-edit-2-fill"></i>
                     </button>
                   </td>
                   <td className="p-2 text-center">
                     <button
-                      className=" text-red-600 p-2 text-black text-xl rounded"
+                      className="text-red-600 text-xl p-2 rounded hover:bg-gray-100"
                       onClick={() => {
                         remove_product(product._id);
-                        setProducts(
-                          products.filter((p) => p._id !== product._id)
-                        );
+                        setProducts(products.filter((p) => p._id !== product._id));
                       }}
                     >
-                      {<i className="ri-delete-bin-6-line"></i>}
+                      <i className="ri-delete-bin-6-line"></i>
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="8"
-                  className="p-2 text-center text-gray-400 text-lg "
-                >
+                <td colSpan="9" className="p-2 text-center text-gray-400 text-lg">
                   No Products
                 </td>
               </tr>

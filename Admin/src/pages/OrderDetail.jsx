@@ -82,6 +82,8 @@ function OrderDetail() {
                       className={`${
                         orderDetail.paymentStatus === "failed"
                           ? "text-red-500"
+                          : orderDetail.paymentStatus === "refunded"
+                          ? "text-yellow-500"
                           : "text-green-500"
                       }`}
                     >
@@ -100,6 +102,7 @@ function OrderDetail() {
                       <option value="Order Shipped">Order Shipped</option>
                       <option value="Out For Delivery">Out For Delivery</option>
                       <option value="Delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
                     </select>
                   </p>
                   <p className="font-semibold">Products:</p>

@@ -19,7 +19,7 @@ const Payment = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer `,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzRmMzIxZmZmYzBmOTc3NWFlMGVkNzgiLCJpYXQiOjE3MzQyODQ2MDd9.JlFwx-dgMJBGDYRjtK8jTUdVEhMs6ITHqge4Si-hE5g`,
         },
         body: JSON.stringify({ products }),
       });
@@ -39,7 +39,7 @@ const Payment = () => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer `,
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzRmMzIxZmZmYzBmOTc3NWFlMGVkNzgiLCJpYXQiOjE3MzQyODQ2MDd9.JlFwx-dgMJBGDYRjtK8jTUdVEhMs6ITHqge4Si-hE5g`,
               },
               body: JSON.stringify({
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -54,11 +54,13 @@ const Payment = () => {
                 if (verificationData.status === true) {
                   alert("Payment Verified and Successful!");
                 } else {
-                  alert("Payment Verification Failed");
+                  alert(
+                    "Payment Verification Failed ",
+                    verificationData.message
+                  );
                 }
               })
               .catch((error) => {
-                console.log(verificationData);
                 alert("Payment Verification Failed");
                 console.error("Verification Error:", error);
               });
