@@ -19,7 +19,7 @@ const Payment = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzUzZTVlNzBlNWY3NDBjZWMxYWNkYmYiLCJpYXQiOjE3MzQ5NDk0Nzh9.TnV5jMv7N8ELkVbS5jjRYca1BDFnUPg4aG3dQiED_fA`,
+          Authorization: `Bearer `,
         },
         body: JSON.stringify({ products }),
       });
@@ -39,7 +39,7 @@ const Payment = () => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzUzZTVlNzBlNWY3NDBjZWMxYWNkYmYiLCJpYXQiOjE3MzQ5NDk0Nzh9.TnV5jMv7N8ELkVbS5jjRYca1BDFnUPg4aG3dQiED_fA`,
+                Authorization: `Bearer `,
               },
               body: JSON.stringify({
                 razorpay_payment_id: response.razorpay_payment_id,
