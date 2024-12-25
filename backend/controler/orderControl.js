@@ -311,12 +311,30 @@ const refundPayment = async (
   }
 };
 
+const orderHistory = async (req, res) => {
+  console.log(req.user.userId);
+  try {
+    const orders = await Order.find({
+      userID: "6753e5e70e5f740cec1acdbf",
+    }).populate("products.product");
+    if (orders) {
+      return res.status(200).json({
+        orders,
+        status: true,
+        message: "Orders found successfully",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
 export default {
   VerifyAndAddOrder,
   viewOrders,
+  orderHistory,
   deleteOrder,
   viewOrder,
   updateOrderStatus,
   cancelOrder,
 };
-

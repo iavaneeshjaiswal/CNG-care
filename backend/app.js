@@ -108,6 +108,7 @@ app.post("/api/admin/logout", verifyUser, adminControl.logout);
 //Order Routes
 app.post("/api/verifyandorder", verifyUser, orderControl.VerifyAndAddOrder);
 app.get("/api/order", verifyUser, orderControl.viewOrders);
+app.get("/api/orderhistory", verifyUser, orderControl.orderHistory);
 app.get("/api/order/:id", verifyUser, orderControl.viewOrder);
 app.post(
   "/api/order/update-order-status/:id",
