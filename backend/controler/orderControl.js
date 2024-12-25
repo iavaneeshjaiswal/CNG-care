@@ -1,7 +1,3 @@
-/**
- * Controller for handling orders
- */
-
 import Order from "../models/order.js";
 import User from "../models/user.js";
 import { Refund } from "../models/refund.js";
@@ -316,13 +312,6 @@ const orderHistory = async (req, res) => {
     const orders = await Order.find({
       userID: req.user.userId,
     }).populate("products.product");
-    if (orders) {
-      return res.status(200).json({
-        orders,
-        status: true,
-        message: "Orders found successfully",
-      });
-    }
     if (orders.length === 0) {
       return res.status(200).json({
         orders: [],
@@ -330,6 +319,11 @@ const orderHistory = async (req, res) => {
         message: "No orders found",
       });
     }
+    return res.status(200).json({
+      orders,
+      status: true,
+      message: "Orders found successfully",
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message, status: false });
   }

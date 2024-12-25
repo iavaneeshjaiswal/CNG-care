@@ -15,45 +15,64 @@ const client = twilio(
 
 // User login function
 export const userLogin = async (req, res) => {
-  // Validate input fields
-  if (!req.body.email || !req.body.password) {
-    return res
-      .status(401)
-      .json({ message: "Email and password required", status: false });
-  }
-  // Email validation pattern
-  const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-  if (!emailPattern.test(req.body.email)) {
-    return res.status(401).json({ message: "Invalid email", status: false });
-  }
   try {
-    // Find user by email and populate related fields
-    const user = await User.findOne({
-      email: req.body.email.toLowerCase(),
-    })
-      .populate("orders")
-      .populate("transactionID");
-    if (!user) {
-      return res.status(401).json({ message: "Invalid email", status: false });
+    const { email, password } = req.body;
+
+    // Validate input fields
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required", status: false });
     }
-    // Compare passwords
-    const match = await bcrypt.compare(req.body.password, user.password);
-    if (!match) {
+
+    // Validate email format
+    const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+    if (!emailPattern.test(email)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid email format", status: false });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() }).select(
+      "+password"
+    ); // Ensure password is selected
+
+    if (!user) {
       return res
         .status(401)
-        .json({ message: "Invalid password", status: false });
+        .json({ message: "Invalid email or password", status: false });
     }
-    // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+
+    // Compare passwords
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ message: "Invalid email or password", status: false });
+    }
+
+    // Generate JWT token with expiry
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" } // Token valid for 1 hour
+    );
+
+    // Exclude password from the user object before sending response
+    const { password: _, ...userData } = user.toObject();
+
     res.status(200).json({
       status: true,
-      message: "User login successfully",
+      message: "User logged in successfully",
       token,
-      user,
+      user: userData,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message, status: false });
+    console.error("Login Error:", error.message);
+    res
+      .status(500)
+      .json({ message: "An error occurred during login", status: false });
   }
 };
 
@@ -324,12 +343,10 @@ export const getUserLocation = async (req, res) => {
   try {
     const { lat, long } = req.body;
     if (!lat || !long) {
-      return res
-        .status(400)
-        .json({
-          message: "Latitude and longitude are required",
-          status: false,
-        });
+      return res.status(400).json({
+        message: "Latitude and longitude are required",
+        status: false,
+      });
     }
     const location = `https://www.google.com/maps?q=${lat},${long}`;
     console.log(location);
