@@ -312,16 +312,22 @@ const refundPayment = async (
 };
 
 const orderHistory = async (req, res) => {
-  console.log(req.user.userId);
   try {
     const orders = await Order.find({
-      userID: "6753e5e70e5f740cec1acdbf",
+      userID: req.user.userId,
     }).populate("products.product");
     if (orders) {
       return res.status(200).json({
         orders,
         status: true,
         message: "Orders found successfully",
+      });
+    }
+    if (orders.length === 0) {
+      return res.status(200).json({
+        orders: [],
+        status: true,
+        message: "No orders found",
       });
     }
   } catch (error) {

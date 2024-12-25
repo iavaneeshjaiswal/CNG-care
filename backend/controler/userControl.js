@@ -326,7 +326,10 @@ export const getUserLocation = async (req, res) => {
     if (!lat || !long) {
       return res
         .status(400)
-        .json({ message: "Latitude and longitude are required", status: false });
+        .json({
+          message: "Latitude and longitude are required",
+          status: false,
+        });
     }
     const location = `https://www.google.com/maps?q=${lat},${long}`;
     console.log(location);
@@ -338,3 +341,17 @@ export const getUserLocation = async (req, res) => {
   }
 };
 
+export const fetchUserDetail = async (req, res) => {
+  console.log(req.user.userId);
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(401).json({ message: "User not found", status: false });
+    }
+    return res
+      .status(200)
+      .json({ user, status: true, message: "User found successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};

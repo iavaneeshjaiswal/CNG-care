@@ -14,6 +14,7 @@ import {
   removeUser,
   resetpassword,
   updateAddress,
+  fetchUserDetail,
   getUserLocation,
 } from "./controler/userControl.js";
 import adminControl from "./controler/adminControl.js";
@@ -64,7 +65,9 @@ app.use(express.urlencoded({ extended: true }));
 // User routes
 app.post("/api/user/login", userLogin);
 app.get("/api/user/all-users", verifyUser, listUser);
+app.get("/api/user/user-detail", verifyUser, fetchUserDetail);
 app.post("/api/user/register", signup);
+app.get("/api/user/orderhistory", verifyUser, orderControl.orderHistory);
 app.delete("/api/user/remove-user/:id", verifyUser, removeUser);
 app.post("/api/user/send-otp", sendOtp);
 app.post("/api/user/reset-password", resetpassword);
@@ -108,7 +111,6 @@ app.post("/api/admin/logout", verifyUser, adminControl.logout);
 //Order Routes
 app.post("/api/verifyandorder", verifyUser, orderControl.VerifyAndAddOrder);
 app.get("/api/order", verifyUser, orderControl.viewOrders);
-app.get("/api/orderhistory", verifyUser, orderControl.orderHistory);
 app.get("/api/order/:id", verifyUser, orderControl.viewOrder);
 app.post(
   "/api/order/update-order-status/:id",
