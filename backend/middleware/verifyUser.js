@@ -15,21 +15,21 @@ export const verifyUser = (req, res, next) => {
 
   // If no token is provided, return 401 Unauthorized
   if (!token) {
-    return res.status(401).json({ message: "No token provided" });
+    return res.status(401).send({ message: "No token provided" });
   }
 
   // Verify the token using the secret key
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+  jwt.verify(token, SECRET_KEY, { algorithms: ["HS256"] }, (err, decoded) => {
     if (err) {
       // Handle specific token errors
       if (err.name === "TokenExpiredError") {
-        return res.status(401).json({ message: "Token expired" });
+        return res.status(401).send({ message: "Token expired" });
       }
       if (err.name === "JsonWebTokenError") {
-        return res.status(401).json({ message: "Invalid token" });
+        return res.status(401).send({ message: "Invalid token" });
       }
       // For other errors, return 403 Forbidden
-      return res.status(403).json({ message: "Failed to authenticate token" });
+      return res.status(403).send({ message: "Failed to authenticate token" });
     }
 
     // Attach decoded token information to the request object
@@ -38,3 +38,4 @@ export const verifyUser = (req, res, next) => {
     next();
   });
 };
+

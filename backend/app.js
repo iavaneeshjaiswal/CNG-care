@@ -115,7 +115,7 @@ app.post(
   orderControl.updateOrderStatus
 );
 app.delete("/api/order/:id", verifyUser, orderControl.deleteOrder);
-app.patch("/api/cancel-order/:id",  orderControl.cancelOrder);
+app.patch("/api/cancel-order/:id", verifyUser, orderControl.cancelOrder);
 //Transaction Routes
 app.get("/api/transaction", verifyUser, transactionControler.viewTransaction);
 app.post(

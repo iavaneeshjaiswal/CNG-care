@@ -13,7 +13,8 @@ const adminLogin = async (req, res) => {
       return res.status(401).json({ message: "Admin not found" });
     }
     // Check password
-    if (admin.password !== data.password) {
+    const match = await admin.comparePassword(data.password);
+    if (!match) {
       return res.status(401).json({ message: "Invalid password" });
     }
     // Generate JWT token
@@ -61,6 +62,9 @@ const removeAdmin = async (req, res) => {
   try {
     // Delete admin by ID
     const admin = await Admin.findByIdAndDelete(id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
     res.status(200).json({ admin });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -72,7 +76,12 @@ const updateAdmin = async (req, res) => {
   const { id } = req.params;
   try {
     // Update admin by ID
-    const admin = await Admin.findByIdAndUpdate(id, { ...req.body });
+    const admin = await Admin.findByIdAndUpdate(id, { ...req.body }, {
+      new: true,
+    });
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
     res.status(200).json({ admin });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -85,6 +94,9 @@ const admindetail = async (req, res) => {
   try {
     // Find admin by ID
     const admin = await Admin.findOne({ _id: id });
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
     res.status(200).json(admin);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -95,8 +107,8 @@ const admindetail = async (req, res) => {
 const logout = async (req, res) => {
   try {
     // Delete cookie
-    let cookies = req.cookies;
-    res.status(200).json({ message: "Logout successfully", cookies });
+    res.clearCookie("jwt");
+    res.status(200).json({ message: "Logout successfully" });
   } catch (error) {
     console.error("Error deleting cookie:", error.message);
     res.status(500).json({ message: error.message });

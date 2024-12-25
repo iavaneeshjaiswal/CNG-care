@@ -116,7 +116,6 @@ const VerifyAndAddOrder = async (req, res) => {
         userID: req.user.userId,
         orderID: newOrder._id,
         paymentID: razorpay_payment_id,
-        status: paymentStatus,
       });
 
       newOrder.transactionID = newTransaction._id;
@@ -263,9 +262,9 @@ const cancelOrder = async (req, res) => {
     await refundPayment(
       transaction.paymentID,
       transaction.amount,
-      transaction.orderID,
+      order._id,
       transaction._id,
-      "6753e5e70e5f740cec1acdbf"
+      order.userID
     );
 
     await order.save();
@@ -320,3 +319,4 @@ export default {
   updateOrderStatus,
   cancelOrder,
 };
+

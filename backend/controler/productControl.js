@@ -20,13 +20,14 @@ const addProduct = async (req, res) => {
 
     const { category, title, price, quantity, offerPrice, description, brand } =
       req.body;
-    let categoryOption = ["CNG", "LPG", "SPARE"];
+    const categoryOption = ["CNG", "LPG", "SPARE"];
     // Validate category
     if (!categoryOption.includes(category)) {
       return res.status(400).json({ message: "Invalid category option" });
     }
+
     // Create new product instance
-    let newProduct = new Product({
+    const newProduct = new Product({
       category,
       title,
       price,
@@ -52,12 +53,7 @@ const addProduct = async (req, res) => {
 const listProduct = async (req, res) => {
   try {
     const products = await Product.find();
-    if (!products) {
-      return res
-        .status(404)
-        .json({ message: "Product not found", status: false });
-    }
-    res.status(200).json({ products, status: true, message: "Product found" });
+    res.status(200).json({ products, status: true, message: "Products found" });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
@@ -67,13 +63,13 @@ const listProduct = async (req, res) => {
 const listSingleProduct = async (req, res) => {
   const { id } = req.params;
   try {
-    const product = await Product.findOne({ _id: id });
+    const product = await Product.findById(id);
     if (!product) {
-      return res.status(500).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
-    return res.status(200).json(product);
+    res.status(200).json(product);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -87,18 +83,15 @@ const removeProduct = async (req, res) => {
     }
 
     // Delete associated images
-    if (product.images && product.images.length > 0) {
-      const ProductImages = product.images;
-      ProductImages.forEach((imageUrl) => {
-        const fileName = path.basename(imageUrl);
-        const filePath = path.join(__dirname, "../uploads", fileName);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        } else {
-          console.log(`File not found: ${filePath}`);
-        }
-      });
-    }
+    product.images.forEach((imageUrl) => {
+      const fileName = path.basename(imageUrl);
+      const filePath = path.join(__dirname, "../uploads", fileName);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      } else {
+        console.log(`File not found: ${filePath}`);
+      }
+    });
 
     res.status(200).json({ message: "Product removed successfully" });
   } catch (error) {
@@ -118,6 +111,9 @@ const updateProduct = async (req, res) => {
       },
       { new: true }
     );
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
     res.status(200).json({ product });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -127,24 +123,21 @@ const updateProduct = async (req, res) => {
 // Controller to search products by title
 const searchProduct = async (req, res) => {
   const { query } = req.query;
-  console.log(query);
   if (!query) {
-    return res.status(400).json({ status: false, message: "Query not found" });
+    return res.status(400).json({ status: false, message: "Query not provided" });
   }
   try {
     const products = await Product.find({
       title: { $regex: query, $options: "i" },
     });
-    if (!products || products.length === 0) {
+    if (products.length === 0) {
       return res
-        .status(400)
-        .json({ status: false, message: "Product not found with this name" });
+        .status(404)
+        .json({ status: false, message: "No products found with this name" });
     }
-    return res
-      .status(200)
-      .json({ products, status: true, message: "Product found" });
+    res.status(200).json({ products, status: true, message: "Products found" });
   } catch (error) {
-    return res.status(500).json({ message: error.message, status: false });
+    res.status(500).json({ message: error.message, status: false });
   }
 };
 
