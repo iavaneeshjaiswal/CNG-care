@@ -1,31 +1,26 @@
-/**
- * Controller for transaction-related operations.
- *
- * @module transactionControler
- */
-
 import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
 import Product from "../models/product.js";
 import { v4 as uuidv4 } from "uuid";
 
-/**
- * View all transactions.
- *
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- */
 const viewTransaction = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
 
-    // Find all transactions, skip the first 'skip' number of documents,
-    // and limit the result to 'limit' number of documents.
-    const transactions = await Transaction.find()
+    const transactions = await Transaction.find(
+      {},
+      "_id amount  status userID paymentID orderID createdAt"
+    )
       .skip(skip)
       .limit(limit)
-      .populate("userID");
+      .populate("userID", "fullName");
+
+    if (!transactions || transactions.length === 0) {
+      return res
+        .status(404)
+        .json({ status: false, message: "No transactions found" });
+    }
 
     res.status(200).json({
       status: true,
@@ -104,4 +99,3 @@ const createRazorpayOrder = async (req, res) => {
 };
 
 export default { viewTransaction, createRazorpayOrder };
-

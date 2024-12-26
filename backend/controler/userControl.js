@@ -3,9 +3,11 @@ import jwt from "jsonwebtoken";
 import twilio from "twilio";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+dotenv.config();
+import { generateTokens } from "../utils/Tokens.js";
 import sendMail from "../utils/sendMail.js";
 import { getOtpEmailtemp } from "../utils/emailTemplate.js";
-dotenv.config();
+import BlockedToken from "../models/blockedToken.js";
 
 // Initialize Twilio client
 const client = twilio(
@@ -34,9 +36,10 @@ export const userLogin = async (req, res) => {
     }
 
     // Find user by email
-    const user = await User.findOne({ email: email.toLowerCase() }).select(
-      "+password"
-    ); // Ensure password is selected
+    const user = await User.findOne(
+      { email },
+      "_id fullName number email password address"
+    );
 
     if (!user) {
       return res
@@ -52,12 +55,7 @@ export const userLogin = async (req, res) => {
         .json({ message: "Invalid email or password", status: false });
     }
 
-    // Generate JWT token with expiry
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" } // Token valid for 1 hour
-    );
+    const { accessToken, refreshToken } = generateTokens(user);
 
     // Exclude password from the user object before sending response
     const { password: _, ...userData } = user.toObject();
@@ -65,7 +63,8 @@ export const userLogin = async (req, res) => {
     res.status(200).json({
       status: true,
       message: "User logged in successfully",
-      token,
+      accessToken,
+      refreshToken,
       user: userData,
     });
   } catch (error) {
@@ -133,12 +132,15 @@ export const signup = async (req, res) => {
     // Save new user to database
     await newUser.save();
     // Generate JWT token
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
+    const { accessToken, refreshToken } = generateTokens(newUser);
+
+    // Send email with OTP
     res.status(201).json({
       status: true,
       message: "User created successfully",
       user: newUser,
-      token,
+      accessToken,
+      refreshToken,
     });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
@@ -231,9 +233,12 @@ export const verifyOtp = async (req, res) => {
 // List all users
 export const listUser = async (req, res) => {
   try {
-    // Retrieve all users
-    const users = await User.find();
-    if (!users) {
+    const { page = 1, limit = 15 } = req.query;
+    const skip = (page - 1) * limit;
+    const users = await User.find({}, "_id fullName number email address")
+      .skip(skip)
+      .limit(limit);
+    if (!users || users.length === 0) {
       return res.status(404).json({ message: "No users found", status: false });
     }
     return res
@@ -361,7 +366,10 @@ export const getUserLocation = async (req, res) => {
 export const fetchUserDetail = async (req, res) => {
   console.log(req.user.userId);
   try {
-    const user = await User.findById(req.user.userId);
+    const user = await User.findOne(
+      { _id: req.user.userId },
+      "_id fullName number email address"
+    );
     if (!user) {
       return res.status(401).json({ message: "User not found", status: false });
     }
@@ -369,6 +377,27 @@ export const fetchUserDetail = async (req, res) => {
       .status(200)
       .json({ user, status: true, message: "User found successfully" });
   } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+export const logout = async (req, res) => {
+  if (!req.body.token) {
+    return res
+      .status(400)
+      .json({ message: "Token is required", status: false });
+  }
+  try {
+    // Delete cookie
+    const newblocked = await BlockedToken.create({
+      token: req.body.token,
+    });
+    newblocked.save();
+    return res
+      .status(200)
+      .json({ message: "Logout successfully", status: true });
+  } catch (error) {
+    console.error("Error deleting cookie:", error.message);
     return res.status(500).json({ message: error.message, status: false });
   }
 };

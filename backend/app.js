@@ -23,6 +23,7 @@ import orderControl from "./controler/orderControl.js";
 import transactionControler from "./controler/transactionControler.js";
 import { verifyUser } from "./middleware/verifyUser.js";
 import checkRole from "./middleware/authAdmin.js";
+import { refreshTokens } from "./utils/Tokens.js";
 dotenv.config();
 
 const storage = multer.diskStorage({
@@ -73,6 +74,7 @@ app.post("/api/user/send-otp", sendOtp);
 app.post("/api/user/reset-password", resetpassword);
 app.put("/api/user/update-address", verifyUser, updateAddress);
 app.get("/api/user/location", verifyUser, getUserLocation);
+app.post("/api/user/logout", verifyUser, adminControl.logout);
 
 // Admin routes
 app.post("/api/admin/login", adminControl.adminLogin);
@@ -151,6 +153,9 @@ app.put(
   verifyUser,
   productControl.updateProduct
 );
+
+//protection route
+app.post("/api/protected", refreshTokens);
 
 //server
 app.listen(port, () => {

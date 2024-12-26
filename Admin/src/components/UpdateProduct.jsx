@@ -18,15 +18,14 @@ export default function UpdateProduct({ id }) {
     setValue,
   } = useForm();
 
-  const categoryOptions = ["CNG", "LPG"];
+  const categoryOptions = ["CNG", "LPG", "SPARE"];
 
   useEffect(() => {
     (async function () {
       try {
         const product = await axios.get(`${url}/product/get-product/${id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            id: localStorage.getItem("id"),
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
         setWait(true);
@@ -114,7 +113,9 @@ export default function UpdateProduct({ id }) {
                 className="p-2 rounded focus:outline-none w-full border-2 bg-gray-200 border-gray-400 focus:border-black"
               />
               {errors.quantity && (
-                <p className="text-red-400 text-sm">{errors.quantity.message}</p>
+                <p className="text-red-400 text-sm">
+                  {errors.quantity.message}
+                </p>
               )}
             </div>
             <div className="flex flex-col gap-2 w-1/2">
@@ -130,7 +131,9 @@ export default function UpdateProduct({ id }) {
                 ))}
               </select>
               {errors.category && (
-                <p className="text-red-400 text-sm">{errors.category.message}</p>
+                <p className="text-red-400 text-sm">
+                  {errors.category.message}
+                </p>
               )}
             </div>
           </div>
@@ -139,11 +142,15 @@ export default function UpdateProduct({ id }) {
             <textarea
               placeholder="Enter Description"
               rows="4"
-              {...register("description", { required: "Description is required" })}
+              {...register("description", {
+                required: "Description is required",
+              })}
               className="p-2 rounded focus:outline-none bg-gray-200 border-2 border-gray-400 focus:border-black w-full"
             ></textarea>
             {errors.description && (
-              <p className="text-red-400 text-sm">{errors.description.message}</p>
+              <p className="text-red-400 text-sm">
+                {errors.description.message}
+              </p>
             )}
           </div>
           <button

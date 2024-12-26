@@ -1,5 +1,3 @@
-import jwt from "jsonwebtoken";
-
 const SECRET_KEY = process.env.JWT_SECRET;
 
 if (!SECRET_KEY) {
@@ -26,5 +24,5 @@ const checkRole = (requiredRoles) => {
       .json({ message: "Forbidden: You do not have permission" });
   };
 };
-export default checkRole;
 
+export default checkRole;

@@ -15,7 +15,7 @@ function OrderDetail() {
       try {
         const { data } = await axios.get(`${url}/order/${id}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
         setOrderDetail(data.order);
@@ -37,7 +37,7 @@ function OrderDetail() {
         { orderStatus: e.target.value },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         }
       );

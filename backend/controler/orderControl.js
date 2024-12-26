@@ -205,9 +205,10 @@ const deleteOrder = async (req, res) => {
 
 const viewOrder = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id)
-      .populate("products.product")
-      .populate("userID");
+    const order = await Order.findById(
+      req.params.id,
+      "_id products createdAt orderStatus paymentStatus totalAmount address paymentStatus transactionID"
+    ).populate("products.product", "title price images").populate("userID","fullName number") ;
     if (order) {
       return res.status(200).json({
         order,
@@ -309,9 +310,12 @@ const refundPayment = async (
 
 const orderHistory = async (req, res) => {
   try {
-    const orders = await Order.find({
-      userID: req.user.userId,
-    }).populate("products.product");
+    const orders = await Order.find(
+      {
+        userID: req.user.userId,
+      },
+      "_id products createdAt"
+    ).populate("products.product", "title price images");
     if (orders.length === 0) {
       return res.status(200).json({
         orders: [],

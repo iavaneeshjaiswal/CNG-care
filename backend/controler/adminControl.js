@@ -1,31 +1,32 @@
-import jwt from "jsonwebtoken";
 import Admin from "../models/admin.js";
+import { generateTokens } from "../utils/Tokens.js";
 import dotenv from "dotenv";
+import BlockedToken from "../models/blockedToken.js";
 dotenv.config();
 
 // Admin login function
 const adminLogin = async (req, res) => {
-  const { data } = req.body;
   try {
     // Find admin by username
-    const admin = await Admin.findOne({ username: data.username });
+    const admin = await Admin.findOne(
+      { username: req.body.data.username },
+      "_id role username password"
+    );
     if (!admin) {
       return res.status(401).json({ message: "Admin not found" });
     }
     // Check password
-    const match = await admin.comparePassword(data.password);
-    if (!match) {
+
+    if (req.body.data.password !== admin.password) {
       return res.status(401).json({ message: "Invalid password" });
     }
     // Generate JWT token
-    const token = jwt.sign(
-      { id: admin._id, username: admin.username, role: admin.role },
-      process.env.JWT_SECRET
-    );
+    const { accessToken, refreshToken } = generateTokens(admin);
     res.status(200).json({
       success: true,
       message: "Admin login successfully",
-      token,
+      accessToken,
+      refreshToken,
       admin,
     });
   } catch (error) {
@@ -35,6 +36,24 @@ const adminLogin = async (req, res) => {
 
 // Add new admin
 const addAdmin = async (req, res) => {
+  const { name, username, password, role } = req.body;
+
+  // Validation
+  if (!name || !username || !password || !role) {
+    return res
+      .status(400)
+      .json({ message: "Name, username, password and role are required" });
+  }
+
+  const passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+  if (!passwordPattern.test(password)) {
+    return res.status(400).json({
+      message:
+        "Password must have at least 6 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+    });
+  }
+
   try {
     // Create new admin
     let newAdmin = new Admin({ ...req.body });
@@ -76,9 +95,13 @@ const updateAdmin = async (req, res) => {
   const { id } = req.params;
   try {
     // Update admin by ID
-    const admin = await Admin.findByIdAndUpdate(id, { ...req.body }, {
-      new: true,
-    });
+    const admin = await Admin.findByIdAndUpdate(
+      id,
+      { ...req.body },
+      {
+        new: true,
+      }
+    );
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
@@ -105,13 +128,19 @@ const admindetail = async (req, res) => {
 
 // Logout admin
 const logout = async (req, res) => {
+  if (!req.body.token) {
+    return res.status(400).json({ message: "Token is required" });
+  }
   try {
     // Delete cookie
-    res.clearCookie("jwt");
-    res.status(200).json({ message: "Logout successfully" });
+    const newblocked = await BlockedToken.create({
+      token: req.body.token,
+    });
+    newblocked.save();
+    res.status(200).json({ message: "Logout successfully", status: true });
   } catch (error) {
     console.error("Error deleting cookie:", error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message, status: false });
   }
 };
 
@@ -124,4 +153,3 @@ export default {
   admindetail,
   logout,
 };
-

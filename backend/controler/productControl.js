@@ -52,7 +52,13 @@ const addProduct = async (req, res) => {
 // Controller to list all products
 const listProduct = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find(
+      {},
+      "_id category brand title price quantity description images"
+    );
+    if (products.length === 0 || !products) {
+      return res.status(404).json({ message: "No products found" });
+    }
     res.status(200).json({ products, status: true, message: "Products found" });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
@@ -124,7 +130,9 @@ const updateProduct = async (req, res) => {
 const searchProduct = async (req, res) => {
   const { query } = req.query;
   if (!query) {
-    return res.status(400).json({ status: false, message: "Query not provided" });
+    return res
+      .status(400)
+      .json({ status: false, message: "Query not provided" });
   }
   try {
     const products = await Product.find({
@@ -167,4 +175,3 @@ export default {
   listSingleProduct,
   addBulkProduct,
 };
-

@@ -20,21 +20,16 @@ export default function UpdateAdmin() {
 
   const [Role, setRole] = useState("");
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
     setRole(localStorage.getItem("role"));
   }, []);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
     (async function () {
       const admin = await axios.get(`${url}/admin/admindetail/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          id: localStorage.getItem("id"),
         },
       });
       setIswait(!iswait);

@@ -1,41 +1,33 @@
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+import BlockedToken from "../models/blockedToken.js";
 
-const SECRET_KEY = process.env.JWT_SECRET;
-
-if (!SECRET_KEY) {
-  throw new Error("JWT_SECRET is not defined in environment variables.");
-}
-
-export const verifyUser = (req, res, next) => {
-  // Retrieve token from Authorization header or cookies
-  const authHeader = req.headers.authorization;
+export const verifyUser = async (req, res, next) => {
+  const authHeader = req.headers["authorization"];
   const token = authHeader?.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
     : req.cookies?.token;
 
-  // If no token is provided, return 401 Unauthorized
-  if (!token) {
-    return res.status(401).send({ message: "No token provided" });
-  }
+  if (!token)
+    return res.status(401).json({ message: "Access Token is required" });
 
-  // Verify the token using the secret key
-  jwt.verify(token, SECRET_KEY, { algorithms: ["HS256"] }, (err, decoded) => {
-    if (err) {
-      // Handle specific token errors
-      if (err.name === "TokenExpiredError") {
-        return res.status(401).send({ message: "Token expired" });
-      }
-      if (err.name === "JsonWebTokenError") {
-        return res.status(401).send({ message: "Invalid token" });
-      }
-      // For other errors, return 403 Forbidden
-      return res.status(403).send({ message: "Failed to authenticate token" });
+  try {
+    // Check if token is blocked
+    const checkToken = await BlockedToken.findOne({ token });
+    if (checkToken) {
+      return res.status(401).json({ message: "Access Token is blocked" });
     }
 
-    // Attach decoded token information to the request object
-    req.user = decoded;
-    // Proceed to the next middleware
+    // Verify token and specify algorithms
+    const user = jwt.verify(token, ACCESS_TOKEN_SECRET, {
+      algorithms: ["HS256"],
+    });
+    req.user = user;
     next();
-  });
+  } catch (err) {
+    console.error("Token verification failed:", err.message);
+    return res.status(403).json({ message: "Invalid or expired Access Token" });
+  }
 };
-

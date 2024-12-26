@@ -1,16 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import Navbar from "../components/Navbar";
 import Adminlist from "../components/Adminlist";
-import { useNavigate } from "react-router-dom";
-import { Admincontext } from "../contexts/admincontext";
-
 export default function Admin() {
-  const navigate = useNavigate();
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
     setRole(localStorage.getItem("role"));
   }, []);
   const [role, setRole] = useState("");

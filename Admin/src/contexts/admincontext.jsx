@@ -9,15 +9,16 @@ export const AdminProvider = (props) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const url = import.meta.env.VITE_APP_URL;
 
-  const [token] = useState(localStorage.getItem("token"));
+  const [token] = useState(localStorage.getItem("accessToken"));
+  const [refreshtoken] = useState(localStorage.getItem("refreshtoken"));
   const admintype = useState(localStorage.getItem("role"));
+
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
         const res = await axios.get(`${url}/admin/list-admin`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            id: localStorage.getItem("id"),
           },
         });
         setAdmins(res.data);
@@ -34,7 +35,6 @@ export const AdminProvider = (props) => {
       const res = await axios.get(`${url}/admin/list-admin`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          id: localStorage.getItem("id"),
         },
       });
       setAdmins(res.data);
@@ -49,7 +49,6 @@ export const AdminProvider = (props) => {
       .delete(`${url}/admin/remove-admin/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          id: localStorage.getItem("id"),
         },
       })
       .then(() => updateadminState())
@@ -63,7 +62,6 @@ export const AdminProvider = (props) => {
         .post(`${url}/admin/add-admin`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
-            id: localStorage.getItem("id"),
           },
         })
         .then(() => {
@@ -85,7 +83,6 @@ export const AdminProvider = (props) => {
         .put(`${url}/admin/update-admin/${id}`, data, {
           headers: {
             Authorization: `Bearer ${token}`,
-            id: localStorage.getItem("id"),
           },
         })
         .then(() => updateadminState())
@@ -98,19 +95,11 @@ export const AdminProvider = (props) => {
 
   const login = async (data) => {
     try {
-      const response = await axios.post(
-        `${url}/admin/login`,
-        { data },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.post(`${url}/admin/login`, { data });
       if (response && response.data.success) {
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refressToken", response.data.refreshToken);
         localStorage.setItem("role", response.data.admin.role);
-        localStorage.setItem("id", response.data.admin._id);
         window.location.href = "/";
       }
       return response;
@@ -121,9 +110,21 @@ export const AdminProvider = (props) => {
 
   const logout = async () => {
     try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      localStorage.removeItem("id");
+      const response = await axios.post(
+        `${url}/admin/logout`,
+        { token },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      console.log(response);
+      if (response && response.data.status) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refressToken");
+        localStorage.removeItem("role");
+      }
     } catch (error) {
       console.error("Error deleting cookie:", error);
     }

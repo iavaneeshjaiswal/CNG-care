@@ -24,11 +24,7 @@ export default function NewAdmin() {
 
   const [Role, setRole] = useState("");
   useEffect(() => {
-    const token = localStorage.getItem("token");
     setRole(localStorage.getItem("role"));
-    if (!token) {
-      navigate("/login");
-    }
   }, []);
 
   return (

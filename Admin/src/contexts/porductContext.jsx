@@ -6,7 +6,7 @@ export const ProductContext = createContext(null);
 export const ProductProvider = (props) => {
   const [Products, setProducts] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [token] = useState(localStorage.getItem("token"));
+  const [token] = useState(localStorage.getItem("accessToken"));
   const url = import.meta.env.VITE_APP_URL;
 
   useEffect(() => {
@@ -19,7 +19,6 @@ export const ProductProvider = (props) => {
           },
         });
         setProducts(res.data.products);
-        console.log(url + res.data.products);
         setIsLoaded(true);
       } catch (err) {
         console.log(err);
