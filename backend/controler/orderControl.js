@@ -23,7 +23,6 @@ const VerifyAndAddOrder = async (req, res) => {
       address,
     } = req.body;
     // Validation
-    console.log(req.body);
     if (
       !products ||
       !razorpay_payment_id ||
@@ -161,7 +160,6 @@ const VerifyAndAddOrder = async (req, res) => {
         : "Payment verification failed, order saved with failed status";
 
     const statusCode = paymentStatus === "success" ? 200 : 400;
-    console.log(statusCode);
     return res.status(statusCode).json({
       status: paymentStatus === "success",
       message: responseMessage,

@@ -292,7 +292,6 @@ export const updateAddress = async (req, res) => {
 // Reset user password
 export const resetpassword = async (req, res) => {
   const { credential, new_password, VerifyToken, otp } = req.body;
-  console.log(credential);
   try {
     // Verify the token
     const verify = jwt.verify(VerifyToken, process.env.JWT_SECRET);
@@ -364,7 +363,6 @@ export const getUserLocation = async (req, res) => {
 };
 
 export const fetchUserDetail = async (req, res) => {
-  console.log(req.user.userId);
   try {
     const user = await User.findOne(
       { _id: req.user.userId },
