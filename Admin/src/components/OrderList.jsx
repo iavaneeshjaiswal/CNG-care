@@ -12,14 +12,21 @@ function OrderList() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      setIsLoading(true);
-      const { data } = await axios.get(`${url}/order`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
-      setOrders(data.orders);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const { data } = await axios.get(`${url}/order`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        setOrders(data.orders);
+        setIsLoading(false);
+      } catch (error) {
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+        }
+      }
     };
     fetchOrders();
     const interval = setInterval(fetchOrders, 5 * 60 * 1000);
@@ -61,7 +68,7 @@ function OrderList() {
             <option value="Order Shipped">Order Shipped</option>
             <option value="Out For Delivery">Out For Delivery</option>
             <option value="Delivered">Delivered</option>
-            <option value="cancelled">cancelled</option>
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
         <p className="text-lg font-bold text-start my-2 w-full ">
@@ -105,7 +112,9 @@ function OrderList() {
                           ? "text-red-500"
                           : order.orderStatus === "cancelled"
                           ? "text-yellow-500"
-                          : "text-green-500"
+                          : order.orderStatus === "Out For Delivery"
+                          ? "text-green-500"
+                          : "text-black"
                       }`}
                     >
                       {order.orderStatus}

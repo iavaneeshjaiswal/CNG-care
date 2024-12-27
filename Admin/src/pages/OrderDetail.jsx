@@ -22,6 +22,10 @@ function OrderDetail() {
         setDeliveryStatus(data.order.orderStatus);
       } catch (error) {
         console.error("Error fetching order detail:", error);
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -44,6 +48,10 @@ function OrderDetail() {
       window.location.reload();
     } catch (error) {
       console.error("Error updating delivery status:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("role");
+      }
     }
   };
 

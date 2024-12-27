@@ -14,12 +14,17 @@ export const UserProvider = (props) => {
       .get(`${url}/user/all-users`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          id: localStorage.getItem("id"),
         },
       })
       .then((res) => setUsers(res.data.users))
       .then(() => setIsloaded(true))
-      .catch((err) => console.log(err));
+      .catch((error) => {
+        console.log(error);
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+        }
+      });
   }, []);
 
   const updateUserState = async () => {
@@ -27,7 +32,6 @@ export const UserProvider = (props) => {
     const res = await axios.get(`${url}/user/all-users`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        id: localStorage.getItem("id"),
       },
     });
     setUsers(res.data.users);
@@ -38,12 +42,17 @@ export const UserProvider = (props) => {
       .delete(`${url}/user/remove-user/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          id: localStorage.getItem("id"),
         },
       })
       .then(() => updateUserState())
       .then(() => setIsloaded(true))
-      .catch((err) => console.log(err));
+      .catch((error) => {
+        console.log(error);
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+        }
+      });
   };
 
   return (

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 
 function TransactionList() {
   const [transaction, setTransactions] = useState([]);
@@ -9,14 +8,21 @@ function TransactionList() {
   const url = import.meta.env.VITE_APP_URL;
   useEffect(() => {
     const fetchTransaction = async () => {
-      setIsLoading(true);
-      const { data } = await axios.get(`${url}/transaction`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
-      setTransactions(data.transactions);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const { data } = await axios.get(`${url}/transaction`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        setTransactions(data.transactions);
+        setIsLoading(false);
+      } catch (error) {
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+        }
+      }
     };
     fetchTransaction();
     const interval = setInterval(fetchTransaction, 5 * 60 * 1000);

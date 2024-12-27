@@ -6,8 +6,8 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 // Token expiry times
-const ACCESS_TOKEN_EXPIRY = "15min"; // Short-lived
-const REFRESH_TOKEN_EXPIRY = "15d"; // Longer-lived
+const ACCESS_TOKEN_EXPIRY = "1d";
+const REFRESH_TOKEN_EXPIRY = "15d";
 
 // Middleware to generate tokens
 const generateTokens = (user) => {

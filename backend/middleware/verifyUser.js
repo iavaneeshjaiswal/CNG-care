@@ -9,10 +9,8 @@ export const verifyUser = async (req, res, next) => {
   const token = authHeader?.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
     : req.cookies?.token;
-
   if (!token)
     return res.status(401).json({ message: "Access Token is required" });
-
   try {
     // Check if token is blocked
     const checkToken = await BlockedToken.findOne({ token });
@@ -21,9 +19,7 @@ export const verifyUser = async (req, res, next) => {
     }
 
     // Verify token and specify algorithms
-    const user = jwt.verify(token, ACCESS_TOKEN_SECRET, {
-      algorithms: ["HS256"],
-    });
+    const user = jwt.verify(token, ACCESS_TOKEN_SECRET);
     req.user = user;
     next();
   } catch (err) {

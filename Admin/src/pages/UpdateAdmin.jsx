@@ -27,16 +27,23 @@ export default function UpdateAdmin() {
 
   useEffect(() => {
     (async function () {
-      const admin = await axios.get(`${url}/admin/admindetail/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setIswait(!iswait);
-      setValue("name", admin.data.name);
-      setValue("password", admin.data.password);
-      setValue("role", admin.data.role);
-      setValue("username", admin.data.username);
+      try {
+        const admin = await axios.get(`${url}/admin/admindetail/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setIswait(!iswait);
+        setValue("name", admin.data.name);
+        setValue("password", admin.data.password);
+        setValue("role", admin.data.role);
+        setValue("username", admin.data.username);
+      } catch (error) {
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+        }
+      }
     })();
   }, [id]);
 

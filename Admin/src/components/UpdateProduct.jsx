@@ -38,6 +38,10 @@ export default function UpdateProduct({ id }) {
         setImgURl(product.data.images[0]);
       } catch (error) {
         console.error("Error fetching product details:", error);
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+        }
       }
     })();
   }, [id]);

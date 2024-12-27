@@ -9,8 +9,10 @@ export const AdminProvider = (props) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const url = import.meta.env.VITE_APP_URL;
 
-  const [token] = useState(localStorage.getItem("accessToken"));
-  const [refreshtoken] = useState(localStorage.getItem("refreshtoken"));
+  const [token, setToken] = useState(localStorage.getItem("accessToken"));
+  const [refreshtoken, setRefreshtoken] = useState(
+    localStorage.getItem("refreshtoken")
+  );
   const admintype = useState(localStorage.getItem("role"));
 
   useEffect(() => {
@@ -25,6 +27,10 @@ export const AdminProvider = (props) => {
         setIsloaded(true);
       } catch (err) {
         console.log(err);
+        if (err.response.status === 403 || err.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          setToken(null);
+        }
       }
     };
     fetchAdmins();
@@ -41,6 +47,10 @@ export const AdminProvider = (props) => {
       setIsloaded(true);
     } catch (error) {
       console.error("Error fetching admin list:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        setToken(null);
+      }
     }
   };
 
@@ -53,7 +63,13 @@ export const AdminProvider = (props) => {
       })
       .then(() => updateadminState())
       .then(() => setIsloaded(true))
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        if (err.response.status === 403 || err.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          setToken(null);
+        }
+      });
   };
 
   const addAdmin = async (data) => {
@@ -74,6 +90,10 @@ export const AdminProvider = (props) => {
       console.log(res);
     } catch (error) {
       alert("Error adding user:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        setToken(null);
+      }
     }
   };
 
@@ -90,21 +110,29 @@ export const AdminProvider = (props) => {
         .then(() => alert("Admin Updated Successfully"));
     } catch (error) {
       alert("Error updating Admin:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        setToken(null);
+      }
     }
   };
 
   const login = async (data) => {
     try {
       const response = await axios.post(`${url}/admin/login`, { data });
+      console.log(response);
       if (response && response.data.success) {
         localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refressToken", response.data.refreshToken);
         localStorage.setItem("role", response.data.admin.role);
         window.location.href = "/";
       }
       return response;
     } catch (error) {
       console.log(error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        setToken(null);
+      }
     }
   };
 
@@ -127,6 +155,10 @@ export const AdminProvider = (props) => {
       }
     } catch (error) {
       console.error("Error deleting cookie:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        setToken(null);
+      }
     }
   };
   const role = ["super admin", "sub Admin", "manager", "admin"];
@@ -152,3 +184,4 @@ export const AdminProvider = (props) => {
     </Admincontext.Provider>
   );
 };
+

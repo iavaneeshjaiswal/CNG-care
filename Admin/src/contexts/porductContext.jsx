@@ -15,27 +15,38 @@ export const ProductProvider = (props) => {
         const res = await axios.get(`${url}/product/list-products`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            id: localStorage.getItem("id"),
           },
         });
         setProducts(res.data.products);
         setIsLoaded(true);
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.log(error);
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+        }
       }
     };
     fetchProducts();
   }, []);
 
   const updateproductState = async () => {
-    const res = await axios.get(`${url}/product/list-products`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        id: localStorage.getItem("id"),
-      },
-    });
-    setProducts(res.data.products);
-    setIsLoaded(true);
+    try {
+      const res = await axios.get(`${url}/product/list-products`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setProducts(res.data.products);
+      setIsLoaded(true);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("role");
+        setToken(null);
+      }
+    }
   };
 
   const remove_product = (id) => {
@@ -48,13 +59,19 @@ export const ProductProvider = (props) => {
       })
       .then(() => updateproductState())
       .then(() => setIsLoaded(true))
-      .catch((err) => console.log(err));
+      .catch((error) => {
+        console.log(error);
+        if (error.response.status === 403 || error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+          setToken(null);
+        }
+      });
   };
 
   const addProduct = async (data) => {
-    console.log(data);
     try {
-      await axios
+      const res = await axios
         .post(`${url}/product/add-product`, data, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -66,6 +83,11 @@ export const ProductProvider = (props) => {
         .then(() => alert("Product uploaded successfully"));
     } catch (error) {
       alert("Error uploading product:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("role");
+        setToken(null);
+      }
     }
   };
 
@@ -83,6 +105,11 @@ export const ProductProvider = (props) => {
         .then(() => alert("Product Updated Successfully"));
     } catch (error) {
       alert("Error updating product:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("role");
+        setToken(null);
+      }
     }
   };
 
