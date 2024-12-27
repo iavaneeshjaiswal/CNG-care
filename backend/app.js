@@ -27,10 +27,10 @@ import { refreshTokens } from "./utils/Tokens.js";
 dotenv.config();
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_, __, cb) => {
     cb(null, "uploads/");
   },
-  filename: (req, file, cb) => {
+  filename: (_, file, cb) => {
     const fileExtension = path.extname(file.originalname).toLowerCase();
     const allowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
 
@@ -54,7 +54,7 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
-app.use((req, res, next) => {
+app.use((_, res, next) => {
   res.header("Access-Control-Allow-Credentials", "true");
   next();
 });
