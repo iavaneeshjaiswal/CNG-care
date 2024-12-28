@@ -60,7 +60,9 @@ const addAdmin = async (req, res) => {
     await newAdmin.save();
     res.status(201).json({ message: "Admin created successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Admin not created" });
+    res
+      .status(500)
+      .json({ message: "Admin not created", error: error.message });
   }
 };
 
@@ -84,7 +86,7 @@ const removeAdmin = async (req, res) => {
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
-    res.status(200).json({ admin });
+    res.status(200).json({ message: "Admin deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -105,7 +107,7 @@ const updateAdmin = async (req, res) => {
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
-    res.status(200).json({ admin });
+    res.status(200).json({ message: "Admin updated successfully", admin });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -127,20 +129,35 @@ const admindetail = async (req, res) => {
 };
 
 // Logout admin
-const logout = async (req, res) => {
-  if (!req.body.token) {
-    return res.status(400).json({ message: "Token is required" });
+export const logout = async (req, res) => {
+  if (!req.body.token || !req.user.userId) {
+    return res
+      .status(400)
+      .json({ message: "Token and user ID is required", status: false });
   }
   try {
-    // Delete cookie
+    const admin = await Admin.findById(req.user.userId);
+    if (!admin) {
+      return res
+        .status(401)
+        .json({ message: "Admin not found", status: false });
+    }
+    const findtoken = await BlockedToken.findOne({ token: req.body.token });
+    if (findtoken) {
+      return res
+        .status(401)
+        .json({ message: "Token already blocked", status: false });
+    }
     const newblocked = await BlockedToken.create({
       token: req.body.token,
     });
-    newblocked.save();
-    res.status(200).json({ message: "Logout successfully", status: true });
+    await newblocked.save();
+    return res
+      .status(200)
+      .json({ message: "Logout successfully", status: true });
   } catch (error) {
     console.error("Error deleting cookie:", error.message);
-    res.status(500).json({ message: error.message, status: false });
+    return res.status(500).json({ message: error.message, status: false });
   }
 };
 

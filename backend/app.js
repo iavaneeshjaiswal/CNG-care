@@ -14,6 +14,7 @@ import {
   sendOtp,
   listUser,
   removeUser,
+  logout,
   resetpassword,
   updateAddress,
   fetchUserDetail,
@@ -95,7 +96,7 @@ if (cluster.isMaster) {
   app.post("/api/user/reset-password", resetpassword);
   app.put("/api/user/update-address", verifyUser, updateAddress);
   app.get("/api/user/location", verifyUser, getUserLocation);
-  app.post("/api/user/logout", verifyUser, adminControl.logout);
+  app.post("/api/user/logout", verifyUser, logout);
 
   // Admin routes
   app.post("/api/admin/login", adminControl.adminLogin);
@@ -135,7 +136,7 @@ if (cluster.isMaster) {
   app.post("/api/verifyandorder", verifyUser, orderControl.VerifyAndAddOrder);
   app.get("/api/order", verifyUser, orderControl.viewOrders);
   app.get("/api/order/:id", verifyUser, orderControl.viewOrder);
-  app.post(
+  app.patch(
     "/api/order/update-order-status/:id",
     verifyUser,
     orderControl.updateOrderStatus

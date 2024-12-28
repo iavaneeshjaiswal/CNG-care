@@ -353,7 +353,6 @@ export const getUserLocation = async (req, res) => {
       });
     }
     const location = `https://www.google.com/maps?q=${lat},${long}`;
-    console.log(location);
     return res
       .status(200)
       .json({ location, status: true, message: "Location found" });
@@ -380,17 +379,26 @@ export const fetchUserDetail = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  if (!req.body.token) {
+  if (!req.body.token || !req.user.userId) {
     return res
       .status(400)
-      .json({ message: "Token is required", status: false });
+      .json({ message: "Token and user ID is required", status: false });
   }
   try {
-    // Delete cookie
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(401).json({ message: "User not found", status: false });
+    }
+    const findtoken = await BlockedToken.findOne({ token: req.body.token });
+    if (findtoken) {
+      return res
+        .status(401)
+        .json({ message: "Token already blocked", status: false });
+    }
     const newblocked = await BlockedToken.create({
       token: req.body.token,
     });
-    newblocked.save();
+    await newblocked.save();
     return res
       .status(200)
       .json({ message: "Logout successfully", status: true });

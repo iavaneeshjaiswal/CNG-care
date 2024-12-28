@@ -11,7 +11,6 @@ const REFRESH_TOKEN_EXPIRY = "15d";
 
 // Middleware to generate tokens
 const generateTokens = (user) => {
-  console.log(ACCESS_TOKEN_SECRET);
   const accessToken = jwt.sign(
     {
       userId: user._id,

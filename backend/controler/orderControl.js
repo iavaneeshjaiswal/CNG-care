@@ -176,8 +176,8 @@ const VerifyAndAddOrder = async (req, res) => {
 const viewOrders = async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate("userID")
-      .populate("products.product");
+      .populate("userID", "_id fullName number")
+      .populate("products.product", "title price images");
     if (orders) {
       return res.status(200).json({
         orders,
@@ -206,7 +206,9 @@ const viewOrder = async (req, res) => {
     const order = await Order.findById(
       req.params.id,
       "_id products createdAt orderStatus paymentStatus totalAmount address paymentStatus transactionID"
-    ).populate("products.product", "title price images").populate("userID","fullName number") ;
+    )
+      .populate("products.product", "title price images")
+      .populate("userID", "fullName number");
     if (order) {
       return res.status(200).json({
         order,
