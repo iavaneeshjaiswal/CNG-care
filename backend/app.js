@@ -26,6 +26,11 @@ import orderControl from "./controler/orderControl.js";
 import transactionControler from "./controler/transactionControler.js";
 import { verifyUser } from "./middleware/verifyUser.js";
 import checkRole from "./middleware/authAdmin.js";
+import {
+  createWorkshop,
+  loginWorkshop,
+  logoutWorkshop,
+} from "./controler/workshopController.js";
 import { refreshTokens } from "./utils/Tokens.js";
 
 dotenv.config();
@@ -179,6 +184,11 @@ if (cluster.isMaster) {
 
   // Protection route
   app.post("/api/protected", refreshTokens);
+
+  //workshop Routes
+  app.post("/api/workshop", upload.array("images", 2), createWorkshop);
+  app.post("/api/workshop/login", loginWorkshop);
+  app.post("/api/workshop/logout", verifyUser, logoutWorkshop);
 
   // Start the server
   app.listen(port, () => {

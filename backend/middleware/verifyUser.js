@@ -21,6 +21,7 @@ export const verifyUser = async (req, res, next) => {
     // Verify token and specify algorithms
     const user = jwt.verify(token, ACCESS_TOKEN_SECRET);
     req.user = user;
+    req.user.accessToken = token;
     next();
   } catch (err) {
     console.error("Token verification failed:", err.message);
