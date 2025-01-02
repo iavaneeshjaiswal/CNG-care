@@ -8,6 +8,7 @@ import path from "path";
 import multer from "multer";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import approveController from "./controler/approveController.js";
 import {
   userLogin,
   signup,
@@ -186,9 +187,12 @@ if (cluster.isMaster) {
   app.post("/api/protected", refreshTokens);
 
   //workshop Routes
-  app.post("/api/workshop", upload.array("images", 2), createWorkshop);
+  app.post("/api/workshop", createWorkshop);
   app.post("/api/workshop/login", loginWorkshop);
   app.post("/api/workshop/logout", verifyUser, logoutWorkshop);
+
+  //Approval routes
+  app.get("/api/approval", verifyUser, approveController.viewApprovals);
 
   // Start the server
   app.listen(port, () => {

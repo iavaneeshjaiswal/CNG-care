@@ -1,6 +1,12 @@
 import React from "react";
 import Login from "./pages/Login";
-import { BrowserRouter as Router, Route, Routes, Link, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+} from "react-router-dom";
 import Product from "./pages/Product";
 import ProductActions from "./pages/ProductActions";
 import User from "./pages/User";
@@ -11,6 +17,7 @@ import Order from "./pages/Order";
 import Transaction from "./pages/Transaction";
 import OrderDetail from "./pages/OrderDetail";
 import ProtectRoute from "./components/ProtectRoute";
+import Approval from "./pages/Approval";
 
 export default function App() {
   return (
@@ -97,9 +104,16 @@ export default function App() {
             </ProtectRoute>
           }
         />
+        <Route
+          path="/approval"
+          element={
+            <ProtectRoute>
+              <Approval />
+            </ProtectRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
   );
 }
-

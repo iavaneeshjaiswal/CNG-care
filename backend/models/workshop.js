@@ -81,9 +81,8 @@ const workshopSchema = new mongoose.Schema(
       },
     ],
     approvalStatus: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      type: mongoose.Schema.Types.ObjectId,
+      required: [true, "Approval status is required"],
     },
   },
   { timestamps: true }

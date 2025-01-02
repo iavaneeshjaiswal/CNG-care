@@ -1,7 +1,6 @@
 import workshopModel from "../models/workshop.js";
+import Approval from "../models/Approval.js";
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
-dotenv.config();
 import { generateTokens } from "../utils/Tokens.js";
 import sendMail from "../utils/sendMail.js";
 import { getOtpEmailtemp } from "../utils/emailTemplate.js";
@@ -17,13 +16,13 @@ export const createWorkshop = async (req, res) => {
       number,
       address,
     } = req.body;
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({
-        message: "Please upload at least one image.",
-        status: false,
-      });
-    }
-    const imageUrls = req.files.map((file) => `uploads/${file.filename}`);
+    // if (!req.files || req.files.length === 0) {
+    //   return res.status(400).json({
+    //     message: "Please upload at least one image.",
+    //     status: false,
+    //   });
+    // }
+    // const imageUrls = req.files.map((file) => `uploads/${file.filename}`);
 
     if (
       !workshopName ||
@@ -63,8 +62,14 @@ export const createWorkshop = async (req, res) => {
           lat: address.coordinates.lat,
         },
       },
-      images: imageUrls,
+      images: [],
     });
+
+    const newApproval = new Approval({
+      WorkshopID: newWorkshop._id,
+    });
+    newWorkshop.approvalStatus = newApproval._id;
+    await newApproval.save();
     const tokens = generateTokens(newWorkshop);
     const savedWorkshop = await newWorkshop.save();
     res.status(201).json({
