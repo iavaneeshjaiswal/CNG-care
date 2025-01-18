@@ -19,7 +19,7 @@ const Payment = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzRmMzIxZmZmYzBmOTc3NWFlMGVkNzgiLCJpYXQiOjE3MzQyODQ2MDd9.JlFwx-dgMJBGDYRjtK8jTUdVEhMs6ITHqge4Si-hE5g`,
+          Authorization: `Bearer `,
         },
         body: JSON.stringify({ products }),
       });
