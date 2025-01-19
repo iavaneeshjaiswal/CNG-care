@@ -8,24 +8,26 @@ const workshopSchema = new mongoose.Schema(
       minlength: [3, "Workshop name must be at least 3 characters long"],
       maxlength: [50, "Workshop name can't exceed 50 characters"],
     },
-    workshopOwnerName: {
+    ownerName: {
       type: String,
       required: [true, "Workshop owner name is required"],
       minlength: [3, "Workshop owner name must be at least 3 characters long"],
       maxlength: [50, "Workshop owner name can't exceed 50 characters"],
     },
-    number: {
-      type: String,
-      required: [true, "Phone number is required"],
-      unique: true,
-      validate: {
-        validator: function (v) {
-          const re = /^[6-9]\d{9}$/;
-          return re.test(v);
+    numbers: [
+      {
+        type: String,
+        required: [true, "Phone number is required"],
+        unique: true,
+        validate: {
+          validator: function (v) {
+            const re = /^[6-9]\d{9}$/;
+            return re.test(v);
+          },
+          message: "Phone number must be a valid 10 digit Indian phone number",
         },
-        message: "Phone number must be a valid 10 digit Indian phone number",
       },
-    },
+    ],
     address: {
       text: {
         type: String,
@@ -33,40 +35,16 @@ const workshopSchema = new mongoose.Schema(
         default: "",
       },
       coordinates: {
-        long: {
+        longitude: {
           type: Number,
           required: [true, "Longitude is required"],
         },
-        lat: {
+        latitude: {
           type: Number,
           required: [true, "Latitude is required"],
         },
       },
     },
-    email: {
-      type: String,
-      required: [true, "Email is required"],
-      unique: true,
-      validate: {
-        validator: function (v) {
-          const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-          return re.test(v);
-        },
-        message: "Please enter a valid email",
-      },
-    },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      minlength: [8, "Password must be at least 8 characters long"],
-      select: false,
-    },
-    wallet: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Wallet",
-      },
-    ],
     workshopImage: [
       {
         type: String,
@@ -80,10 +58,6 @@ const workshopSchema = new mongoose.Schema(
         ref: "Service",
       },
     ],
-    approvalStatus: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: [true, "Approval status is required"],
-    },
   },
   { timestamps: true }
 );

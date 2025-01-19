@@ -4,7 +4,7 @@ dotenv.config();
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 import BlockedToken from "../models/blockedToken.js";
 
-export const verifyUser = async (req, res, next) => {
+const verifyUser = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader?.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
@@ -28,3 +28,5 @@ export const verifyUser = async (req, res, next) => {
     return res.status(403).json({ message: "Invalid or expired Access Token" });
   }
 };
+
+export default verifyUser;

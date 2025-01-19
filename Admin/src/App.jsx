@@ -17,7 +17,6 @@ import Order from "./pages/Order";
 import Transaction from "./pages/Transaction";
 import OrderDetail from "./pages/OrderDetail";
 import ProtectRoute from "./components/ProtectRoute";
-import Approval from "./pages/Approval";
 
 export default function App() {
   return (
@@ -101,14 +100,6 @@ export default function App() {
           element={
             <ProtectRoute>
               <Transaction />
-            </ProtectRoute>
-          }
-        />
-        <Route
-          path="/approval"
-          element={
-            <ProtectRoute>
-              <Approval />
             </ProtectRoute>
           }
         />

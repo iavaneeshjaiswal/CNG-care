@@ -6,34 +6,35 @@ export const WorkshopProvider = ({ children }) => {
   const [workshops, setWorkshops] = useState([]);
   const [isloaded, setIsloaded] = useState(false);
   const url = import.meta.env.VITE_APP_URL;
-  useEffect(() => {
-    const getWorkshops = async () => {
-      const response = await axios.get(url + "/workshop", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
-      console.log(response);
-      setIsloaded(true);
-    };
-    getWorkshops();
-  }, []);
 
-  useEffect(() => {
-    const getWorkshops = async () => {
-      const response = await axios.get("/approval", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
-      console.log(response);
-      setIsloaded(true);
-    };
-    getWorkshops();
-  }, []);
+  // useEffect(() => {
+  //   const getWorkshops = async () => {
+  //     const response = await axios.get(url + "/workshop", {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+  //       },
+  //     });
+  //     console.log(response);
+  //     setIsloaded(true);
+  //   };
+  //   getWorkshops();
+  // }, []);
+
+  // useEffect(() => {
+  //   const getWorkshopsForapproval = async () => {
+  //     const response = await axios.get(url + "/approval", {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+  //       },
+  //     });
+  //     console.log(response);
+  //     setIsloaded(true);
+  //   };
+  //   getWorkshopsForapproval();
+  // }, []);
 
   const addWorkshop = async (workshop) => {
-    const response = await axios.post("/workshop", {
+    const response = await axios.post(url + "/workshop", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

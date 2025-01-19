@@ -38,7 +38,7 @@ const VerifyAndAddOrder = async (req, res) => {
     }
     const user = await User.findById(req.user.userId, "email");
     if (!user) {
-      return res.status(404).json({
+      return res.status(401).json({
         status: false,
         message: "User not found",
       });
@@ -61,7 +61,7 @@ const VerifyAndAddOrder = async (req, res) => {
     const productIds = products.map((product) => product._id);
     const dbProducts = await Product.find({ _id: { $in: productIds } });
     if (dbProducts.length !== products.length) {
-      return res.status(404).json({
+      return res.status(401).json({
         status: false,
         message: "Some products were not found",
       });
@@ -117,7 +117,7 @@ const VerifyAndAddOrder = async (req, res) => {
 
       const user = await User.findById(req.user.userId);
       if (!user) {
-        return res.status(404).json({
+        return res.status(401).json({
           status: false,
           message: "User not found",
         });
