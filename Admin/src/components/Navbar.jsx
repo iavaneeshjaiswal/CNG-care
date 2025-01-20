@@ -18,6 +18,8 @@ export default function Navbar() {
       { image: "cart", path: "/products", text: "Products" },
       { image: "add", path: "/addproduct", text: "Add Product" },
       { image: "order", path: "/order", text: "Orders" },
+      { image: "workshop", path: "/workshops", text: "workshops" },
+      { image: "add", path: "/addworkshop", text: "Add Workshop" },
       { image: "wallet", path: "/transaction", text: "Transaction" },
       { image: "logout", onclick: handleLogout, text: "logout" },
     ];
@@ -28,6 +30,8 @@ export default function Navbar() {
       { image: "add", path: "/addproduct", text: "Add Product" },
       { image: "order", path: "/order", text: "Orders" },
       { image: "wallet", path: "/transaction", text: "Transaction" },
+      { image: "workshop", path: "/workshops", text: "workshops" },
+      { image: "add", path: "/addworkshop", text: "Add Workshop" },
       { image: "admin", path: "/admins", text: "Admins" },
       { image: "addAdmin", path: "/addadmins", text: "Insert Admin" },
       { image: "logout", onclick: handleLogout, text: "logout" },

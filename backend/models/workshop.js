@@ -18,6 +18,7 @@ const workshopSchema = new mongoose.Schema(
       {
         type: String,
         required: [true, "Phone number is required"],
+        sparse: true,
         unique: true,
         validate: {
           validator: function (v) {
@@ -35,21 +36,14 @@ const workshopSchema = new mongoose.Schema(
         default: "",
       },
       coordinates: {
-        longitude: {
-          type: Number,
-          required: [true, "Longitude is required"],
-        },
-        latitude: {
-          type: Number,
-          required: [true, "Latitude is required"],
-        },
+        type: [Number], // Array of numbers [longitude, latitude]
+        required: [true, "Coordinates are required"],
       },
     },
     workshopImage: [
       {
         type: String,
-        require: [true, "Image is required"],
-        default: "",
+        required: [true, "Image is required"],
       },
     ],
     services: [
@@ -61,6 +55,8 @@ const workshopSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+workshopSchema.index({ "address.coordinates": "2dsphere" });
 
 const workshopModel = mongoose.model("Workshop", workshopSchema);
 export default workshopModel;

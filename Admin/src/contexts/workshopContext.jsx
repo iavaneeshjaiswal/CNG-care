@@ -4,7 +4,6 @@ export const WorkshopContext = createContext();
 
 export const WorkshopProvider = ({ children }) => {
   const [workshops, setWorkshops] = useState([]);
-  const [isloaded, setIsloaded] = useState(false);
   const url = import.meta.env.VITE_APP_URL;
 
   // useEffect(() => {
@@ -33,26 +32,29 @@ export const WorkshopProvider = ({ children }) => {
   //   getWorkshopsForapproval();
   // }, []);
 
-  const addWorkshop = async (workshop) => {
-    const response = await axios.post(url + "/workshop", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(workshop),
-    });
-    const data = await response.json();
-    setWorkshops([...workshops, data]);
-  };
-
-  const value = {
-    isloaded,
-    workshops,
-    addWorkshop,
+  const addWorkshop = async (data) => {
+    try {
+      const res = await axios
+        .post(`${url}/workshop`, data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        })
+        .then(() => updateproductState())
+        .then(() => alert("Workshop Added successfully"));
+    } catch (error) {
+      alert("Error Adding Workshop:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("role");
+        setToken(null);
+      }
+    }
   };
 
   return (
-    <WorkshopContext.Provider value={value}>
+    <WorkshopContext.Provider value={addWorkshop}>
       {children}
     </WorkshopContext.Provider>
   );
