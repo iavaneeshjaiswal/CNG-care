@@ -1,6 +1,12 @@
 import React from "react";
 import Login from "./pages/Login";
-import { BrowserRouter as Router, Route, Routes, Link, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+} from "react-router-dom";
 import Product from "./pages/Product";
 import ProductActions from "./pages/ProductActions";
 import User from "./pages/User";
@@ -11,6 +17,8 @@ import Order from "./pages/Order";
 import Transaction from "./pages/Transaction";
 import OrderDetail from "./pages/OrderDetail";
 import ProtectRoute from "./components/ProtectRoute";
+import WorkshopActions from "./pages/workshopActions";
+import Workshop from "./pages/Workshop";
 
 export default function App() {
   return (
@@ -46,6 +54,22 @@ export default function App() {
           element={
             <ProtectRoute>
               <ProductActions add />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/addworkshop"
+          element={
+            <ProtectRoute>
+              <WorkshopActions add />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/workshops"
+          element={
+            <ProtectRoute>
+              <Workshop />
             </ProtectRoute>
           }
         />
@@ -102,4 +126,3 @@ export default function App() {
     </Router>
   );
 }
-

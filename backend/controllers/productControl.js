@@ -12,9 +12,10 @@ const addProduct = async (req, res) => {
   try {
     // Check if images are uploaded
     if (!req.files || req.files.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Please upload at least one image." });
+      return res.status(400).json({
+        message: "Please upload at least one image.",
+        status: false,
+      });
     }
     const imageUrls = req.files.map((file) => `uploads/${file.filename}`);
 

@@ -16,7 +16,7 @@ const client = twilio(
 );
 
 // User login function
-export const userLogin = async (req, res) => {
+const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -76,7 +76,7 @@ export const userLogin = async (req, res) => {
 };
 
 // User signup function
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
   const { fullName, email, number, password } = req.body;
   // Check for mandatory fields
   if (!fullName || !email || !number || !password) {
@@ -148,7 +148,7 @@ export const signup = async (req, res) => {
 };
 
 // Send OTP through email and phone number
-export const sendOtp = async (req, res) => {
+const sendOtp = async (req, res) => {
   const { credential } = req.body;
   // Generate random OTP
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
@@ -214,7 +214,7 @@ export const sendOtp = async (req, res) => {
 };
 
 // Verify OTP function
-export const verifyOtp = async (req, res) => {
+const verifyOtp = async (req, res) => {
   try {
     const { otp, VerifyToken } = req.body;
     // Verify the token
@@ -231,7 +231,7 @@ export const verifyOtp = async (req, res) => {
 };
 
 // List all users
-export const listUser = async (req, res) => {
+const listUser = async (req, res) => {
   try {
     const { page = 1, limit = 15 } = req.query;
     const skip = (page - 1) * limit;
@@ -250,7 +250,7 @@ export const listUser = async (req, res) => {
 };
 
 // Delete user by ID
-export const removeUser = async (req, res) => {
+const removeUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     return res
@@ -262,7 +262,7 @@ export const removeUser = async (req, res) => {
 };
 
 // Update user address
-export const updateAddress = async (req, res) => {
+const updateAddress = async (req, res) => {
   const { pincode, state, area, locality, city } = req.body;
 
   // Validate input fields
@@ -290,7 +290,7 @@ export const updateAddress = async (req, res) => {
 };
 
 // Reset user password
-export const resetpassword = async (req, res) => {
+const resetpassword = async (req, res) => {
   const { credential, new_password, VerifyToken, otp } = req.body;
   try {
     // Verify the token
@@ -343,7 +343,7 @@ export const resetpassword = async (req, res) => {
   }
 };
 
-export const getUserLocation = async (req, res) => {
+const getUserLocation = async (req, res) => {
   try {
     const { lat, long } = req.body;
     if (!lat || !long) {
@@ -361,7 +361,7 @@ export const getUserLocation = async (req, res) => {
   }
 };
 
-export const fetchUserDetail = async (req, res) => {
+const fetchUserDetail = async (req, res) => {
   try {
     const user = await User.findOne(
       { _id: req.user.userId },
@@ -378,7 +378,7 @@ export const fetchUserDetail = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) => {
+const logout = async (req, res) => {
   if (!req.body.token || !req.user.userId) {
     return res
       .status(400)
@@ -406,4 +406,17 @@ export const logout = async (req, res) => {
     console.error("Error deleting cookie:", error.message);
     return res.status(500).json({ message: error.message, status: false });
   }
+};
+
+export default {
+  userLogin,
+  signup,
+  sendOtp,
+  listUser,
+  removeUser,
+  logout,
+  resetpassword,
+  updateAddress,
+  fetchUserDetail,
+  getUserLocation,
 };
