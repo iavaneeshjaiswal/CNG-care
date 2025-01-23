@@ -15,5 +15,12 @@ router.post("/reset-password", userControl.resetpassword);
 router.put("/update-address", verifyUser, userControl.updateAddress);
 router.get("/location", verifyUser, userControl.getUserLocation);
 router.post("/logout", verifyUser, userControl.logout);
+router.post("/addtocart", verifyUser, userControl.addToCart);
+router.get("/viewcarts", verifyUser, userControl.viewcarts);
+router.delete("/removeFromCart", verifyUser, userControl.removeFromCart);
+router.put("/updateCartQuantity", verifyUser, userControl.updateCartQuantity);
+router.post("/addtofev", verifyUser, userControl.addtofev);
+router.delete("/removefromfev", verifyUser, userControl.removefromfev);
+router.get("/viewfavorites", verifyUser, userControl.viewFavorites);
 
 export default router;

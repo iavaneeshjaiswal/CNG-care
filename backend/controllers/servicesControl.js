@@ -31,8 +31,12 @@ const createService = async (req, res) => {
 
 const listService = async (req, res) => {
   try {
-    const services = await Service.find({});
-    res.status(200).json({ services, status: true });
+    const services = await Service.find({}).populate("workshopID customerID");
+    res.status(200).json({
+      services,
+      status: true,
+      message: "Service list fetched successfully",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
@@ -104,9 +108,64 @@ const updateService = async (req, res) => {
   }
 };
 
+const deleteService = async (req, res) => {
+  try {
+    const service = await Service.findById(req.params.id);
+    if (!service) {
+      return res.status(404).json({
+        message: "Service not found",
+        status: false,
+      });
+    }
+
+    await service.remove();
+    res.status(200).json({
+      message: "Service deleted successfully",
+      status: true,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+const completeService = async (req, res) => {
+  try {
+    const { serviceID, amount } = req.body;
+
+    if (!serviceID || !amount) {
+      return res.status(401).json({
+        message: "All fields are required",
+        status: false,
+      });
+    }
+
+    const service = await Service.findById(serviceID);
+    if (!service) {
+      return res.status(404).json({
+        message: "Service not found",
+        status: false,
+      });
+    }
+
+    service.status = "completed";
+    service.amount = amount;
+    await service.save();
+
+    res.status(200).json({
+      service,
+      message: "Service completed successfully",
+      status: true,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+};
+
 export default {
   createService,
   listService,
   updateServiceStatus,
   updateService,
+  deleteService,
+  completeService,
 };

@@ -343,6 +343,7 @@ const resetpassword = async (req, res) => {
   }
 };
 
+// Get user location
 const getUserLocation = async (req, res) => {
   try {
     const { lat, long } = req.body;
@@ -361,11 +362,12 @@ const getUserLocation = async (req, res) => {
   }
 };
 
+// Fetch user details
 const fetchUserDetail = async (req, res) => {
   try {
     const user = await User.findOne(
       { _id: req.user.userId },
-      "_id fullName number email address"
+      "_id fullName number email address cart favorites"
     );
     if (!user) {
       return res.status(401).json({ message: "User not found", status: false });
@@ -378,6 +380,7 @@ const fetchUserDetail = async (req, res) => {
   }
 };
 
+// Logout function
 const logout = async (req, res) => {
   if (!req.body.token || !req.user.userId) {
     return res
@@ -408,6 +411,293 @@ const logout = async (req, res) => {
   }
 };
 
+// Add to cart function
+const addToCart = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    const userId = req.user.userId;
+    // Validate input fields
+    if (!userId || !productId || !quantity) {
+      return res
+        .status(400)
+        .json({ message: "All fields are required", status: false });
+    }
+
+    // Find user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: false });
+    }
+
+    // Check if product already exists in cart
+    const productIndex = user.cart.findIndex(
+      (item) => item.productId.toString() === productId
+    );
+
+    if (productIndex > -1) {
+      // Update quantity if product exists
+      user.cart[productIndex].quantity += quantity;
+    } else {
+      // Add new product to cart
+      user.cart.push({ productId, quantity });
+    }
+
+    // Save user with updated cart
+    await user.save();
+
+    return res.status(200).json({
+      message: "Product added to cart",
+      status: true,
+      cart: user.cart,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+//remove from cart function
+const removeFromCart = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.user.userId;
+
+    // Validate input fields
+    if (!userId || !productId) {
+      return res.status(400).json({
+        message: "User ID and product ID are required",
+        status: false,
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: { cart: { productId } },
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: false });
+    }
+
+    return res.status(200).json({
+      message: "Product removed from cart",
+      status: true,
+      cart: user.cart,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+// update cart product quantity
+const updateCartQuantity = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    const userId = req.user.userId;
+
+    // Validate input fields
+    if (!userId || !productId || quantity === undefined) {
+      return res.status(400).json({
+        message: "User ID, product ID, and quantity are required",
+        status: false,
+      });
+    }
+
+    // Find user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: false });
+    }
+
+    // Find product in cart
+    const productIndex = user.cart.findIndex(
+      (item) => item.productId.toString() === productId
+    );
+
+    if (productIndex > -1) {
+      // Update quantity or remove product if quantity becomes zero
+      user.cart[productIndex].quantity += quantity;
+      if (user.cart[productIndex].quantity <= 0) {
+        user.cart.splice(productIndex, 1);
+      }
+      await user.save();
+      return res.status(200).json({
+        message: "Product quantity updated in cart",
+        status: true,
+        cart: user.cart,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Product not found in cart",
+        status: false,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+// Add to favorites function
+const addtofev = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.user.userId;
+
+    // Validate input fields
+    if (!userId || !productId) {
+      return res.status(400).json({
+        message: "User ID and product ID are required",
+        status: false,
+      });
+    }
+
+    // Find user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: false });
+    }
+
+    // Check if product already exists in favorites
+    if (user.favorites.includes(productId)) {
+      return res
+        .status(400)
+        .json({ message: "Product already in favorites", status: false });
+    }
+
+    // Add product to favorites
+    user.favorites.push(productId);
+
+    // Save user with updated favorites
+    await user.save();
+
+    return res.status(200).json({
+      message: "Product added to favorites",
+      status: true,
+      favorites: user.favorites,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+// Remove from favorites function
+const removefromfev = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const userId = req.user.userId;
+
+    // Validate input fields
+    if (!userId || !productId) {
+      return res.status(400).json({
+        message: "User ID and product ID are required",
+        status: false,
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: { favorites: productId },
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: false });
+    }
+
+    if (!user.favorites.includes(productId)) {
+      return res.status(400).json({
+        message: "Product already removed from favorites",
+        status: false,
+      });
+    }
+    return res.status(200).json({
+      message: "Product removed from favorites",
+      status: true,
+      favorites: user.favorites,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+// View favorites function
+const viewFavorites = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Validate input fields
+    if (!userId) {
+      return res.status(400).json({
+        message: "User ID is required",
+        status: false,
+      });
+    }
+
+    // Find user by ID
+    const user = await User.findById(userId, "favorites").populate({
+      path: "favorites",
+      select: "category brand title price images",
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: false });
+    }
+    if (user.favorites.length === 0) {
+      return res.status(400).json({
+        message: "No favorites found",
+        status: false,
+      });
+    }
+    return res.status(200).json({
+      message: "Favorites retrieved successfully",
+      status: true,
+      favorites: user.favorites,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
+// View cart function
+const viewcarts = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Validate input fields
+    if (!userId) {
+      return res.status(400).json({
+        message: "User ID is required",
+        status: false,
+      });
+    }
+
+    // Find user by ID
+    const user = await User.findById(userId, "cart").populate({
+      path: "cart.productId",
+      select: "category brand title price images",
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: false });
+    }
+    if (user.cart.length === 0) {
+      return res.status(400).json({
+        message: "No items in cart",
+        status: false,
+      });
+    }
+    return res.status(200).json({
+      message: "Cart retrieved successfully",
+      status: true,
+      cart: user.cart,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, status: false });
+  }
+};
+
 export default {
   userLogin,
   signup,
@@ -419,4 +709,11 @@ export default {
   updateAddress,
   fetchUserDetail,
   getUserLocation,
+  addToCart,
+  addtofev,
+  removeFromCart,
+  updateCartQuantity,
+  removefromfev,
+  viewcarts,
+  viewFavorites,
 };

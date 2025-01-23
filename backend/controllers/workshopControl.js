@@ -80,7 +80,9 @@ const listWorkshop = async (req, res) => {
         .status(404)
         .json({ message: "No workshops found", status: false });
     }
-    return res.status(200).json({ workshops, status: true });
+    return res
+      .status(200)
+      .json({ workshops, status: true, message: "Workshops found" });
   } catch (error) {
     return res.status(500).json({ message: error.message, status: false });
   }
