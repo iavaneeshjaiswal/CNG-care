@@ -179,4 +179,287 @@ const getOtpEmailtemp = (otp) => {
 `;
 };
 
-export { getSuccessEmailTemplate, getFailureEmailTemplate, getOtpEmailtemp };
+const serviceRequest = (
+  workshopName,
+  customerName,
+  customerNumber,
+  serviceType,
+  requestedDate
+) => {
+  return `<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .email-header {
+      background-color: #4CAF50;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .email-body {
+      padding: 20px;
+    }
+    .email-body p {
+      margin: 0 0 15px;
+      line-height: 1.6;
+    }
+    .email-footer {
+      background-color: #f1f1f1;
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+    }
+    .btn {
+      display: inline-block;
+      margin: 10px 5px;
+      padding: 12px 20px;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .btn-accept {
+      background-color: #4CAF50;
+    }
+    .btn-reject {
+      background-color: #E74C3C;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="email-header">
+      <h1>Service Request Notification</h1>
+    </div>
+    <div class="email-body">
+      <p>Dear <strong>${workshopName}</strong>,</p>
+      <p>You have received a new service request that requires your attention. Please review the details below and take action by accepting or rejecting the request:</p>
+      <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;"><strong>Customer Name:</strong></td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${customerName}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;"><strong>Contact Number:</strong></td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${customerNumber}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;"><strong>Service Type:</strong></td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${serviceType}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;"><strong>Requested On:</strong></td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${requestedDate}</td>
+        </tr>
+      </table>
+      <p>Do check your <strong>Workshop Pannel</strong> to <strong>accept</strong> or <strong>recject</strong> the service.</p>
+      <p>If no action is taken within <strong>5 minutes</strong>, the request will be automatically rejected.</p>
+      <p>Thank you,</p>
+      <p><strong>Cng Care Team</strong></p>
+    </div>
+    <div class="email-footer">
+      <p>This is an automated email. Please do not reply to this message.</p>
+    </div>
+  </div>
+</body>
+</html>`;
+};
+const rejectservice = (serviceID, customerName, serviceType, requestedDate) => {
+  return `<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Request Rejected</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333333;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .header {
+        background-color: #d9534f;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .content {
+        padding: 20px;
+      }
+      .content p {
+        margin: 10px 0;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .content .important {
+        font-weight: bold;
+        color: #d9534f;
+      }
+      .footer {
+        background-color: #f4f4f4;
+        text-align: center;
+        padding: 10px;
+        font-size: 12px;
+        color: #888888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="header">
+        Service Request Rejected
+      </div>
+      <div class="content">
+        <p>Dear <span class="important">${customerName}</span>,</p>
+
+        <p>
+          We regret to inform you that your service request with the following
+details has been <span class="important">rejected</span>:
+        </p>
+
+        <ul>
+          <li><strong>Service ID:</strong> ${serviceID}</li>
+          <li><strong>Requested Service:</strong> ${serviceType}</li>
+          <li><strong>Requested Date:</strong> ${requestedDate}</li>
+        </ul>
+
+        <p>
+          We apologize for any inconvenience caused.
+        </p>
+
+        <p>Thank you for understanding.</p>
+
+        <p>Best regards,</p>
+        <p><strong>CNG CARE</strong></p>
+      </div>
+      <div class="footer">
+        &copy; 2025 CNG CARE. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>
+`;
+};
+const acceptService = (serviceID, customerName, serviceType, requestedDate) => {
+  return `<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Request Accepted</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333333;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .header {
+        background-color: #5cb85c;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .content {
+        padding: 20px;
+      }
+      .content p {
+        margin: 10px 0;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .content .important {
+        font-weight: bold;
+        color: #5cb85c;
+      }
+      .footer {
+        background-color: #f4f4f4;
+        text-align: center;
+        padding: 10px;
+        font-size: 12px;
+        color: #888888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="header">
+        Service Request Accepted
+      </div>
+      <div class="content">
+        <p>Dear <span class="important">${customerName}</span>,</p>
+
+        <p>
+          We are pleased to inform you that your service request with the following
+          details has been <span class="important">accepted</span>:
+        </p>
+
+        <ul>
+          <li><strong>Service ID:</strong> ${serviceID}</li>
+          <li><strong>Requested Service:</strong> ${serviceType}</li>
+          <li><strong>Requested Date:</strong> ${requestedDate}</li>
+        </ul>
+
+        <p>Thank you for choosing us.</p>
+
+        <p>Best regards,</p>
+        <p><strong>CNG CARE</strong></p>
+      </div>
+      <div class="footer">
+        &copy; 2025 CNG CARE. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>
+`;
+};
+
+export {
+  getSuccessEmailTemplate,
+  getFailureEmailTemplate,
+  getOtpEmailtemp,
+  serviceRequest,
+  rejectservice,
+  acceptService,
+};

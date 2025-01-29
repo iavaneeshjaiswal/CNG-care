@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 
 const serviceSchema = new mongoose.Schema(
   {
-    transactionID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Transaction",
-    },
     customerID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -14,12 +10,6 @@ const serviceSchema = new mongoose.Schema(
     amount: {
       type: Number,
       min: 0,
-    },
-    paymentStatus: {
-      type: String,
-      enum: ["Pending", "Completed", "Failed"],
-      default: "Pending",
-      required: true,
     },
     workshopID: {
       type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +23,7 @@ const serviceSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Cancelled", "Accepted", "Pending", "Completed"],
+      enum: ["Rejected", "Accepted", "Pending", "Completed"],
       default: "Pending",
       required: true,
     },

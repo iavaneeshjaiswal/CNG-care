@@ -6,6 +6,7 @@ import BlockedToken from "../models/blockedToken.js";
 
 const verifyUser = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
+
   const token = authHeader?.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
     : req.cookies?.token;
@@ -21,6 +22,7 @@ const verifyUser = async (req, res, next) => {
     // Verify token and specify algorithms
     const user = jwt.verify(token, ACCESS_TOKEN_SECRET);
     req.user = user;
+    req.token = token;
     req.user.accessToken = token;
     next();
   } catch (err) {

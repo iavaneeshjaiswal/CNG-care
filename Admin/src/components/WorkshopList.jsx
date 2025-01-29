@@ -62,6 +62,7 @@ function WorkshopList() {
             <thead>
               <tr className="bg-primary bold-14 sm:regular-22 text-start py-12 bg-gray-200">
                 <th className="p-2 text-start">Workshop ID</th>
+                <th className="p-2 text-start">USERNAME</th>
                 <th className="p-2 text-start">WORKSHOP NAME</th>
                 <th className="p-2 text-start">OWNER NAME</th>
                 <th className="p-2 text-start">ADDRESS TEXT</th>
@@ -72,6 +73,7 @@ function WorkshopList() {
                 filteredworkshop.map((workshop) => (
                   <tr key={workshop._id} className="border-b">
                     <td className="p-2 text-start">{workshop._id}</td>
+                    <td className="p-2 text-start">{workshop.username}</td>
                     <td className="p-2 text-start">{workshop.workshopName}</td>
                     <td className="p-2 text-start">{workshop.ownerName}</td>
                     <td className="p-2 text-start">{workshop.address.text}</td>

@@ -596,13 +596,9 @@ const removefromfev = async (req, res) => {
       });
     }
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      {
-        $pull: { favorites: productId },
-      },
-      { new: true }
-    );
+    const user = await User.findByIdAndUpdate(userId, {
+      $pull: { favorites: productId },
+    });
 
     if (!user) {
       return res.status(404).json({ message: "User not found", status: false });

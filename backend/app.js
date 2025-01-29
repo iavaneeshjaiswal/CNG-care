@@ -6,6 +6,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
+import cron from "node-cron";
+import automationForService from "./services/automation.js";
 
 //routers
 import userRoutes from "./routes/users.routes.js";
@@ -43,6 +45,9 @@ if (cluster.isPrimary) {
   // Constants
   const app = express();
   const port = process.env.PORT || 3000;
+
+  //node corn setup for automation
+  cron.schedule("* * * * *", automationForService);
 
   // Middlewares
   app.use(bodyParser.json());

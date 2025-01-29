@@ -22,6 +22,7 @@ const VerifyAndAddOrder = async (req, res) => {
       products,
       address,
     } = req.body;
+
     // Validation
     if (
       !products ||
@@ -36,6 +37,7 @@ const VerifyAndAddOrder = async (req, res) => {
           "Missing required fields: RazorpayOrderId, razorpay_order_id, razorpay_signature, or address",
       });
     }
+
     const user = await User.findById(req.user.userId, "email");
     if (!user) {
       return res.status(401).json({
@@ -43,7 +45,7 @@ const VerifyAndAddOrder = async (req, res) => {
         message: "User not found",
       });
     }
-    const userEmail = user.email;
+
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({
         status: false,
@@ -58,10 +60,12 @@ const VerifyAndAddOrder = async (req, res) => {
       });
     }
 
-    const productIds = products.map((product) => product._id);
+    const productIds = products.map((product) => product.id);
+
     const dbProducts = await Product.find({ _id: { $in: productIds } });
+
     if (dbProducts.length !== products.length) {
-      return res.status(401).json({
+      return res.status(404).json({
         status: false,
         message: "Some products were not found",
       });
@@ -69,9 +73,12 @@ const VerifyAndAddOrder = async (req, res) => {
 
     const totalAmount = products.reduce((sum, product) => {
       const dbProduct = dbProducts.find(
-        (p) => p._id.toString() === product._id
+        (p) => p._id.toString() === product.id.toString()
       );
-      return sum + (dbProduct.price * product.quantity || 0);
+      if (!dbProduct) {
+        throw new Error(`Product with ID ${product.id} not found`);
+      }
+      return sum + dbProduct.price * product.quantity;
     }, 0);
 
     if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
@@ -82,11 +89,12 @@ const VerifyAndAddOrder = async (req, res) => {
     }
 
     const productsWithIds = products.map((product) => ({
-      product: product._id,
+      product: product.id,
       quantity: product.quantity,
     }));
 
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
+
     const expectedSignature = crypto
       .createHmac("sha256", razorpayInstance.key_secret)
       .update(body)
@@ -192,7 +200,17 @@ const viewOrders = async (req, res) => {
 
 const deleteOrder = async (req, res) => {
   try {
-    await Order.findByIdAndDelete(req.params.id);
+    if (!req.params.id) {
+      return res
+        .status(400)
+        .json({ message: "Order ID Needed", status: false });
+    }
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) {
+      return res
+        .status(400)
+        .json({ message: "Order Already deleted", status: false });
+    }
     return res
       .status(200)
       .json({ message: "Order deleted successfully", status: true });
@@ -239,6 +257,7 @@ const updateOrderStatus = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
   const { id } = req.params;
+
   try {
     const order = await Order.findById(id);
     if (!order) {
@@ -246,31 +265,56 @@ const cancelOrder = async (req, res) => {
         .status(404)
         .json({ message: "Order not found", status: false });
     }
-    order.orderStatus = "cancelled";
-    order.paymentStatus = "refunded";
+
+    if (order.orderStatus === "delivered") {
+      return res.status(400).json({
+        message: "Cannot cancel the order as it has already been delivered",
+        status: false,
+      });
+    }
+
+    if (!order.transactionID) {
+      return res.status(400).json({
+        message: "Order does not have an associated transaction ID",
+        status: false,
+      });
+    }
+
     const transaction = await Transaction.findById(order.transactionID);
     if (!transaction) {
       return res
         .status(404)
         .json({ message: "Transaction not found", status: false });
     }
-    transaction.status = "refunded";
+
+    if (!transaction.paymentID) {
+      return res.status(400).json({
+        message: "Transaction does not have an associated payment ID",
+        status: false,
+      });
+    }
 
     await refundPayment(
       transaction.paymentID,
-      transaction.amount,
+      transaction.amount * 100,
       order._id,
       transaction._id,
       order.userID
     );
 
+    order.orderStatus = "cancelled";
+    order.paymentStatus = "refunded";
+    transaction.status = "refunded";
+
     await order.save();
     await transaction.save();
+
     return res.status(200).json({
       status: true,
       message: "Order cancelled successfully",
     });
   } catch (error) {
+    console.error("Error cancelling order:", error);
     return res.status(500).json({ message: error.message, status: false });
   }
 };
@@ -282,16 +326,21 @@ const refundPayment = async (
   transactionID,
   userId
 ) => {
-  if (!paymentID || !amount || typeof amount !== "number" || amount < 0) {
-    throw new Error(
-      "Payment ID and amount are required for refund, amount should be a positive number"
-    );
+  if (!paymentID || !amount || typeof amount !== "number" || amount <= 0) {
+    throw new Error("Payment ID and a valid amount are required for a refund.");
   }
+
+  console.log("Attempting refund for Payment ID:", paymentID);
+  console.log("Refund amount (in paise):", amount);
+
   try {
     const refund = await razorpayInstance.payments.refund(paymentID, {
       amount,
     });
-    const newRefund = Refund({
+
+    console.log("Refund successful:", refund);
+
+    const newRefund = new Refund({
       amount,
       orderID,
       transactionID,
@@ -301,10 +350,12 @@ const refundPayment = async (
     });
 
     await newRefund.save();
-    console.log("Refund successful:", refund);
   } catch (error) {
-    console.error("Refund failed:", error);
-    throw new Error("Refund failed:", error.message);
+    console.error("Refund failed. Razorpay response:", error);
+
+    throw new Error(
+      `Refund failed: ${error.error?.description || "Unknown error"}`
+    );
   }
 };
 

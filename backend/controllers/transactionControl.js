@@ -2,6 +2,7 @@ import { Transaction } from "../models/transaction.js";
 import razorpayInstance from "../utils/razorpay.js";
 import Product from "../models/product.js";
 import { v4 as uuidv4 } from "uuid";
+import mongoose from "mongoose";
 
 const viewTransaction = async (req, res) => {
   try {
@@ -33,14 +34,9 @@ const viewTransaction = async (req, res) => {
   }
 };
 
-/**
- * Create a new Razorpay order.
- *
- * @param {Object} req - Express request object.
- * @param {Object} res - Express response object.
- */
 const createRazorpayOrder = async (req, res) => {
   const { products } = req.body;
+  console.log(products);
   try {
     // Check if products are provided and are an array
     if (!products || !Array.isArray(products)) {
@@ -51,8 +47,11 @@ const createRazorpayOrder = async (req, res) => {
     }
 
     // Check if all products exist in the database
-    const productIds = products.map((product) => product._id);
+    const productIds = products.map(
+      (product) => new mongoose.Types.ObjectId(product.id)
+    );
     const dbProducts = await Product.find({ _id: { $in: productIds } });
+
     if (dbProducts.length !== products.length) {
       return res.status(404).json({
         status: false,
@@ -65,7 +64,7 @@ const createRazorpayOrder = async (req, res) => {
     // in the products array.
     products.forEach((product) => {
       const dbProduct = dbProducts.find(
-        (p) => p._id.toString() === product._id.toString()
+        (p) => p._id.toString() === product.id.toString()
       );
       totalAmount += dbProduct.price * product.quantity;
     });

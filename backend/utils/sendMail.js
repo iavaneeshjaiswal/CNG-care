@@ -16,7 +16,6 @@ const transporter = nodemailer.createTransport({
 const sendMail = async (userEmail, emailTemplate, subject) => {
   // Validate the email address format using a regex pattern
   const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-
   if (emailPattern.test(userEmail)) {
     try {
       const mailOptions = {
