@@ -69,14 +69,21 @@ const listProduct = async (req, res) => {
 // Controller to list a single product by ID
 const listSingleProduct = async (req, res) => {
   const { id } = req.params;
+  if (!id) {
+    return res
+      .status(401)
+      .json({ message: "Product ID not found", status: false });
+  }
   try {
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return res
+        .status(404)
+        .json({ message: "Product not found", status: false });
     }
-    res.status(200).json(product);
+    res.status(200).json({ product, message: "Product founded", status: true });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message, status: false });
   }
 };
 

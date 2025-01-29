@@ -29,6 +29,18 @@ const workshopSchema = new mongoose.Schema(
         },
       },
     ],
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      validate: {
+        validator: function (v) {
+          const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          return re.test(v);
+        },
+        message: "Please enter a valid email",
+      },
+    },
     address: {
       text: {
         type: String,
@@ -52,6 +64,23 @@ const workshopSchema = new mongoose.Schema(
         ref: "Service",
       },
     ],
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+      minlength: [8, "Username must be at least 8 characters long"],
+      maxlength: [30, "Username can't exceed 30 characters"],
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [8, "Password must be at least 8 characters long"],
+      select: false,
+    },
+    available: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

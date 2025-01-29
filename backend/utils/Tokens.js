@@ -7,14 +7,18 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 // Token expiry times
 const ACCESS_TOKEN_EXPIRY = "1d";
-const REFRESH_TOKEN_EXPIRY = "15d";
+const REFRESH_TOKEN_EXPIRY = "7d";
 
 // Middleware to generate tokens
 const generateTokens = (user) => {
   const accessToken = jwt.sign(
     {
       userId: user._id,
-      ...(user.role ? { role: user.role } : { email: user.email }),
+      ...(user.role
+        ? { role: user.role }
+        : user.email
+        ? { email: user.email }
+        : { username: user.username }),
     },
     ACCESS_TOKEN_SECRET,
     {
@@ -25,7 +29,11 @@ const generateTokens = (user) => {
   const refreshToken = jwt.sign(
     {
       userId: user._id,
-      ...(user.role ? { role: user.role } : { email: user.email }),
+      ...(user.role
+        ? { role: user.role }
+        : user.email
+        ? { email: user.email }
+        : { username: user.username }),
     },
     REFRESH_TOKEN_SECRET,
     {

@@ -38,31 +38,39 @@ const adminLogin = async (req, res) => {
 const addAdmin = async (req, res) => {
   const { name, username, password, role } = req.body;
 
-  // Validation
   if (!name || !username || !password || !role) {
-    return res
-      .status(400)
-      .json({ message: "Name, username, password and role are required" });
+    return res.status(400).json({
+      message: "Name, username, password, and role are required",
+    });
   }
 
   const passwordPattern =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   if (!passwordPattern.test(password)) {
     return res.status(400).json({
       message:
-        "Password must have at least 6 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+        "Password must have at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character",
     });
   }
 
   try {
-    // Create new admin
-    let newAdmin = new Admin({ ...req.body });
+    const existingAdmin = await Admin.findOne({ username });
+    if (existingAdmin) {
+      return res.status(400).json({
+        message: "Username already exists. Please choose a different username",
+      });
+    }
+
+    const newAdmin = new Admin({ name, username, password, role });
+
     await newAdmin.save();
     res.status(201).json({ message: "Admin created successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Admin not created", error: error.message });
+    console.error("Error creating admin:", error);
+    res.status(500).json({
+      message: "Admin not created",
+      error: error.message || "An unexpected error occurred",
+    });
   }
 };
 
@@ -95,11 +103,35 @@ const removeAdmin = async (req, res) => {
 // Update admin by ID
 const updateAdmin = async (req, res) => {
   const { id } = req.params;
+  const { name, username, password, role } = req.body;
+
+  if (!name || !username || !password || !role) {
+    return res.status(400).json({
+      message: "Name, username, password, and role are required",
+    });
+  }
+
+  const passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordPattern.test(password)) {
+    return res.status(400).json({
+      message:
+        "Password must have at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character",
+    });
+  }
+
   try {
-    // Update admin by ID
+    const existingAdmin = await Admin.findOne({ username });
+    console.log(existingAdmin); // Debug log
+    if (existingAdmin) {
+      return res.status(400).json({
+        message: "Username already exists. Please choose a different username",
+      });
+    }
+
     const admin = await Admin.findByIdAndUpdate(
       id,
-      { ...req.body },
+      { name, username, password, role },
       {
         new: true,
       }
@@ -107,9 +139,17 @@ const updateAdmin = async (req, res) => {
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
-    res.status(200).json({ message: "Admin updated successfully", admin });
+
+    res.status(200).json({
+      message: "Admin updated successfully",
+      admin,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error updating admin:", error);
+    res.status(500).json({
+      message: "Admin update failed",
+      error: error.message || "An unexpected error occurred",
+    });
   }
 };
 
@@ -130,11 +170,12 @@ const admindetail = async (req, res) => {
 
 // Logout admin
 export const logout = async (req, res) => {
-  if (!req.body.token || !req.user.userId) {
+  if (!req.token || !req.user.userId) {
     return res
       .status(400)
       .json({ message: "Token and user ID is required", status: false });
   }
+  console.log(req.token);
   try {
     const admin = await Admin.findById(req.user.userId);
     if (!admin) {
@@ -142,14 +183,14 @@ export const logout = async (req, res) => {
         .status(401)
         .json({ message: "Admin not found", status: false });
     }
-    const findtoken = await BlockedToken.findOne({ token: req.body.token });
+    const findtoken = await BlockedToken.findOne({ token: req.token });
     if (findtoken) {
       return res
         .status(401)
         .json({ message: "Token already blocked", status: false });
     }
     const newblocked = await BlockedToken.create({
-      token: req.body.token,
+      token: req.token,
     });
     await newblocked.save();
     return res

@@ -434,7 +434,7 @@ const addToCart = async (req, res) => {
       (item) => item.productId.toString() === productId
     );
 
-    if (productIndex > -1) {
+    if (productIndex > -1) {   ''
       // Update quantity if product exists
       user.cart[productIndex].quantity += quantity;
     } else {
@@ -458,13 +458,13 @@ const addToCart = async (req, res) => {
 //remove from cart function
 const removeFromCart = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { productIds } = req.body;
     const userId = req.user.userId;
 
     // Validate input fields
-    if (!userId || !productId) {
+    if (!userId || !Array.isArray(productIds) || productIds.length === 0) {
       return res.status(400).json({
-        message: "User ID and product ID are required",
+        message: "User ID and an array of product IDs are required",
         status: false,
       });
     }
@@ -472,7 +472,7 @@ const removeFromCart = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       userId,
       {
-        $pull: { cart: { productId } },
+        $pull: { cart: { productId: { $in: productIds } } },
       },
       { new: true }
     );
@@ -596,13 +596,9 @@ const removefromfev = async (req, res) => {
       });
     }
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      {
-        $pull: { favorites: productId },
-      },
-      { new: true }
-    );
+    const user = await User.findByIdAndUpdate(userId, {
+      $pull: { favorites: productId },
+    });
 
     if (!user) {
       return res.status(404).json({ message: "User not found", status: false });

@@ -3,6 +3,8 @@ const router = express.Router();
 import workshopController from "../controllers/workshopControl.js";
 import multer from "multer";
 import path from "path";
+import verifyUser from "../middleware/verifyUser.js";
+import checkRole from "../middleware/authAdmin.js";
 
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
@@ -22,7 +24,24 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/", upload.array("images", 6), workshopController.createWorkshop);
-router.get("/", workshopController.listWorkshop);
-router.get("/findNearbyWorkshops", workshopController.findNearbyWorkshops);
+router.post(
+  "/",
+  verifyUser,
+  checkRole("super admin"),
+  upload.array("images", 6),
+  workshopController.createWorkshop
+);
+router.post("/login", workshopController.loginWorkshop);
+router.patch(
+  "/availability",
+  verifyUser,
+  workshopController.changeAvailability
+);
+router.get("/", verifyUser, workshopController.listWorkshop);
+router.get(
+  "/findNearbyWorkshops",
+  verifyUser,
+  workshopController.findNearbyWorkshops
+);
+router.post("/logout", verifyUser, workshopController.workshopLogout);
 export default router;

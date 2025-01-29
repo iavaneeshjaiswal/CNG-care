@@ -59,7 +59,7 @@ Ensure you have the following tools installed:
 4. Run the application:
 
    ```bash
-   npm start
+   npm run dev
    ```
 
 ## Usage
@@ -79,5 +79,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For inquiries, you can reach out to the project maintainer:
 
-- **Author**: [Avaneesh Jaiswal](https://github.com/iavaneeshjaiswal)
-- **Email**: [workwithavaneesh@gmail.com]
+- **Developer**: [Avaneesh Jaiswal](https://github.com/iavaneeshjaiswal)
+- **Organization**: VirtuGrowDigital
